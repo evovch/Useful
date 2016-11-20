@@ -4,7 +4,7 @@
 
 ClassImp(cls_hit)
 
-cls_hit::cls_hit() :
+cls_hit::cls_hit(void) :
 	ts(0), ch(0), adc(0)
 {
 }
@@ -14,7 +14,7 @@ cls_hit::cls_hit(UInt_t p_ts, UInt_t p_ch, UInt_t p_adc) :
 {
 }
 
-cls_hit::~cls_hit()
+cls_hit::~cls_hit(void)
 {
 	Clear();
 }
@@ -35,13 +35,15 @@ void cls_hit::Set(UInt_t p_ts, UInt_t p_ch, UInt_t p_adc)
 
 ClassImp(cls_event)
 
-cls_event::cls_event()
+ULong_t cls_event::fEventsCounter = 0;
+
+cls_event::cls_event(void)
 {
 	fNumHits = 0;
 	fHits = new TClonesArray("cls_hit", 10);
 }
 
-cls_event::~cls_event()
+cls_event::~cls_event(void)
 {
 	Clear();
 }
@@ -62,6 +64,12 @@ cls_hit* cls_event::AddHit(UInt_t p_ts, UInt_t p_ch, UInt_t p_adc)
  	cls_hit *hit = new(hits[fNumHits++]) cls_hit(p_ts, p_ch, p_adc);
 #endif
     return hit;
+}
+
+void cls_event::NextEvent(void)
+{
+	fEventId = fEventsCounter;
+	fEventsCounter++;
 }
 
 // -----------------------------------------------------------------------------------------------

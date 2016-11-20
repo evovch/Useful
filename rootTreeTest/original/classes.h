@@ -7,9 +7,9 @@
 class cls_hit : public TObject
 {
 public:
-	cls_hit();
+	cls_hit(void);
 	cls_hit(UInt_t p_ts, UInt_t p_ch, UInt_t p_adc);
-	virtual ~cls_hit();
+	virtual ~cls_hit(void);
 
 	void Clear(Option_t *option="");
 
@@ -27,16 +27,23 @@ public:
 class cls_event : public TObject
 {
 public:
-	cls_event();
-	virtual ~cls_event();
+	cls_event(void);
+	virtual ~cls_event(void);
 
 	void Clear(Option_t *option="");
 
 	cls_hit* AddHit(UInt_t p_ts, UInt_t p_ch, UInt_t p_adc);
+	void SetTimestamp(Double_t p_ts) { fTimestamp = p_ts; }
+	void NextEvent(void);
 
 private:
+	ULong_t fEventId;
+	Double_t fTimestamp;
+
 	TClonesArray* fHits;	//->
 	UInt_t fNumHits;
+
+	static ULong_t fEventsCounter;
 
 public:
 	ClassDef(cls_event, 1);

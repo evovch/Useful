@@ -17,32 +17,43 @@ int main(int /*argc*/, char** /*argv*/)
 
 	theTree.Branch("theBranch", "cls_event", theEvent);
 
-	UInt_t nEvents = 10;
-
+	UInt_t nEvents = 1000;
 	Double_t meanNhitsPerEvent = 20.;
-	Double_t sigmaNhitsPerEvent = 5.;
 
 	TRandom3 rndGen;
 
 	for (UInt_t i=0; i<nEvents; i++) {
 
-		Double_t nHits = rndGen.Gaus(meanNhitsPerEvent, sigmaNhitsPerEvent);
+		Double_t nHits = rndGen.Poisson(meanNhitsPerEvent);
 
-		cout << "Event (" << (UInt_t)nHits << " hits)" << endl;
+		Double_t eventTimestamp = rndGen.Gaus(0., 10.);
 
-		for (UInt_t j=0; j<(UInt_t)nHits; j++) {
-			theEvent->AddHit(i, i, i);
+		//cout << "Event " << i << "\t\tTs: " << (i+1)*1000.+eventTimestamp << "\tnHits: " << (UInt_t)nHits << endl;
+
+		Double_t tsInPs = (Double_t)(i+1) * 1000. + eventTimestamp;
+		theEvent->SetTimestamp(tsInPs);
+
+		for (UInt_t j=0; j<(UInt_t)nHits; j++)
+		{
+			Double_t hitTs = rndGen.Exp(5000.);
+			UInt_t hitCh = rndGen.Integer(128);
+			UInt_t hitAdc = rndGen.Integer(1024);
+
+			theEvent->AddHit((UInt_t)hitTs, hitCh, hitAdc);
+
+			//cout << "\t\tHit " << j << "\tTs: " << hitTs/1000. << "\tCh: " << hitCh << "\tAdc: " << hitAdc << endl;
 		}
 
+		theEvent->NextEvent();
 		theTree.Fill();
 		theEvent->Clear();
 
 	}
 
-	delete theEvent;	// cen I do it here o only after writing to file?
+	delete theEvent;
 
 	theTreeFile.Write();
-	theTree.Print();
+	//theTree.Print();
 
 	return 0;
 }
