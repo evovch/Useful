@@ -1,0 +1,5 @@
+A ROOT tutorial:
+Bash script to run several ROOT macros with parameters and then use hadd to aggregate the results.
+Random number generator, TF1, Poisson, TCanvas, TH1D, Writing a histogram into a file.
+Reading a histogram from a file, fitting a histogram, drawring several histograms on one canvas.
+TString operations.
