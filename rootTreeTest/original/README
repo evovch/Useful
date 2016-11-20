@@ -1,0 +1,2 @@
+An example of a standalone software tool using the ROOT framework.
+We generate some events with random hits inside them and put everything into the ROOT tree in the ROOT file.
