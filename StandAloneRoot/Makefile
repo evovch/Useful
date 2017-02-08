@@ -9,4 +9,4 @@ all:
 	g++ PDF_CDF.C -o $(TARGET) $(FLAGS) $(LDFLAGS) $(INCFLAGS)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) *.d *.so *.pcm

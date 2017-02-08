@@ -1,0 +1,14 @@
+1. You can just run the code as a macro using
+
+> root -l PDF_CDF.C
+
+2. You can compile the code using ACLiC
+
+> root -l PDF_CDF.C+
+
+3. You can compile the code using standard C++ compiler.
+For that you need to reference the include and lib files. See Makefile.
+
+> make
+
+

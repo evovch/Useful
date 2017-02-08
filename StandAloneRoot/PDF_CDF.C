@@ -1,4 +1,6 @@
-/*
+// ----------------------------------------------------
+// This block you need for ACLiC and full compilation
+
 #include <TApplication.h>
 #include <TCanvas.h>
 #include <TH1D.h>
@@ -6,12 +8,18 @@
 #include <TGraph.h>
 #include <Math/DistFunc.h>
 
-void PDF_CDF();
-*/
+// ----------------------------------------------------
+
+// This block you need anyway
 void DrawBinomial();
 void DrawNormal();
 void DrawExp();
+
+// ----------------------------------------------------
+// This block is required only for standalone compilation
 /*
+void PDF_CDF();
+
 int main(int argc, char** argv)
 {
 	TApplication app("drawStability", &argc, argv);
@@ -22,6 +30,8 @@ int main(int argc, char** argv)
 	return 0;
 }
 */
+// ----------------------------------------------------
+
 void PDF_CDF()
 {
 	Double_t xMin = -2.;
