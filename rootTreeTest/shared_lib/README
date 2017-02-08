@@ -1,0 +1,4 @@
+One has to specify the current folder as the search path for the dynamic libraries.
+
+export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
+
