@@ -33,14 +33,14 @@ FORMS   += mainwindow.ui \
 
 # Set correct path to your ROOT include directory
 
-INCLUDEPATH += /home/evovch/soft/root_install/include \
+INCLUDEPATH += /opt/root/root_build/include \
     Go4QtRoot/ \
     gui/
 
 # Set correct path to your ROOT libs directory
 
 LIBS += -lX11 \
-        -L/home/evovch/soft/root_install/lib \
+        -L/opt/root/root_build/lib \
         -lGui -lCore -lRIO -lNet -lHist -lGraf -lGraf3d \
         -lGpad -lTree -lRint -lPostscript -lMatrix \
         -lPhysics -lMathCore -lThread -lMultiProc -lCling \
