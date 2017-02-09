@@ -1,0 +1,5 @@
+prog.exe - classes are compiled statically, the .so file is not needed.
+prog2.exe - classes are compiled dynamically into an .so file and one has to follow the instruction below to make it work.
+
+Specify the current folder as the search path for dynamic libraries.
+$ export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH

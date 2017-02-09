@@ -1,0 +1,5 @@
+[ libclasses.so ]
+# List of selected classes
+class cls_event
+class cls_hit
+header classes.h
