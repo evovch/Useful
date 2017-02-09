@@ -6,26 +6,31 @@ LDFLAGS=`root-config --libs`
 SOLIB=lib$(PROJNAME).so
 EXEC=$(PROJNAME).exe
 
-.PHONY: all clean exec
 
-all: main.o classes.o classesdict.o
+.PHONY: all clean
+
+all: $(SOLIB) $(EXEC)
+
+$(SOLIB): main.o classes.o classesdict.o
 	g++ main.o classes.o classesdict.o $(FLAGS) $(LDFLAGS) -shared -o $(SOLIB)
 
-main.o :
+$(EXEC): $(SOLIB)
+	g++ exeMain.cpp -o $(EXEC) -L. -l$(PROJNAME)
+
+main.o:
 	g++ -c main.cpp $(FLAGS) $(INCFLAGS)
 
-classes.o :
-	g++ -c classes.cpp $(FLAGS) $(INCFLAGS)
-
-classesdict.o : classesdict.cpp
-	g++ -c classesdict.cpp $(FLAGS) $(INCFLAGS)
 
 # Use rootcint for ROOT5 and rootcling for ROOT6
-classesdict.cpp :
+classesdict.cpp:
 	rootcling -f classesdict.cpp -c classes.h LinkDef.h
 
-clean :
-	rm -fv *.o classesdict.cpp classesdict_rdict.pcm *.root $(EXEC) $(SOLIB)
+classesdict.o: classesdict.cpp
+	g++ -c classesdict.cpp $(FLAGS) $(INCFLAGS)
 
-exec :
-	g++ exeMain.cpp -o $(EXEC) -L. -l$(PROJNAME)
+classes.o:
+	g++ -c classes.cpp $(FLAGS) $(INCFLAGS)
+
+
+clean:
+	rm -fv *.o classesdict.cpp classesdict_rdict.pcm *.root $(EXEC) $(SOLIB)

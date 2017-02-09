@@ -1,5 +1,6 @@
 // ----------------------------------------------------
-// This block you need for ACLiC and full compilation
+// This block you need for ACLiC and full compilation.
+// It is not necessary if you run this file as a macro from ROOT.
 
 #include <TApplication.h>
 #include <TCanvas.h>
@@ -10,14 +11,15 @@
 
 // ----------------------------------------------------
 
-// This block you need anyway
+// This block you need anyway.
 void DrawBinomial();
 void DrawNormal();
 void DrawExp();
 
 // ----------------------------------------------------
-// This block is required only for standalone compilation
-/*
+// This block is required only for standalone compilation.
+#ifndef __CLING__
+
 void PDF_CDF();
 
 int main(int argc, char** argv)
@@ -29,7 +31,8 @@ int main(int argc, char** argv)
 	app.Run();
 	return 0;
 }
-*/
+
+#endif // __CLING__
 // ----------------------------------------------------
 
 void PDF_CDF()

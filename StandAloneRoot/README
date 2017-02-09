@@ -1,14 +1,26 @@
 1. You can just run the code as a macro using
 
-> root -l PDF_CDF.C
+$ root -l PDF_CDF.C
 
 2. You can compile the code using ACLiC
 
-> root -l PDF_CDF.C+
+$ root -l PDF_CDF.C+
 
-3. You can compile the code using standard C++ compiler.
-For that you need to reference the include and lib files. See Makefile.
+Afterwards you can use the dynamic library, i.e.
 
-> make
+$ root -l
+> .L PDF_CDF_C.so
+> PDF_CDF()
 
+In this solution it takes some time to compile but program works much faster,
+which is feasible for time-consuming computations and multiple invocations without recompiling.
 
+3. You can compile the code using standard C++ compiler into a single executable.
+For that you need to reference the include and lib files. See Makefile for details.
+
+$ make
+
+Afterwards you can use this executable without direct invocation of ROOT but using the dynamic libraries of ROOT.
+In principle this should be the fastest working solution, theoretically just a bit faster than the previous one.
+Try running your exe without setting the ROOT environment (without running thisroot.sh beforehand).
+You must the error about absence of some dynamic library (*.so) from the ROOT package.
