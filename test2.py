@@ -17,4 +17,5 @@ someText = OneOrMore(aWord)
 
 outputText = someText.parseString(TEXT)
 
-print outputText
+finalOutput = ' '.join(outputText)
+print finalOutput
