@@ -33,5 +33,8 @@ void trapLoop()
 
 	worldVol->Draw();
 
-	canv->SaveAs("output1.png");
+	Int_t counter = 0;
+	TString outputFilename;
+	outputFilename.Form("%s_%d.png", "trap", counter);
+	canv->SaveAs(outputFilename);
 }
