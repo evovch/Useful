@@ -31,7 +31,7 @@ void trapLoop()
 
 	TCanvas* canv = new TCanvas("canv", "canv");
 
-	worldVol->Draw();
+	worldVol->Draw("ogl");
 
 	Int_t counter = 0;
 	TString outputFilename;
