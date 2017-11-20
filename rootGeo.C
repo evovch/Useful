@@ -2,7 +2,6 @@ void rootGeo()
 {
 	TGeoManager* geoM = new TGeoManager("geoM", "geoM");
 
-
 	// Materials and media --------------------------------------------------------------
 
 	TGeoMaterial* vacMat = new TGeoMaterial("vacMat", 0, 0, 0);
@@ -13,7 +12,6 @@ void rootGeo()
 
 	TGeoMaterial* sciMat = new TGeoMaterial("sciMat", 0, 0, 0);
 	TGeoMedium* sciMed = new TGeoMedium("sciMed", 1, sciMat);
-
 
 	// Shapes and volumes ---------------------------------------------------------------
 
