@@ -122,6 +122,11 @@ void stlFile::printTemplateStlFile() {
 
   // Blank line at the end of the file
   outfile << endl;
+
+  // Postprocess - add carriage return characters
+  // so that the output GDML file was correct from
+  // Windows point of view
+  //TODO
 }
 
 void stlFile::searchUnicVertex() { //подсчет уникальных элементов в массиве
