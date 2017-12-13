@@ -295,15 +295,15 @@ void matrix::ExecuteTXYZ()
   // tg(alpha) ver1
   double tga1 = B/D;
   // tg(alpha) ver2
-  double tga2 = F/C;
+  //double tga2 = F/C;
 
   // tg(gamma) ver1
   double tgg1 = F/B;
   // tg(gamma) ver2
-  double tgg2 = C/D;
+  //double tgg2 = C/D;
 
-  double tga_diff = tga1-tga2;
-  double tgg_diff = tgg1-tgg2;
+  //double tga_diff = tga1-tga2;
+  //double tgg_diff = tgg1-tgg2;
 
   double recAlpha;
   double recGamma;
@@ -434,40 +434,50 @@ void matrix::RunScan()
 
         matrix Mz;
         Mz.InitZrot(alpha);
-        //cout << std::fixed << "Mz (alph=" << alpha << ")" << endl;
-        //Mz.Dump();
+        cout << std::fixed << "Mz (alph=" << alpha << ")" << endl;
+        Mz.Dump();
 
         matrix My;
         My.InitYrot(beta);
-        //cout << std::fixed << "My (beta=" << beta << ")" << endl;
-        //My.Dump();
+        cout << std::fixed << "My (beta=" << beta << ")" << endl;
+        My.Dump();
 
         matrix Mx;
         Mx.InitXrot(gamma);
-        //cout << std::fixed << "Mx (gamm=" << gamma << ")" << endl;
-        //Mx.Dump();
+        cout << std::fixed << "Mx (gamm=" << gamma << ")" << endl;
+        Mx.Dump();
 
-        matrix Mxyz;
+        matrix Mtr;
+        Mtr.InitXYZposRow(3.3, 4.4, 5.5);
+        cout << std::fixed << "Mtr (x=3.3, y=4.4, z=5.5)" << endl;
+        Mtr.Dump();
 
-        Mxyz.SetAngles(alpha, beta, gamma);
+        matrix Mtxyz;
 
-        Mxyz.InitE();
-        //cout << "Mxyz = E" << endl;
-        //Mxyz.Dump();
+        Mtxyz.SetAngles(alpha, beta, gamma);
 
-        Mxyz.Multiply(Mz);
-        //cout << "Mxyz *= Mz" << endl;
-        //Mxyz.Dump();
+        Mtxyz.InitE();
+        cout << "Mtxyz = E" << endl;
+        Mtxyz.Dump();
 
-        Mxyz.Multiply(My);
-        //cout << "Mxyz *= My" << endl;
-        //Mxyz.Dump();
+        Mtxyz.Multiply(Mz);
+        cout << "Mtxyz *= Mz" << endl;
+        Mtxyz.Dump();
 
-        Mxyz.Multiply(Mx);
-        //cout << "Mxyz *= Mx" << endl;
-        //Mxyz.Dump();
+        Mtxyz.Multiply(My);
+        cout << "Mtxyz *= My" << endl;
+        Mtxyz.Dump();
 
-        Mxyz.ExecuteTXYZ();
+        Mtxyz.Multiply(Mx);
+        cout << "Mtxyz *= Mx" << endl;
+        Mtxyz.Dump();
+
+        Mtxyz.Multiply(Mtr);
+        cout << "Mtxyz *= Mtr" << endl;
+        Mtxyz.Dump();
+
+
+        Mtxyz.ExecuteTXYZ();
 
         mGraph->SetPoint(iPoint, alpha, beta, gamma);
         iPoint++;
