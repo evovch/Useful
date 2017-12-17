@@ -35,6 +35,8 @@ int main(int argc, char** argv)
 
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
+	fprintf(stdout, "Version of OpenGL detected in the system: '%s'\n", glGetString(GL_VERSION));
+
 	glutKeyboardFunc(KeyFunc);
 	glutDisplayFunc(DrawFunc);
 	glutMainLoop();
