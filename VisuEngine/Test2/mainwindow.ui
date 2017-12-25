@@ -18,9 +18,6 @@
     <item>
      <widget class="cls_myGLwidget" name="openGLWidget"/>
     </item>
-    <item>
-     <widget class="cls_myGLwidget" name="openGLWidget_2"/>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">

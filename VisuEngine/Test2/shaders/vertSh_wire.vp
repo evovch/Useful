@@ -1,7 +1,6 @@
 #version 400
 
 layout (location = 0) in vec3 in_Position;
-
 out vec4 ex_Color;
 
 // Model view projection matrix - combination of model-to-camera, camera-to-clip

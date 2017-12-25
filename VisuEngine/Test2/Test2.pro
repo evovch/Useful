@@ -27,14 +27,16 @@ QMAKE_CXXFLAGS += -Wall -Wextra -Wpedantic
 LIBS    += -lGLEW
 
 SOURCES += main.cpp\
+           support.cpp \
            mainwindow.cpp \
            cls_myglwidget.cpp \
-    cls_displaymodel.cpp \
-    support.cpp
+           cls_displaymodel.cpp \
+           cls_mycamera.cpp
 
 HEADERS += mainwindow.h \
+           support.h \
            cls_myglwidget.h \
-    cls_displaymodel.h \
-    support.h
+           cls_displaymodel.h \
+           cls_mycamera.h
 
 FORMS   += mainwindow.ui

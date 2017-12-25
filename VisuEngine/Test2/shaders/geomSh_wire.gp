@@ -8,7 +8,8 @@ flat out vec4 geom_Color;
 
 void main()
 {
-	for (int i=0; i<2; i++) {
+	for (int i=0; i<2; i++)
+	{
 		geom_Color = ex_Color[i];
 		gl_Position = gl_in[i].gl_Position;
 		EmitVertex();

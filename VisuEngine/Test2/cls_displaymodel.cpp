@@ -2,7 +2,14 @@
 
 #include <QDebug>
 
-cls_DisplayModel::cls_DisplayModel()
+#include <QOpenGLBuffer>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
+
+#include "cls_myglwidget.h"
+
+cls_DisplayModel::cls_DisplayModel(cls_myGLwidget* p_widget) :
+    mWidget(p_widget)
 {
     // Allocate memory inside this GenerateBox() method; free in the destructor
     this->GenerateBox();
@@ -26,9 +33,9 @@ void cls_DisplayModel::GenerateBox(void)
 
     // Only colors
     for (unsigned int i=0; i<8; i++) { // mNumOfVertices
-        mVertexAndColorData[i].c[0] = 0.5;
-        mVertexAndColorData[i].c[1] = 0.5;
-        mVertexAndColorData[i].c[2] = 0.5;
+        mVertexAndColorData[i].c[0] = (float)qrand()/(float)RAND_MAX;
+        mVertexAndColorData[i].c[1] = (float)qrand()/(float)RAND_MAX;
+        mVertexAndColorData[i].c[2] = (float)qrand()/(float)RAND_MAX;
     }
 
     // mNumOfVertices*3
@@ -98,10 +105,35 @@ void cls_DisplayModel::Dump(void)
 
 void cls_DisplayModel::SendToGPU()
 {
+    ////qDebug().nospace() << "cls_DisplayModel::SendToGPU";
 
+    mWidget->mVAO->bind();
+    mWidget->mVBO->bind();
+
+    mWidget->glBufferData(GL_ARRAY_BUFFER, mNumOfVertices*sizeof(stc_VandC), mVertexAndColorData, GL_STATIC_DRAW);
+    mWidget->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, v));
+    mWidget->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, c));
+    mWidget->glEnableVertexAttribArray(0);
+    mWidget->glEnableVertexAttribArray(1);
+
+    mWidget->mIBOshading->bind();
+    mWidget->glBufferData(GL_ELEMENT_ARRAY_BUFFER, mNumOfTriangles*3*sizeof(unsigned int), mTriangleIndices, GL_STATIC_DRAW);
+
+    mWidget->mIBOwire->bind();
+    mWidget->glBufferData(GL_ELEMENT_ARRAY_BUFFER, mNumOfWires*2*sizeof(unsigned int), mWireIndices, GL_STATIC_DRAW);
 }
 
 void cls_DisplayModel::Draw()
 {
+    ////qDebug().nospace() << "cls_DisplayModel::Draw";
 
+    // Shading
+    mWidget->mProgShading->bind();
+    mWidget->mIBOshading->bind();
+    mWidget->glDrawElements(GL_TRIANGLES, mNumOfTriangles*3, GL_UNSIGNED_INT, NULL);
+
+    // Wire
+    mWidget->mProgWire->bind();
+    mWidget->mIBOwire->bind();
+    glDrawElements(GL_LINES, mNumOfWires*2, GL_UNSIGNED_INT, NULL);
 }
