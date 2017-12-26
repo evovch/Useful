@@ -31,6 +31,8 @@ public: // methods
     int GetMinWinDim(void) const { return (this->height() < this->width()) ? this->height() : this->width(); }
     float GetSphR(void) const { return (cls_myGLwidget::mCentralCircleK * this->GetMinWinDim() / 2.0f); }
 
+    void SetModel(cls_DisplayModel* v_model);
+
 public: // data members
 
     static float mCentralCircleK;
@@ -62,17 +64,24 @@ private: // methods
 private: // data members
 
     // Shaders
-    QOpenGLShader* mShaderVpassthrought; // Vertex shader (for shading-style rendering) - the simplest vertex shader
-    QOpenGLShader* mShaderVwire; // Vertex shader for wireframe-style rendering
+    QOpenGLShader* mShaderVshading; // Vertex shader for shading-style rendering
     QOpenGLShader* mShaderGshading; // Geometry shader for shading-style rendering
+    QOpenGLShader* mShaderFshading; // Fragment shader for shading-style rendering
+
+    QOpenGLShader* mShaderVwire; // Vertex shader for wireframe-style rendering
     QOpenGLShader* mShaderGwire; // Geometry shader for wireframe-style rendering
-    QOpenGLShader* mShaderFsmooth; // Fragment shader for both shading-style and wireframe-style rendering ???
-    QOpenGLShader* mShaderFflat; // Fragment shader for both shading-style and wireframe-style rendering ???
+    QOpenGLShader* mShaderFwire; // Fragment shader for wireframe-style rendering
+
+    QOpenGLShader* mShaderVpoints; // Vertex shader for points rendering
+    QOpenGLShader* mShaderGpoints; // Geometry shader for points rendering
+    QOpenGLShader* mShaderFpoints; // Fragment shader for points rendering
 
     // Program for shading-style rendering
     QOpenGLShaderProgram* mProgShading;
     // Program for wireframe-style rendering
     QOpenGLShaderProgram* mProgWire;
+    // Program for points rendering
+    QOpenGLShaderProgram* mProgPoints;
 
     // Vertex array object
     QOpenGLVertexArrayObject* mVAO;
@@ -82,10 +91,13 @@ private: // data members
     QOpenGLBuffer* mIBOshading;
     // Index buffer object for wireframe-style rendering
     QOpenGLBuffer* mIBOwire;
+    // Index buffer object for points rendering
+    QOpenGLBuffer* mIBOpoints;
 
     // Uniform variables for matrices
     GLuint mMVPshadingUniform;
     GLuint mMVPwireUniform;
+    GLuint mMVPpointsUniform;
 
     // OpenGL logger for easier debug
     QOpenGLDebugLogger* mOpenGLlogger;

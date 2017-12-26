@@ -1,13 +1,15 @@
 #include "cls_mycamera.h"
 
-#include <QDebug>
-
-#include <QOpenGLShaderProgram>
-
+// GLM
 #include "glm/gtx/vector_angle.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+// Qt
+#include <QDebug>
+#include <QOpenGLShaderProgram>
+
+// Project
 #include "cls_myglwidget.h"
 
 cls_myCamera::cls_myCamera(glm::vec3 p_center, float p_radius, cls_myGLwidget* p_widget) :
@@ -38,9 +40,9 @@ void cls_myCamera::Reset(void)
     //this->SendCamToGPU();
 }
 
-void cls_myCamera::Pan(float p_curScreenX, float p_curScreenY,
-                       float p_startScreenX, float p_startScreenY,
-                       glm::vec3 p_startLookPt)
+void cls_myCamera::Pan(float /*p_curScreenX*/, float /*p_curScreenY*/,
+                       float /*p_startScreenX*/, float /*p_startScreenY*/,
+                       glm::vec3 /*p_startLookPt*/)
 {
     //TODO implement
 /*    qDebug() << "cls_myCamera::Pan";
@@ -167,9 +169,15 @@ void cls_myCamera::SendCamToGPU(void) //const
     // Nasty here - both access to the widget and OpenGL functions
     glm::mat4 v_MVP = this->GetMVP();
 
+    // Send MVP matrix to GPU - shading
     mWidget->mProgShading->bind();
     mWidget->glUniformMatrix4fv(mWidget->mMVPshadingUniform, 1, GL_FALSE, glm::value_ptr(v_MVP));
 
+    // Send MVP matrix to GPU - wire
     mWidget->mProgWire->bind();
     mWidget->glUniformMatrix4fv(mWidget->mMVPwireUniform, 1, GL_FALSE, glm::value_ptr(v_MVP));
+
+    // Send MVP matrix to GPU - points
+    mWidget->mProgPoints->bind();
+    mWidget->glUniformMatrix4fv(mWidget->mMVPpointsUniform, 1, GL_FALSE, glm::value_ptr(v_MVP));
 }

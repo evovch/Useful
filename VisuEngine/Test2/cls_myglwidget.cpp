@@ -21,23 +21,34 @@ cls_myGLwidget::cls_myGLwidget(QWidget *parent) :
 
     qDebug().nospace() << "cls_myGLwidget::cls_myGLwidget()";
 
-    mShaderVpassthrought = nullptr;
-    mShaderVwire = nullptr;
+    // Shaders
+    mShaderVshading = nullptr;
     mShaderGshading = nullptr;
-    mShaderGwire = nullptr;
-    mShaderFsmooth = nullptr;
-    mShaderFflat = nullptr;
+    mShaderFshading = nullptr;
 
+    mShaderVwire = nullptr;
+    mShaderGwire = nullptr;
+    mShaderFwire = nullptr;
+
+    mShaderVpoints = nullptr;
+    mShaderGpoints = nullptr;
+    mShaderFpoints = nullptr;
+
+    // Programs
     mProgShading = nullptr;
     mProgWire = nullptr;
+    mProgPoints = nullptr;
 
+    // Buffers
     mVAO = nullptr;
     mVBO = nullptr;
     mIBOshading = nullptr;
     mIBOwire = nullptr;
+    mIBOpoints = nullptr;
 
     //mMVPshadingUniform = ?;
     //mMVPwireUniform = ?;
+    //mMVPpointsUniform = ?;
 
     mCamera = nullptr;
     mModel = nullptr;
@@ -53,25 +64,42 @@ cls_myGLwidget::~cls_myGLwidget()
     // destroy all underlying OpenGL resources.
     this->makeCurrent(); // method of QOpenGLWidget (mother) class
 
-    delete mShaderVpassthrought;
-    delete mShaderVwire;
+    // Shaders
+    delete mShaderVshading;
     delete mShaderGshading;
-    delete mShaderGwire;
-    delete mShaderFsmooth;
-    delete mShaderFflat;
+    delete mShaderFshading;
 
+    delete mShaderVwire;
+    delete mShaderGwire;
+    delete mShaderFwire;
+
+    delete mShaderVpoints;
+    delete mShaderGpoints;
+    delete mShaderFpoints;
+
+    // Programs
     delete mProgShading;
     delete mProgWire;
+    delete mProgPoints;
 
+    // Buffers
     delete mVAO;
     delete mVBO;
     delete mIBOshading;
     delete mIBOwire;
+    delete mIBOpoints;
 
     delete mOpenGLlogger;
 
     delete mCamera;
-    delete mModel;
+    delete mModel; //FIXME currently model is an external object
+}
+
+void cls_myGLwidget::SetModel(cls_DisplayModel* v_model)
+{
+    mModel = v_model;
+    // Send model to GPU
+    mModel->SendToGPU();
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -120,7 +148,9 @@ void cls_myGLwidget::paintGL()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    mModel->Draw();
+    if (mModel != nullptr) {
+        mModel->Draw();
+    }
 
     const QList<QOpenGLDebugMessage> v_messages = mOpenGLlogger->loggedMessages();
     for (const QOpenGLDebugMessage &v_message : v_messages) {
@@ -249,27 +279,41 @@ void cls_myGLwidget::InitProgramsAndShaders(void)
 {
     qDebug().nospace() << "cls_myGLwidget::InitProgramsAndShaders()";
 
-    // Create shaders
-    mShaderVpassthrought = new QOpenGLShader(QOpenGLShader::Vertex);
-    mShaderVwire = new QOpenGLShader(QOpenGLShader::Vertex);
+    // Create shaders - shading
+    mShaderVshading = new QOpenGLShader(QOpenGLShader::Vertex);
     mShaderGshading = new QOpenGLShader(QOpenGLShader::Geometry);
-    mShaderGwire = new QOpenGLShader(QOpenGLShader::Geometry);
-    mShaderFsmooth = new QOpenGLShader(QOpenGLShader::Fragment);
-    mShaderFflat = new QOpenGLShader(QOpenGLShader::Fragment);
+    mShaderFshading = new QOpenGLShader(QOpenGLShader::Fragment);
 
-    // Compile shaders' source files
-    mShaderVpassthrought->compileSourceFile("shaders/vertSh_passthrough.vp");
+    // Create shaders - wire
+    mShaderVwire = new QOpenGLShader(QOpenGLShader::Vertex);
+    mShaderGwire = new QOpenGLShader(QOpenGLShader::Geometry);
+    mShaderFwire = new QOpenGLShader(QOpenGLShader::Fragment);
+
+    // Create shaders - points
+    mShaderVpoints = new QOpenGLShader(QOpenGLShader::Vertex);
+    mShaderGpoints = new QOpenGLShader(QOpenGLShader::Geometry);
+    mShaderFpoints = new QOpenGLShader(QOpenGLShader::Fragment);
+
+    // Compile shaders' source files - shading
+    mShaderVshading->compileSourceFile("shaders/vertSh_shading.vp");
+    mShaderGshading->compileSourceFile("shaders/geomSh_shading.gp");
+    mShaderFshading->compileSourceFile("shaders/frSh_shading.fp");
+
+    // Compile shaders' source files - wire
     mShaderVwire->compileSourceFile("shaders/vertSh_wire.vp");
-    mShaderGshading->compileSourceFile("shaders/geomSh_aux.gp");
     mShaderGwire->compileSourceFile("shaders/geomSh_wire.gp");
-    mShaderFsmooth->compileSourceFile("shaders/frSh_smooth.fp");
-    mShaderFflat->compileSourceFile("shaders/frSh_flat.fp");
+    mShaderFwire->compileSourceFile("shaders/frSh_wire.fp");
+
+    // Compile shaders' source files - points
+    mShaderVpoints->compileSourceFile("shaders/vertSh_points.vp");
+    mShaderGpoints->compileSourceFile("shaders/geomSh_points.gp");
+    mShaderFpoints->compileSourceFile("shaders/frSh_points.fp");
 
     // Prepare the program for shading-style rendering
     mProgShading = new QOpenGLShaderProgram();
-    mProgShading->addShader(mShaderVpassthrought);
+    mProgShading->addShader(mShaderVshading);
     mProgShading->addShader(mShaderGshading);
-    mProgShading->addShader(mShaderFsmooth);
+    mProgShading->addShader(mShaderFshading);
     mProgShading->link();
 
     // Connect uniform variables
@@ -279,17 +323,28 @@ void cls_myGLwidget::InitProgramsAndShaders(void)
     mProgWire = new QOpenGLShaderProgram();
     mProgWire->addShader(mShaderVwire);
     mProgWire->addShader(mShaderGwire);
-    mProgWire->addShader(mShaderFflat);
+    mProgWire->addShader(mShaderFwire);
     mProgWire->link();
 
     // Connect uniform variables
     mMVPwireUniform = mProgWire->uniformLocation("MVP");
+
+    // Prepare the program for points rendering
+    mProgPoints = new QOpenGLShaderProgram();
+    mProgPoints->addShader(mShaderVpoints);
+    mProgPoints->addShader(mShaderGpoints);
+    mProgPoints->addShader(mShaderFpoints);
+    mProgPoints->link();
+
+    // Connect uniform variables
+    mMVPpointsUniform = mProgWire->uniformLocation("MVP");
 }
 
 void cls_myGLwidget::InitBuffers(void)
 {
     qDebug().nospace() << "cls_myGLwidget::InitBuffers()";
 
+    // Vertex array object
     mVAO = new QOpenGLVertexArrayObject();
     mVAO->create();
     if (mVAO->isCreated()) {
@@ -298,6 +353,7 @@ void cls_myGLwidget::InitBuffers(void)
         qDebug().nospace() << "Error creating vertex array object.";
     }
 
+    // Vertex buffer object
     mVBO = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     mVBO->create();
     if (mVBO->isCreated()) {
@@ -306,6 +362,7 @@ void cls_myGLwidget::InitBuffers(void)
         qDebug().nospace() << "Error creating vertex buffer object.";
     }
 
+    // Inbex buffer object - shading
     mIBOshading = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
     mIBOshading->create();
     if (mIBOshading->isCreated()) {
@@ -314,6 +371,7 @@ void cls_myGLwidget::InitBuffers(void)
         qDebug().nospace() << "Error creating index buffer object for shading-style rendering.";
     }
 
+    // Inbex buffer object - wire
     mIBOwire = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
     mIBOwire->create();
     if (mIBOwire->isCreated()) {
@@ -321,29 +379,43 @@ void cls_myGLwidget::InitBuffers(void)
     } else {
         qDebug().nospace() << "Error creating index buffer object for wireframe-style rendering.";
     }
+
+    // Inbex buffer object - points
+    mIBOpoints = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+    mIBOpoints->create();
+    if (mIBOpoints->isCreated()) {
+        qDebug().nospace() << "Created index buffer object for points rendering.";
+    } else {
+        qDebug().nospace() << "Error creating index buffer object for points rendering.";
+    }
 }
 
 void cls_myGLwidget::InitGLparameters(void)
 {
     qDebug().nospace() << "cls_myGLwidget::InitGLparameters()";
 
+    this->makeCurrent(); //TODO understand! why?! // Seems not to be neccessary here, but still...
+
     // Init culling             //TODO enable/disable
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
-    //glFrontFace(GL_CCW);
+    //this->glEnable(GL_CULL_FACE);
+    //this->glCullFace(GL_BACK);
+    //this->glFrontFace(GL_CCW);
 
     // Init depth
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-    glDepthFunc(GL_LEQUAL);
-    glDepthRange(0.0f, 1.0f);
+    this->glEnable(GL_DEPTH_TEST);
+    this->glDepthMask(GL_TRUE);
+    this->glDepthFunc(GL_LEQUAL);
+    this->glDepthRange(0.0f, 1.0f);
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClearDepth(1.0f);
+    this->glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    this->glClearDepth(1.0f);
+
+    this->glEnable(GL_PROGRAM_POINT_SIZE);
+    this->glPointSize(10.);
 
     // Set the first vertex of the triangle as the vertex
     // holding the color for the whole triangle for flat shading rendering
-    glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
+    this->glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 }
 
 // ------------------------------------------------------------------------------------------------

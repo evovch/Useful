@@ -22,6 +22,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+OTHER_FILES += shaders/vertSh_shading.vp \
+               shaders/geomSh_shading.gp \
+               shaders/frSh_shading.fp \
+               shaders/vertSh_wire.vp \
+               shaders/geomSh_wire.gp \
+               shaders/frSh_wire.fp \
+               shaders/vertSh_points.vp \
+               shaders/geomSh_points.gp \
+               shaders/frSh_points.fp
+
 QMAKE_CXXFLAGS += -Wall -Wextra -Wpedantic
 
 LIBS    += -lGLEW

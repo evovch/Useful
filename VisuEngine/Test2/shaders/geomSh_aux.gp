@@ -3,8 +3,8 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices=3) out;
 
-in vec4 vertex_Color[];
-out vec3 geom_Color;
+in vec4 vertex_Color[];    // in 4,
+out vec3 geom_Color;  // out 3. I don't know why :-(
 
 
 
