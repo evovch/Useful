@@ -106,7 +106,7 @@ void cls_myGLwidget::initializeGL()
 
 void cls_myGLwidget::resizeGL(int w, int h)
 {
-    qDebug().nospace() << "cls_myGLwidget::resizeGL(" << w << ", " << h << ")";
+    ////qDebug().nospace() << "cls_myGLwidget::resizeGL(" << w << ", " << h << ")";
     ////qDebug().nospace() << "QWidget->width(): " << this->width();
     ////qDebug().nospace() << "QWidget->height(): " << this->height();
 
@@ -116,7 +116,7 @@ void cls_myGLwidget::resizeGL(int w, int h)
 
 void cls_myGLwidget::paintGL()
 {
-    qDebug().nospace() << "cls_myGLwidget::paintGL()";
+    ////qDebug().nospace() << "cls_myGLwidget::paintGL()";
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -142,14 +142,13 @@ void cls_myGLwidget::mousePressEvent(QMouseEvent* event)
     float v_za = sqrt(v_sphR*v_sphR - v_xa*v_xa - v_ya*v_ya);
 
     // Save values at mouse press
-    mStartX = v_xa;
-    mStartY = v_ya;
+    mStartXa = v_xa;
+    mStartYa = v_ya;
     mStartFrAngle = mCamera->GetFrAngle();
     mStartPBS = mCamera->GetParallelBoxSize();
+    mStartLookPt = mCamera->GetLookPt();
 
-    if (event->modifiers() == Qt::ControlModifier) {
-        mCurrentAction = ACT_ZOOM;
-    } else {
+    if (event->button() == Qt::LeftButton) {
         // Check: if we are inside the central circle area - rotate, otherwise - tilt
         if (v_curR > v_sphR) {
             // TILT
@@ -160,6 +159,12 @@ void cls_myGLwidget::mousePressEvent(QMouseEvent* event)
             mStartLocalDir = glm::normalize(glm::vec3(v_xa, v_ya, v_za));
             mCurrentAction = ACT_ROTATE;
         }
+    } else if (event->button() == Qt::RightButton) {
+        mCurrentAction = ACT_ZOOM;
+    } else if (event->button() == Qt::MiddleButton) {
+        mCurrentAction = ACT_PAN;
+    } else {
+
     }
 
     this->setMouseTracking(true);
@@ -174,9 +179,7 @@ void cls_myGLwidget::mouseReleaseEvent(QMouseEvent* /*event*/)
     this->setMouseTracking(false);
 }
 
-void cls_myGLwidget::mouseDoubleClickEvent(QMouseEvent* /*event*/)
-{
-}
+void cls_myGLwidget::mouseDoubleClickEvent(QMouseEvent* /*event*/) {}
 
 void cls_myGLwidget::mouseMoveEvent(QMouseEvent* event)
 {
@@ -190,16 +193,17 @@ void cls_myGLwidget::mouseMoveEvent(QMouseEvent* event)
         float v_sphR = this->GetSphR();
         float v_za = sqrt(v_sphR*v_sphR - v_xa*v_xa - v_ya*v_ya);
         float v_za2;
-        if (std::isnan(v_za)) v_za2 = 0.0f;
+        if (std::isnan(v_za)) v_za2 = 0.0f; //TODO check
         else v_za2 = v_za;
 
         glm::vec3 v_localDir;
 
         switch (mCurrentAction) {
         case ACT_PAN:
+            mCamera->Pan(v_xa, v_ya, mStartXa, mStartYa, mStartLookPt);
             break;
         case ACT_ZOOM:
-            mCamera->Zoom(v_ya, mStartY, mStartFrAngle, mStartPBS); // PBS - parallel box size
+            mCamera->Zoom(v_ya, mStartYa, mStartFrAngle, mStartPBS); // PBS - parallel box size
             break;
         case ACT_ROTATE:
             v_localDir = glm::normalize(glm::vec3(v_xa, v_ya, v_za2));
@@ -212,10 +216,16 @@ void cls_myGLwidget::mouseMoveEvent(QMouseEvent* event)
             mStartLocalDir = v_localDir;
             break;
         case ACT_SECTIONMOVE:
+            qDebug() << "cls_myGLwidget::mouseMoveEvent:" << "ACT_SECTIONMOVE";
+            //TODO implement
             break;
         case ACT_SECTIONROTATE:
+            qDebug() << "cls_myGLwidget::mouseMoveEvent:" << "ACT_SECTIONROTATE";
+            //TODO implement
             break;
         case ACT_SECTIONTILT:
+            qDebug() << "cls_myGLwidget::mouseMoveEvent:" << "ACT_SECTIONTILT";
+            //TODO implement
             break;
         case ACT_NO_ACT:
             break;
@@ -228,18 +238,10 @@ void cls_myGLwidget::mouseMoveEvent(QMouseEvent* event)
 }
 
 #ifndef QT_NO_WHEELEVENT
-void cls_myGLwidget::wheelEvent(QWheelEvent* /*event*/)
-{
-}
+void cls_myGLwidget::wheelEvent(QWheelEvent* /*event*/) {}
 #endif
-
-void cls_myGLwidget::keyPressEvent(QKeyEvent* /*event*/)
-{
-}
-
-void cls_myGLwidget::keyReleaseEvent(QKeyEvent* /*event*/)
-{
-}
+void cls_myGLwidget::keyPressEvent(QKeyEvent* /*event*/) {}
+void cls_myGLwidget::keyReleaseEvent(QKeyEvent* /*event*/) {}
 
 // ------------------------------------------------------------------------------------------------
 
@@ -325,7 +327,7 @@ void cls_myGLwidget::InitGLparameters(void)
 {
     qDebug().nospace() << "cls_myGLwidget::InitGLparameters()";
 
-    // Init culling		//TODO enable/disable
+    // Init culling             //TODO enable/disable
     //glEnable(GL_CULL_FACE);
     //glCullFace(GL_BACK);
     //glFrontFace(GL_CCW);

@@ -38,11 +38,18 @@ void cls_myCamera::Reset(void)
     //this->SendCamToGPU();
 }
 
-void cls_myCamera::Pan(float /*p_curScreenX*/, float /*p_curScreenY*/,
-                         float /*p_startScreenX*/, float /*p_startScreenY*/,
-                         glm::vec3 /*p_startLookPt*/)
+void cls_myCamera::Pan(float p_curScreenX, float p_curScreenY,
+                       float p_startScreenX, float p_startScreenY,
+                       glm::vec3 p_startLookPt)
 {
     //TODO implement
+/*    qDebug() << "cls_myCamera::Pan";
+    float k = 0.05;
+    float dx = (float)(p_curScreenX-p_startScreenX);
+    float dy = (float)(p_curScreenY-p_startScreenY);
+    glm::vec3 v_delta(dx*k, dy*k, 0.);
+    glm::vec3 v_deltaLocal = v_delta * this->GetRotM();
+    mLookPt += v_delta;*/
 }
 
 void cls_myCamera::Center(float /*p_curScreenX*/, float /*p_curScreenY*/)
@@ -154,7 +161,7 @@ glm::vec3 cls_myCamera::GetViewerPoint(void) const
 
 void cls_myCamera::SendCamToGPU(void) //const
 {
-    qDebug() << "cls_myCamera::SendCamToGPU";
+    //qDebug() << "cls_myCamera::SendCamToGPU";
     //TODO implement
 
     // Nasty here - both access to the widget and OpenGL functions

@@ -31,9 +31,9 @@ private: // data members
     unsigned int mNumOfTriangles;
     unsigned int mNumOfWires;
 
-    stc_VandC* mVertexAndColorData;		// [mNumOfVertices]
-    unsigned int* mTriangleIndices;		// [mNumOfTriangles*3]
-    unsigned int* mWireIndices;			// [mNumOfWires*2]
+    stc_VandC* mVertexAndColorData; // [mNumOfVertices]
+    unsigned int* mTriangleIndices; // [mNumOfTriangles*3]
+    unsigned int* mWireIndices;     // [mNumOfWires*2]
 
     // Pointer to the corresponding widget
     cls_myGLwidget* mWidget;

@@ -95,9 +95,10 @@ private: // data members
 
     // Auxiliary for camera manipulation
     action_type mCurrentAction;
-    float mStartX;  // At mouse press
-    float mStartY;  // At mouse press
+    float mStartXa;  // At mouse press
+    float mStartYa;  // At mouse press
     glm::vec3 mStartLocalDir;   // Rotating
+    glm::vec3 mStartLookPt;     // Panning
     float mStartFrAngle;        // Zooming (perspective)
     float mStartPBS;            // Zooming (parallel), PBS - parallel box size
 
