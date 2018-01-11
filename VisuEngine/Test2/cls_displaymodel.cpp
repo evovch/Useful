@@ -10,20 +10,30 @@
 #include "cls_myglwidget.h"
 
 cls_DisplayModel::cls_DisplayModel(cls_myGLwidget* p_widget) :
-    mWidget(p_widget)
+    mWidget(p_widget),
+    mNumOfVertices(0),
+    mNumOfTriangles(0),
+    mNumOfWires(0),
+    mNumOfPoints(0),
+    mVertexAndColorData(nullptr),
+    mTriangleIndices(nullptr),
+    mWireIndices(nullptr),
+    mPointIndices(nullptr),
+    mConstructed(false)
 {
-    // Allocate memory inside this GenerateBox() method; free in the destructor
-    this->GenerateBox();
-
-    //this->Dump();
 }
 
 cls_DisplayModel::~cls_DisplayModel()
 {
+    mNumOfVertices = 0;
+    mNumOfTriangles = 0;
+    mNumOfWires = 0;
+    mNumOfPoints = 0;
     if (mVertexAndColorData) delete [] mVertexAndColorData; mVertexAndColorData = nullptr;
     if (mTriangleIndices) delete [] mTriangleIndices; mTriangleIndices = nullptr;
     if (mWireIndices) delete [] mWireIndices; mWireIndices = nullptr;
     if (mPointIndices) delete [] mPointIndices; mPointIndices = nullptr;
+    mConstructed = false;
 }
 
 void cls_DisplayModel::GenerateBox(void)
@@ -33,64 +43,73 @@ void cls_DisplayModel::GenerateBox(void)
     mNumOfWires = 12;
     mNumOfPoints = 8;
 
-    // --------------------------------------------------------------------------------------------
+    //// --------------------------------------------------------------------------------------------
 
-    // Vertices and colors
-    mVertexAndColorData = new stc_VandC[8]; // mNumOfVertices
+    //// Vertices and colors
+    mVertexAndColorData = new stc_VandC[8]; //// mNumOfVertices
 
-    // Only colors
-    for (unsigned int i=0; i<8; i++) { // mNumOfVertices
+    //// Only colors
+    for (unsigned int i=0; i<8; i++) { //// mNumOfVertices
         mVertexAndColorData[i].c[0] = (float)qrand()/(float)RAND_MAX;
         mVertexAndColorData[i].c[1] = (float)qrand()/(float)RAND_MAX;
         mVertexAndColorData[i].c[2] = (float)qrand()/(float)RAND_MAX;
     }
 
-    // mNumOfVertices*3
+    //// mNumOfVertices*3
     float v_coords[8*3] = {-0.5,-0.5,-0.5, -0.5,-0.5,0.5, -0.5,0.5,-0.5, -0.5,0.5,0.5, 0.5,-0.5,-0.5, 0.5,-0.5,0.5, 0.5,0.5,-0.5, 0.5,0.5,0.5};
 
-    // Vertices
-    for (unsigned int i=0; i<8; i++) { // mNumOfVertices
+    //// Vertices
+    for (unsigned int i=0; i<8; i++) { //// mNumOfVertices
         mVertexAndColorData[i].v[0] = v_coords[i*3+0];
         mVertexAndColorData[i].v[1] = v_coords[i*3+1];
         mVertexAndColorData[i].v[2] = v_coords[i*3+2];
     }
 
-    // --------------------------------------------------------------------------------------------
+    //// --------------------------------------------------------------------------------------------
 
-    // Triangles
-    mTriangleIndices = new unsigned int[12*3]; // mNumOfTriangles*3
+    //// Triangles
+    mTriangleIndices = new unsigned int[12*3]; //// mNumOfTriangles*3
 
-    // mNumOfTriangles*3
+    //// mNumOfTriangles*3
     unsigned int v_triangIndices[12*3] = {0,1,2, 1,3,2, 6,5,4, 7,5,6, 7,1,5, 7,3,1, 0,6,4, 0,2,6, 2,7,6, 2,3,7, 5,0,4, 5,1,0};
 
-    for (unsigned int i=0; i<12*3; i++) { // mNumOfTriangles*3
+    for (unsigned int i=0; i<12*3; i++) { //// mNumOfTriangles*3
         mTriangleIndices[i] = v_triangIndices[i];
     }
 
-    // --------------------------------------------------------------------------------------------
+    //// --------------------------------------------------------------------------------------------
 
-    // Wires
-    mWireIndices = new unsigned int[12*2]; // mNumOfWires*2
+    //// Wires
+    mWireIndices = new unsigned int[12*2]; //// mNumOfWires*2
 
-    // mNumOfWires*2
+    //// mNumOfWires*2
     unsigned int v_wiresIndices[12*2] = {0,1, 0,2, 1,3, 2,3, 4,5, 4,6, 5,7, 6,7, 0,4, 1,5, 3,7, 2,6};
 
-    for (unsigned int i=0; i<12*2; i++) { // mNumOfWires*2
+    for (unsigned int i=0; i<12*2; i++) { //// mNumOfWires*2
         mWireIndices[i] = v_wiresIndices[i];
     }
 
-    // --------------------------------------------------------------------------------------------
+    //// --------------------------------------------------------------------------------------------
 
-    // Points
-    mPointIndices = new unsigned int[8]; // mNumOfPoints
+    //// Points
+    mPointIndices = new unsigned int[8]; //// mNumOfPoints
 
-    for (unsigned int i=0; i<8; i++) { // mNumOfPoints
+    for (unsigned int i=0; i<8; i++) { //// mNumOfPoints
         mPointIndices[i] = i;
     }
+
+    //// --------------------------------------------------------------------------------------------
+
+    mConstructed = true;
 }
 
 void cls_DisplayModel::Dump(void) const
 {
+    if (!mConstructed) {
+        qDebug().nospace() << "cls_DisplayModel::Draw(): Display model is not yet constructed.";
+        return;
+    }
+
     qDebug().nospace() << "-----------------------------------------------------------------------";
 
     qDebug().nospace() << "mNumOfVertices=" << mNumOfVertices;
@@ -132,7 +151,12 @@ void cls_DisplayModel::Dump(void) const
 
 void cls_DisplayModel::SendToGPU(void) const
 {
-    ////qDebug().nospace() << "cls_DisplayModel::SendToGPU";
+    //qDebug().nospace() << "cls_DisplayModel::SendToGPU";
+
+    if (!mConstructed) {
+        qDebug().nospace() << "cls_DisplayModel::Draw(): Display model is not yet constructed.";
+        return;
+    }
 
     mWidget->mVAO->bind();
     mWidget->mVBO->bind();
@@ -155,19 +179,24 @@ void cls_DisplayModel::SendToGPU(void) const
 
 void cls_DisplayModel::Draw(void) const
 {
-    ////qDebug().nospace() << "cls_DisplayModel::Draw";
+    //qDebug().nospace() << "cls_DisplayModel::Draw";
 
-    // Shading
+    if (!mConstructed) {
+        qDebug().nospace() << "cls_DisplayModel::Draw(): Display model is not yet constructed.";
+        return;
+    }
+
+    //// Shading
     mWidget->mProgShading->bind();
     mWidget->mIBOshading->bind();
     mWidget->glDrawElements(GL_TRIANGLES, mNumOfTriangles*3, GL_UNSIGNED_INT, NULL);
 
-    // Wire
+    //// Wire
     mWidget->mProgWire->bind();
     mWidget->mIBOwire->bind();
     mWidget->glDrawElements(GL_LINES, mNumOfWires*2, GL_UNSIGNED_INT, NULL);
 
-    //Points
+    //// Points
     mWidget->mProgPoints->bind();
     mWidget->mIBOpoints->bind();
     mWidget->glDrawElements(GL_POINTS, mNumOfPoints, GL_UNSIGNED_INT, NULL);

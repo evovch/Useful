@@ -17,11 +17,11 @@ float cls_myGLwidget::mCentralCircleK = 0.8f;
 cls_myGLwidget::cls_myGLwidget(QWidget *parent) :
     QOpenGLWidget(parent)
 {
-    // No OpenGL resource initialization is done here. (Qt docu)
+    //// No OpenGL resource initialization is done here. (Qt docu)
 
     qDebug().nospace() << "cls_myGLwidget::cls_myGLwidget()";
 
-    // Shaders
+    //// Shaders
     mShaderVshading = nullptr;
     mShaderGshading = nullptr;
     mShaderFshading = nullptr;
@@ -34,12 +34,12 @@ cls_myGLwidget::cls_myGLwidget(QWidget *parent) :
     mShaderGpoints = nullptr;
     mShaderFpoints = nullptr;
 
-    // Programs
+    //// Programs
     mProgShading = nullptr;
     mProgWire = nullptr;
     mProgPoints = nullptr;
 
-    // Buffers
+    //// Buffers
     mVAO = nullptr;
     mVBO = nullptr;
     mIBOshading = nullptr;
@@ -60,11 +60,11 @@ cls_myGLwidget::~cls_myGLwidget()
 {
     qDebug().nospace() << "cls_myGLwidget::~cls_myGLwidget()";
 
-    // Make sure the context is current and then explicitly
-    // destroy all underlying OpenGL resources.
-    this->makeCurrent(); // method of QOpenGLWidget (mother) class
+    //// Make sure the context is current and then explicitly
+    //// destroy all underlying OpenGL resources.
+    this->makeCurrent(); //// method of QOpenGLWidget (mother) class
 
-    // Shaders
+    //// Shaders
     delete mShaderVshading;
     delete mShaderGshading;
     delete mShaderFshading;
@@ -77,12 +77,12 @@ cls_myGLwidget::~cls_myGLwidget()
     delete mShaderGpoints;
     delete mShaderFpoints;
 
-    // Programs
+    //// Programs
     delete mProgShading;
     delete mProgWire;
     delete mProgPoints;
 
-    // Buffers
+    //// Buffers
     delete mVAO;
     delete mVBO;
     delete mIBOshading;
@@ -92,13 +92,12 @@ cls_myGLwidget::~cls_myGLwidget()
     delete mOpenGLlogger;
 
     delete mCamera;
-    delete mModel; //FIXME currently model is an external object
+    ////delete mModel; //// The display model should be an external object
 }
 
 void cls_myGLwidget::SetModel(cls_DisplayModel* v_model)
 {
     mModel = v_model;
-    // Send model to GPU
     mModel->SendToGPU();
 }
 
@@ -108,28 +107,19 @@ void cls_myGLwidget::initializeGL()
 {
     qDebug().nospace() << "cls_myGLwidget::initializeGL()";
 
-    this->makeCurrent(); // method of QOpenGLWidget (mother) class
-
-    this->initializeOpenGLFunctions(); // method of QOpenGLFunctions_4_5_Core (mother) class
-
-    this->InitProgramsAndShaders(); // method of this class cls_myGLwidget
-
-    this->InitBuffers(); // method of this class cls_myGLwidget
-
-    this->InitGLparameters(); // method of this class cls_myGLwidget
+    this->makeCurrent(); //// method of QOpenGLWidget (mother) class
+    this->initializeOpenGLFunctions(); //// method of QOpenGLFunctions_4_5_Core (mother) class
+    this->InitProgramsAndShaders(); //// method of this class cls_myGLwidget
+    this->InitBuffers(); //// method of this class cls_myGLwidget
+    this->InitGLparameters(); //// method of this class cls_myGLwidget
 
     //QOpenGLContext* v_ctx = QOpenGLContext::currentContext();
     mOpenGLlogger = new QOpenGLDebugLogger(this);
-    mOpenGLlogger->initialize(); // initializes in the current context, i.e. v_ctx
+    mOpenGLlogger->initialize(); //// initializes in the current context, i.e. v_ctx
 
     glm::vec3 v_center(0., 0., 0.);
     float v_radius = 2.;
     mCamera = new cls_myCamera(v_center, v_radius, this);
-
-    mModel = new cls_DisplayModel(this);
-
-    // Send model to GPU
-    mModel->SendToGPU();
 }
 
 void cls_myGLwidget::resizeGL(int w, int h)
@@ -148,7 +138,7 @@ void cls_myGLwidget::paintGL()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (mModel != nullptr) {
+    if (mModel) {
         mModel->Draw();
     }
 
@@ -162,16 +152,16 @@ void cls_myGLwidget::paintGL()
 
 void cls_myGLwidget::mousePressEvent(QMouseEvent* event)
 {
-    ////qDebug() << "cls_myGLwidget::mousePressEvent";
+    //qDebug() << "cls_myGLwidget::mousePressEvent";
 
-    // Current values
-    float v_xa = (float)(event->x() - this->GetWinW()/2);  // local coordinates (from screen center)
-    float v_ya = -(float)(event->y() - this->GetWinH()/2); // local coordinates (from screen center)
+    //// Current values
+    float v_xa = (float)(event->x() - this->GetWinW()/2);  //// local coordinates (from screen center)
+    float v_ya = -(float)(event->y() - this->GetWinH()/2); //// local coordinates (from screen center)
     float v_curR = sqrt(v_xa*v_xa + v_ya*v_ya);
     float v_sphR = this->GetSphR();
     float v_za = sqrt(v_sphR*v_sphR - v_xa*v_xa - v_ya*v_ya);
 
-    // Save values at mouse press
+    //// Save values at mouse press
     mStartXa = v_xa;
     mStartYa = v_ya;
     mStartFrAngle = mCamera->GetFrAngle();
@@ -179,13 +169,13 @@ void cls_myGLwidget::mousePressEvent(QMouseEvent* event)
     mStartLookPt = mCamera->GetLookPt();
 
     if (event->button() == Qt::LeftButton) {
-        // Check: if we are inside the central circle area - rotate, otherwise - tilt
+        //// Check: if we are inside the central circle area - rotate, otherwise - tilt
         if (v_curR > v_sphR) {
-            // TILT
+            //// TILT
             mStartLocalDir = glm::normalize(glm::vec3(v_xa, v_ya, 0.0f));
             mCurrentAction = ACT_TILT;
         } else {
-            // ROTATE
+            //// ROTATE
             mStartLocalDir = glm::normalize(glm::vec3(v_xa, v_ya, v_za));
             mCurrentAction = ACT_ROTATE;
         }
@@ -202,10 +192,8 @@ void cls_myGLwidget::mousePressEvent(QMouseEvent* event)
 
 void cls_myGLwidget::mouseReleaseEvent(QMouseEvent* /*event*/)
 {
-    ////qDebug() << "cls_myGLwidget::mouseReleaseEvent";
-
+    //qDebug() << "cls_myGLwidget::mouseReleaseEvent";
     mCurrentAction = ACT_NO_ACT;
-
     this->setMouseTracking(false);
 }
 
@@ -213,13 +201,13 @@ void cls_myGLwidget::mouseDoubleClickEvent(QMouseEvent* /*event*/) {}
 
 void cls_myGLwidget::mouseMoveEvent(QMouseEvent* event)
 {
-    ////qDebug() << "cls_myGLwidget::mouseMoveEvent";
+    //qDebug() << "cls_myGLwidget::mouseMoveEvent";
 
     if (this->hasMouseTracking()) {
 
-        // Current values
-        float v_xa = (float)(event->x() - this->GetWinW()/2);  // local coordinates (from screen center)
-        float v_ya = -(float)(event->y() - this->GetWinH()/2); // local coordinates (from screen center)
+        //// Current values
+        float v_xa = (float)(event->x() - this->GetWinW()/2);  //// local coordinates (from screen center)
+        float v_ya = -(float)(event->y() - this->GetWinH()/2); //// local coordinates (from screen center)
         float v_sphR = this->GetSphR();
         float v_za = sqrt(v_sphR*v_sphR - v_xa*v_xa - v_ya*v_ya);
         float v_za2;
@@ -233,7 +221,7 @@ void cls_myGLwidget::mouseMoveEvent(QMouseEvent* event)
             mCamera->Pan(v_xa, v_ya, mStartXa, mStartYa, mStartLookPt);
             break;
         case ACT_ZOOM:
-            mCamera->Zoom(v_ya, mStartYa, mStartFrAngle, mStartPBS); // PBS - parallel box size
+            mCamera->Zoom(v_ya, mStartYa, mStartFrAngle, mStartPBS); //// PBS - parallel box size
             break;
         case ACT_ROTATE:
             v_localDir = glm::normalize(glm::vec3(v_xa, v_ya, v_za2));
@@ -273,70 +261,68 @@ void cls_myGLwidget::wheelEvent(QWheelEvent* /*event*/) {}
 void cls_myGLwidget::keyPressEvent(QKeyEvent* /*event*/) {}
 void cls_myGLwidget::keyReleaseEvent(QKeyEvent* /*event*/) {}
 
-// ------------------------------------------------------------------------------------------------
-
 void cls_myGLwidget::InitProgramsAndShaders(void)
 {
     qDebug().nospace() << "cls_myGLwidget::InitProgramsAndShaders()";
 
-    // Create shaders - shading
+    //// Create shaders - shading
     mShaderVshading = new QOpenGLShader(QOpenGLShader::Vertex);
     mShaderGshading = new QOpenGLShader(QOpenGLShader::Geometry);
     mShaderFshading = new QOpenGLShader(QOpenGLShader::Fragment);
 
-    // Create shaders - wire
+    //// Create shaders - wire
     mShaderVwire = new QOpenGLShader(QOpenGLShader::Vertex);
     mShaderGwire = new QOpenGLShader(QOpenGLShader::Geometry);
     mShaderFwire = new QOpenGLShader(QOpenGLShader::Fragment);
 
-    // Create shaders - points
+    //// Create shaders - points
     mShaderVpoints = new QOpenGLShader(QOpenGLShader::Vertex);
     mShaderGpoints = new QOpenGLShader(QOpenGLShader::Geometry);
     mShaderFpoints = new QOpenGLShader(QOpenGLShader::Fragment);
 
-    // Compile shaders' source files - shading
+    //// Compile shaders' source files - shading
     mShaderVshading->compileSourceFile("shaders/vertSh_shading.vp");
     mShaderGshading->compileSourceFile("shaders/geomSh_shading.gp");
     mShaderFshading->compileSourceFile("shaders/frSh_shading.fp");
 
-    // Compile shaders' source files - wire
+    //// Compile shaders' source files - wire
     mShaderVwire->compileSourceFile("shaders/vertSh_wire.vp");
     mShaderGwire->compileSourceFile("shaders/geomSh_wire.gp");
     mShaderFwire->compileSourceFile("shaders/frSh_wire.fp");
 
-    // Compile shaders' source files - points
+    //// Compile shaders' source files - points
     mShaderVpoints->compileSourceFile("shaders/vertSh_points.vp");
     mShaderGpoints->compileSourceFile("shaders/geomSh_points.gp");
     mShaderFpoints->compileSourceFile("shaders/frSh_points.fp");
 
-    // Prepare the program for shading-style rendering
+    //// Prepare the program for shading-style rendering
     mProgShading = new QOpenGLShaderProgram();
     mProgShading->addShader(mShaderVshading);
     mProgShading->addShader(mShaderGshading);
     mProgShading->addShader(mShaderFshading);
     mProgShading->link();
 
-    // Connect uniform variables
+    //// Connect uniform variables
     mMVPshadingUniform = mProgShading->uniformLocation("MVP");
 
-    // Prepare the program for wire-style rendering
+    //// Prepare the program for wire-style rendering
     mProgWire = new QOpenGLShaderProgram();
     mProgWire->addShader(mShaderVwire);
     mProgWire->addShader(mShaderGwire);
     mProgWire->addShader(mShaderFwire);
     mProgWire->link();
 
-    // Connect uniform variables
+    //// Connect uniform variables
     mMVPwireUniform = mProgWire->uniformLocation("MVP");
 
-    // Prepare the program for points rendering
+    //// Prepare the program for points rendering
     mProgPoints = new QOpenGLShaderProgram();
     mProgPoints->addShader(mShaderVpoints);
     mProgPoints->addShader(mShaderGpoints);
     mProgPoints->addShader(mShaderFpoints);
     mProgPoints->link();
 
-    // Connect uniform variables
+    //// Connect uniform variables
     mMVPpointsUniform = mProgWire->uniformLocation("MVP");
 }
 
@@ -344,7 +330,7 @@ void cls_myGLwidget::InitBuffers(void)
 {
     qDebug().nospace() << "cls_myGLwidget::InitBuffers()";
 
-    // Vertex array object
+    //// Vertex array object
     mVAO = new QOpenGLVertexArrayObject();
     mVAO->create();
     if (mVAO->isCreated()) {
@@ -353,7 +339,7 @@ void cls_myGLwidget::InitBuffers(void)
         qDebug().nospace() << "Error creating vertex array object.";
     }
 
-    // Vertex buffer object
+    //// Vertex buffer object
     mVBO = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     mVBO->create();
     if (mVBO->isCreated()) {
@@ -362,7 +348,7 @@ void cls_myGLwidget::InitBuffers(void)
         qDebug().nospace() << "Error creating vertex buffer object.";
     }
 
-    // Inbex buffer object - shading
+    //// Inbex buffer object - shading
     mIBOshading = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
     mIBOshading->create();
     if (mIBOshading->isCreated()) {
@@ -371,7 +357,7 @@ void cls_myGLwidget::InitBuffers(void)
         qDebug().nospace() << "Error creating index buffer object for shading-style rendering.";
     }
 
-    // Inbex buffer object - wire
+    //// Inbex buffer object - wire
     mIBOwire = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
     mIBOwire->create();
     if (mIBOwire->isCreated()) {
@@ -380,7 +366,7 @@ void cls_myGLwidget::InitBuffers(void)
         qDebug().nospace() << "Error creating index buffer object for wireframe-style rendering.";
     }
 
-    // Inbex buffer object - points
+    //// Inbex buffer object - points
     mIBOpoints = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
     mIBOpoints->create();
     if (mIBOpoints->isCreated()) {
@@ -396,12 +382,12 @@ void cls_myGLwidget::InitGLparameters(void)
 
     this->makeCurrent(); //TODO understand! why?! // Seems not to be neccessary here, but still...
 
-    // Init culling             //TODO enable/disable
+    //// Init culling             //TODO enable/disable
     //this->glEnable(GL_CULL_FACE);
     //this->glCullFace(GL_BACK);
     //this->glFrontFace(GL_CCW);
 
-    // Init depth
+    //// Init depth
     this->glEnable(GL_DEPTH_TEST);
     this->glDepthMask(GL_TRUE);
     this->glDepthFunc(GL_LEQUAL);
@@ -413,9 +399,7 @@ void cls_myGLwidget::InitGLparameters(void)
     this->glEnable(GL_PROGRAM_POINT_SIZE);
     this->glPointSize(10.);
 
-    // Set the first vertex of the triangle as the vertex
-    // holding the color for the whole triangle for flat shading rendering
+    //// Set the first vertex of the triangle as the vertex
+    //// holding the color for the whole triangle for flat shading rendering
     this->glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 }
-
-// ------------------------------------------------------------------------------------------------
