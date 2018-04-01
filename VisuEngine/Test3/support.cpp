@@ -1,5 +1,27 @@
 #include "support.h"
 
+#include <cstring>
+
+float UnitToScaleFactor(const char* p_unit)
+{
+	if (strcmp(p_unit, "mm") == 0) {
+		return 1.;
+	}
+	if (strcmp(p_unit, "cm") == 0) {
+		return 10.;
+	}
+	if (strcmp(p_unit, "m") == 0) {
+		return 1000.;
+	}
+	/*if (strcmp(p_unit, "deg") == 0) {
+		return 1.;
+	}
+	if (strcmp(p_unit, "rad") == 0) {
+		//TOD implement
+	}*/
+	return 1.;
+}
+
 // Transform the value of some field into the color
 // Blue is minimum, green is 1/2 and red is maximum
 void ValueToColor(float p_inVal, float p_inValMin, float p_inValMax, stc_VandC* o_destination)

@@ -19,6 +19,8 @@ enum action_type {
     ACT_SECTIONTILT*/
 };
 
+float UnitToScaleFactor(const char* p_unit);
+
 void ValueToColor(float p_inVal, float p_inValMin, float p_inValMax, stc_VandC* o_destination);
 
 void IntToColor(unsigned int p_inVal, stc_VandC* o_destination);

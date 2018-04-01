@@ -7,7 +7,11 @@
 #ifndef CLS_MODEL_H
 #define CLS_MODEL_H
 
+#include <string>
+
 #include "support.h"
+
+class cls_axis2_placement_3d;
 
 class cls_model
 {
@@ -16,6 +20,16 @@ public:
 	~cls_model();
 
 	void GenerateBox(void);
+	void GenerateAxisSystem(void);
+	void GenerateLocalAxisSystem(cls_axis2_placement_3d* p_axisSys);
+
+	void AppendPoints(unsigned int p_nPoints, float* p_array);
+	void AppendWires(unsigned int p_nWires, unsigned int* p_array);
+	void AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array);
+
+	void Dump(void) const;
+
+	int ImportGDML(std::string p_filename);
 
 	// Send the display-model to the GPU using given OpenGL object
 	void SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO) const;

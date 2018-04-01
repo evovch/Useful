@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -9,6 +10,8 @@
 #include "cls_camera.h"
 #include "cls_model.h"
 #include "support.h"
+#include "cls_axis2_placement_3d.h"
+#include "cls_cylinder.h"
 
 // Program object for shading-style rendering
 GLuint mShadingDrawProgram;
@@ -384,28 +387,28 @@ void InitBuffers(void)
 
 void InitGLparameters(void)
 {
-    //// Init culling             //TODO enable/disable
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
-    //glFrontFace(GL_CCW);
+	//// Init culling             //TODO enable/disable
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glFrontFace(GL_CCW);
 
-    //// Init depth
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-    glDepthFunc(GL_LEQUAL);
-    glDepthRange(0.0f, 1.0f);
+	//// Init depth
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LEQUAL);
+	glDepthRange(0.0f, 1.0f);
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClearDepth(1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearDepth(1.0f);
 
-    glEnable(GL_PROGRAM_POINT_SIZE);
-    glPointSize(10.);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glPointSize(10.);
 
-    //// Set the first vertex of the triangle as the vertex
-    //// holding the color for the whole triangle for flat shading rendering
-    glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
+	//// Set the first vertex of the triangle as the vertex
+	//// holding the color for the whole triangle for flat shading rendering
+	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 
-    fprintf(stderr, "[INFO] Initialized OpenGL parameters.\n");
+	fprintf(stderr, "[INFO] Initialized OpenGL parameters.\n");
 }
 
 void Init(void)
@@ -444,14 +447,99 @@ int main(int argc, char** argv)
 	Init();
 
 	// CAMERA
-    glm::vec3 v_center(0., 0., 0.);
-    float v_radius = 2.;
+	glm::vec3 v_center(0., 0., 0.);
+	float v_radius = 1000.;
 	mCamera = new cls_camera(v_center, v_radius);
 
 	mCamera->SendCamToGPU(mProgs, mUnifs);
 
+	// LOCAL AXIS SYSTEM
+	cls_axis2_placement_3d v_localAxisSystem;
+
+	// Basic
+	v_localAxisSystem.mLocation = point_t(0.5, 0.6, 0.7);
+	v_localAxisSystem.mAxis = direction_t(0.3, 1., 0.2);
+	v_localAxisSystem.mAxis.Normalize();
+	v_localAxisSystem.mRefDirection = direction_t(0.1, 0.7, 0.); // a - approximate X axis
+	v_localAxisSystem.mRefDirection.Normalize();
+
+	// Derived
+	double az = dotProd(v_localAxisSystem.mRefDirection, v_localAxisSystem.mAxis); // az = a*z
+	direction_t azz = v_localAxisSystem.mAxis; // azz = (a*z) x z // 'x' meaning cross product
+	azz.Multiply(az);
+	// Exact X axis
+	v_localAxisSystem.mXaxis = v_localAxisSystem.mRefDirection - azz; // X = a - (a*z) x z // 'x' meaning cross product
+	v_localAxisSystem.mXaxis.Normalize();
+	// Y axis
+	crossProd(v_localAxisSystem.mAxis, v_localAxisSystem.mXaxis, v_localAxisSystem.mYaxis); // Y = Z x X // 'x' meaning cross product
+	v_localAxisSystem.mYaxis.Normalize();
+
+	// CYLINDER
+	cls_cylinder v_cyl;
+	v_cyl.mR = 0.4;
+	v_cyl.mPosition = &v_localAxisSystem;
+
+	// TRACKS
+	point_t pTrackStart(0., 0., 0.);  // in global CS
+	direction_t dTrackDir;  // in global CS
+
+	unsigned int nTracks = 100;
+
+	point_t v_inter1;
+	point_t v_inter2;
+
+	float* coordsArray = new float[nTracks*3*2];
+	unsigned int counter = 0;
+
+	// Loop over tracks
+	for (unsigned int i=0; i<nTracks; i++)
+	{
+		// Generate random direction
+		double theta;
+		double phi;
+		theta = ((double)rand()/(double)RAND_MAX) * M_PI;
+		phi = ((double)rand()/(double)RAND_MAX) * 2. * M_PI;
+		dTrackDir.fPx = sin(theta) * cos(phi);
+		dTrackDir.fPy = sin(theta) * sin(phi);
+		dTrackDir.fPz = cos(theta);
+		dTrackDir.Normalize();
+
+		unsigned int curNinter = v_cyl.Intersect(pTrackStart, dTrackDir, v_inter1, v_inter2);
+
+		switch (curNinter) {
+		case 1:
+			////fprintf(stderr, "%f, %f, %f\n", v_inter1.fX, v_inter1.fY, v_inter1.fZ);
+			coordsArray[counter*3+0] = v_inter1.fX;
+			coordsArray[counter*3+1] = v_inter1.fY;
+			coordsArray[counter*3+2] = v_inter1.fZ;
+			counter++;
+			break;
+		case 2:
+			////fprintf(stderr, "%f, %f, %f\n", v_inter1.fX, v_inter1.fY, v_inter1.fZ);
+			coordsArray[counter*3+0] = v_inter1.fX;
+			coordsArray[counter*3+1] = v_inter1.fY;
+			coordsArray[counter*3+2] = v_inter1.fZ;
+			counter++;
+			////fprintf(stderr, "%f, %f, %f\n", v_inter2.fX, v_inter2.fY, v_inter2.fZ);
+			coordsArray[counter*3+0] = v_inter2.fX;
+			coordsArray[counter*3+1] = v_inter2.fY;
+			coordsArray[counter*3+2] = v_inter2.fZ;
+			counter++;
+			break;
+		default:
+			break;
+		}
+	}
+
 	// MODEL
 	mModel = new cls_model();
+
+//	mModel->GenerateLocalAxisSystem(&v_localAxisSystem);
+//	mModel->AppendPoints(counter, coordsArray);
+//	mModel->Dump();
+
+	mModel->ImportGDML("tesselated.gdml");
+
 	mModel->SendToGPUFull(mVAO, mVBO, mIBOshading, mIBOwire, mIBOpoints);
 
 	glutKeyboardFunc(KeyFunc);
