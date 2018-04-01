@@ -9,6 +9,8 @@
 
 #include <cstdio>
 
+#include "cls_renderer.h"
+
 cls_camera::cls_camera(glm::vec3 p_center, float p_radius) :
     mDefCenter(p_center), mDefRadius(p_radius)
 {
@@ -186,6 +188,7 @@ glm::vec3 cls_camera::GetViewerPoint(void) const
 }
 */
 
+/*
 void cls_camera::SendCamToGPU(std::vector<GLuint> p_programs, std::vector<GLuint> p_uniforms) //const
 {
     //qDebug() << "cls_myCamera::SendCamToGPU";
@@ -204,5 +207,23 @@ void cls_camera::SendCamToGPU(std::vector<GLuint> p_programs, std::vector<GLuint
 		++v_iterP;
 		++v_iterU;
 	}
+    glUseProgram(0);
+}
+*/
+
+void cls_camera::SendCamToGPU(cls_renderer* p_renderer)
+{
+    glm::mat4 v_MVP = this->GetMVP();
+
+    std::vector<GLuint>::iterator v_iterP = p_renderer->mProgs.begin(); // over programs
+    std::vector<GLuint>::iterator v_iterU = p_renderer->mUnifs.begin(); // over uniforms
+
+    for ( ; v_iterP != p_renderer->mProgs.end(); ) {
+        glUseProgram(*v_iterP);
+        glUniformMatrix4fv(*v_iterU, 1, GL_FALSE, glm::value_ptr(v_MVP));
+
+        ++v_iterP;
+        ++v_iterU;
+    }
     glUseProgram(0);
 }

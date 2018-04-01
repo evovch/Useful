@@ -42,9 +42,9 @@ GLuint mIBOpoints;
 std::vector<GLuint> mProgs;
 std::vector<GLuint> mUnifs;
 
+cls_model* mModel;
 
 cls_camera* mCamera;
-cls_model* mModel;
 
 float mCentralCircleK = 0.8f;
 
