@@ -30,6 +30,8 @@ set(SOURCE_LIB cls_camera.cpp
 
 set(SOURCE_LIB_STL cls_stl_file.cpp)
 
+add_subdirectory(parsing)
+
 add_library(graphics STATIC ${SOURCE_LIB})
 add_library(stl STATIC ${SOURCE_LIB_STL})
 add_executable(prog ${SOURCE_EXE})
