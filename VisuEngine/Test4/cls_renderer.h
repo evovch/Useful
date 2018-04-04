@@ -7,9 +7,11 @@
 #ifndef CLS_RENDERER_H
 #define CLS_RENDERER_H
 
+// STD
 #include <string>
 #include <vector>
 
+// OpenGL
 #include <GL/glew.h>
 
 class cls_renderer

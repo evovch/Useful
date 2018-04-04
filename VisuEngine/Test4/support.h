@@ -1,6 +1,7 @@
 #ifndef SUPPORT_H
 #define SUPPORT_H
 
+// OpenGL
 #include <GL/glew.h>
 
 struct stc_VandC {

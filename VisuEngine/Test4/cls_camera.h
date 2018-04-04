@@ -7,7 +7,7 @@
 #ifndef CLS_CAMERA_H
 #define CLS_CAMERA_H
 
-// STL
+// STD
 #include <vector>
 
 // GLM

@@ -1,12 +1,18 @@
+// STD
 #include <cstdio>
 
+// OpenGL
 #include <GL/glew.h>
 #include <GL/glut.h>
 
+// Project
 #include "cls_camera.h"
 #include "cls_model.h"
 #include "cls_scene.h"
 #include "cls_renderer.h"
+
+#include "stl_interface/cls_stl_interface.h"
+#include "stl_interface/cls_stl_file.h"
 
 cls_renderer* gRenderer;
 cls_scene* gScene;
@@ -234,19 +240,24 @@ int main(int argc, char** argv)
 
 	gRenderer = new cls_renderer();
 	gScene = new cls_scene();
-	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 1000.);
+	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 100.);
 
 	cls_model* v_model1 = new cls_model();
+	v_model1->GenerateAxisSystem();
+	//v_model1->Shift(0., 0., 0.);
 	gScene->AddModel(v_model1);
 
 	cls_model* v_model2 = new cls_model();
-	v_model2->Shift(500., 300., -50.);
+	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/teapot.stl");
+	v_stlfile2->BuildModel(v_model2);
+	v_model2->Shift(-80., -10., 0.);
 	gScene->AddModel(v_model2);
 
+/*
 	cls_model* v_model3 = new cls_model();
-	v_model3->Shift(0., -200., 350.);
+	v_model3->Shift(0., 0., 0.);
 	gScene->AddModel(v_model3);
-
+*/
 	gScene->SendToGPU(gRenderer);
 
 	gCamera->SendCamToGPU(gRenderer);

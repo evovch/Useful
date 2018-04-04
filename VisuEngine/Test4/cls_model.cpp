@@ -1,14 +1,26 @@
 #include "cls_model.h"
 
+// STD
 #include <cstdio>
 #include <cstdlib>
 #include <algorithm>
 #include <fstream>
 #include <vector>
 
+// GLM
 #include <glm/gtc/matrix_transform.hpp>
 
-cls_model::cls_model()
+cls_model::cls_model() :
+	mNumOfVertices(0),
+	mNumOfTriangles(0),
+	mNumOfWires(0),
+	mNumOfPoints(0),
+	mVertexAndColorData(nullptr),
+	mTriangleIndices(nullptr),
+	mWireIndices(nullptr),
+	mPointsIndices(nullptr),
+	mConstructed(false)
+	//mMatrix
 {
 /*	fprintf(stderr, "%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
 		            mMatrix[0][0], mMatrix[0][1], mMatrix[0][2], mMatrix[0][3],
@@ -18,16 +30,33 @@ cls_model::cls_model()
 
 	// mMatrix seems to be automatically initialized with E (diagonal unity matrix)
 
-	this->GenerateAxisSystem();
+	//this->GenerateAxisSystem();
 	//this->Dump();
 }
 
 cls_model::~cls_model()
 {
+	this->Reset();
+}
+
+void cls_model::Reset(void)
+{
+	if (mVertexAndColorData != nullptr) { delete [] mVertexAndColorData; mVertexAndColorData = nullptr; }
+	if (mTriangleIndices != nullptr) { delete [] mTriangleIndices; mTriangleIndices = nullptr; }
+	if (mWireIndices != nullptr) { delete [] mWireIndices; mWireIndices = nullptr; }
+	if (mPointsIndices != nullptr) { delete [] mPointsIndices; mPointsIndices = nullptr; }
+	mNumOfVertices = 0;
+	mNumOfTriangles = 0;
+	mNumOfWires = 0;
+	mNumOfPoints = 0;
+	mConstructed = false;
+	mMatrix = glm::mat4();
 }
 
 void cls_model::GenerateBox(void)
 {
+	this->Reset();
+
 	mNumOfVertices = 8;
 	mNumOfTriangles = 12;
 	mNumOfWires = 12;
@@ -100,6 +129,8 @@ void cls_model::GenerateBox(void)
 
 void cls_model::GenerateAxisSystem(void)
 {
+	this->Reset();
+
 	//TODO temporary solution
 	//static bool firstTime = true;
 
@@ -139,11 +170,13 @@ void cls_model::GenerateAxisSystem(void)
 //		startZ = 100. * (float)std::rand()/(float)RAND_MAX;
 //	}
 
+	float v_size = 100.f;
+
 	//// mNumOfVertices*3
 	float v_coords[4*3] = {startX,        startY,        startZ,
-		                   startX+1000.f, startY+0.f,    startZ+0.f,
-		                   startX+0.f,    startY+1000.f, startZ+0.f,
-		                   startX+0.f,    startY+0.f,    startZ+1000.f};
+		                   startX+v_size, startY+0.f,    startZ+0.f,
+		                   startX+0.f,    startY+v_size, startZ+0.f,
+		                   startX+0.f,    startY+0.f,    startZ+v_size};
 
 	/*fprintf(stderr, "cls_model::GenerateAxisSystem: startX = %f\n", startX);
 	fprintf(stderr, "                               startY = %f\n", startY);
@@ -184,8 +217,8 @@ void cls_model::GenerateAxisSystem(void)
 
 void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 {
-	fprintf(stderr, "mNumOfVertices=%d\n", mNumOfVertices);
-	fprintf(stderr, "p_nPoints=%d\n", p_nPoints);
+	fprintf(stderr, "[DEBUG] before: mNumOfVertices=%d\n", mNumOfVertices);
+	fprintf(stderr, "[DEBUG] parameter: p_nPoints=%d\n", p_nPoints);
 
 	// --------------------------------------------------------------------------------------------
 
@@ -206,11 +239,12 @@ void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 
 	mNumOfVertices += p_nPoints;
 
-	fprintf(stderr, "mNumOfVertices=%d\n", mNumOfVertices);
+	fprintf(stderr, "[DEBUG] after: mNumOfVertices=%d\n", mNumOfVertices);
 
 	// --------------------------------------------------------------------------------------------
 
-	fprintf(stderr, "mNumOfPoints=%d\n", mNumOfPoints);
+	fprintf(stderr, "[DEBUG] before: mNumOfPoints=%d\n", mNumOfPoints);
+	fprintf(stderr, "[DEBUG] parameter: p_nPoints=%d\n", p_nPoints);
 
 	// Expand mPointsIndices by p_nPoints elements
 	unsigned int* tmpPointsIndices = new unsigned int[mNumOfPoints+p_nPoints]; //// mNumOfPoints + p_nPoints
@@ -225,15 +259,15 @@ void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 	// Increase the number
 	mNumOfPoints += p_nPoints;
 
-	fprintf(stderr, "mNumOfPoints=%d\n", mNumOfPoints);
+	fprintf(stderr, "[DEBUG] after: mNumOfPoints=%d\n", mNumOfPoints);
 
 	// --------------------------------------------------------------------------------------------
 }
 
 void cls_model::AppendWires(unsigned int p_nWires, unsigned int* p_array)
 {
-	fprintf(stderr, "mNumOfWires=%d\n", mNumOfWires);
-	fprintf(stderr, "p_nWires=%d\n", p_nWires);
+	fprintf(stderr, "[DEBUG] before: mNumOfWires=%d\n", mNumOfWires);
+	fprintf(stderr, "[DEBUG] parameter: p_nWires=%d\n", p_nWires);
 
 	// --------------------------------------------------------------------------------------------
 
@@ -244,34 +278,34 @@ void cls_model::AppendWires(unsigned int p_nWires, unsigned int* p_array)
 	mWireIndices = tmpWires;
 
 	for (unsigned int i=0; i<p_nWires*2; i++) {
-		mWireIndices[mNumOfWires*2+i] = p_array[i];
+		mWireIndices[mNumOfWires*2+i] = p_array[i]; //TODO fix
 	}
 
 	mNumOfWires += p_nWires;
 
-	fprintf(stderr, "mNumOfWires=%d\n", mNumOfWires);
+	fprintf(stderr, "[DEBUG] after: mNumOfWires=%d\n", mNumOfWires);
 }
 
 void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array)
 {
-	fprintf(stderr, "mNumOfTriangles=%d\n", mNumOfTriangles);
-	fprintf(stderr, "p_nTriangles=%d\n", p_nTriangles);
+	fprintf(stderr, "[DEBUG] before: mNumOfTriangles=%d\n", mNumOfTriangles);
+	fprintf(stderr, "[DEBUG] parameter: p_nTriangles=%d\n", p_nTriangles);
 
 	// --------------------------------------------------------------------------------------------
 
 	// Expand mTriangleIndices by p_nTriangles*3 elements
 	unsigned int* tmpTriangles = new unsigned int[mNumOfTriangles*3 + p_nTriangles*3]; //// mNumOfTriangles*3 + p_nTriangles*3
 	std::copy(mTriangleIndices, mTriangleIndices + mNumOfTriangles*3, tmpTriangles);
-	delete [] mTriangleIndices;
+	delete [] mTriangleIndices; //TODO potential problem. If there were no triangles before....
 	mTriangleIndices = tmpTriangles;
 
 	for (unsigned int i=0; i<p_nTriangles*3; i++) {
-		mTriangleIndices[mNumOfTriangles*3+i] = p_array[i];
+		mTriangleIndices[mNumOfTriangles*3+i] = p_array[i]; //TODO fix
 	}
 
 	mNumOfTriangles += p_nTriangles;
 
-	fprintf(stderr, "mNumOfTriangles=%d\n", mNumOfTriangles);
+	fprintf(stderr, "[DEBUG] after: mNumOfTriangles=%d\n", mNumOfTriangles);
 }
 
 void cls_model::Dump(void) const
@@ -331,24 +365,42 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 		return;
 	}
 
-	/*fprintf(stderr, "[DEBUG] SendToGPUvAndC:\n");
-	for (unsigned int i=0; i<mNumOfVertices; i++) {
-		fprintf(stderr, "[DEBUG] x=%f\ty=%f\tz=%f\tr=%f\tg=%f\tb=%f\n",
-		                 mVertexAndColorData[i].v[0],
-		                 mVertexAndColorData[i].v[1],
-		                 mVertexAndColorData[i].v[2],
-		                 mVertexAndColorData[i].c[0],
-		                 mVertexAndColorData[i].c[1],
-		                 mVertexAndColorData[i].c[2]);
-	}*/
+	stc_VandC* v_newVertexAndColorData;
+
+	//TODO implement correct if statement
+	//TODO do this only if the matrix is not trivial.
+	//TODO Otherwise keep the 'new' pointer pointing to the 'old' one
+	{
+		v_newVertexAndColorData = new stc_VandC[mNumOfVertices];
+		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, v_newVertexAndColorData);
+
+		//fprintf(stderr, "[DEBUG] SendToGPUvAndC:\n");
+		for (unsigned int i=0; i<mNumOfVertices; i++) {
+
+			glm::vec4 curVertex(mVertexAndColorData[i].v[0], mVertexAndColorData[i].v[1], mVertexAndColorData[i].v[2], 1.);
+			glm::vec4 transformedVertex = mMatrix * curVertex;
+			v_newVertexAndColorData[i].v[0] = transformedVertex[0];
+			v_newVertexAndColorData[i].v[1] = transformedVertex[1];
+			v_newVertexAndColorData[i].v[2] = transformedVertex[2];
+
+			/*fprintf(stderr, "[DEBUG] x=%f\ty=%f\tz=%f\tr=%f\tg=%f\tb=%f\n",
+			                 v_newVertexAndColorData[i].v[0],
+			                 v_newVertexAndColorData[i].v[1],
+			                 v_newVertexAndColorData[i].v[2],
+			                 v_newVertexAndColorData[i].c[0],
+			                 v_newVertexAndColorData[i].c[1],
+			                 v_newVertexAndColorData[i].c[2]);*/
+		}
+
+	}
 
 	glBindVertexArray(p_VAO);
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, p_VBO);
 		if (p_overrideNvertices == 0) {
-			glBufferData(GL_ARRAY_BUFFER, mNumOfVertices*sizeof(stc_VandC), mVertexAndColorData, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, mNumOfVertices*sizeof(stc_VandC), v_newVertexAndColorData, GL_STATIC_DRAW);
 		} else {
-			glBufferData(GL_ARRAY_BUFFER, p_overrideNvertices*sizeof(stc_VandC), mVertexAndColorData, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, p_overrideNvertices*sizeof(stc_VandC), v_newVertexAndColorData, GL_STATIC_DRAW);
 		}
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, v));
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, c));
@@ -356,6 +408,9 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 		glEnableVertexAttribArray(1);
 	}
 	glBindVertexArray(0);
+
+	//TODO check that we do not delete the original data!
+	delete [] v_newVertexAndColorData;
 }
 
 void cls_model::SendToGPUtriangles(GLuint p_IBO, unsigned int p_overrideNtriangles) const
@@ -438,34 +493,48 @@ void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) 
 		return;
 	}
 
-	//fprintf(stderr, "[DEBUG] AppendToGPUvAndC: p_offset=%ld\n", p_offset);
-	for (unsigned int i=0; i<mNumOfVertices; i++) {
+	stc_VandC* v_newVertexAndColorData;
 
-		glm::vec4 curVertex(mVertexAndColorData[i].v[0], mVertexAndColorData[i].v[1], mVertexAndColorData[i].v[2], 1.);
-		glm::vec4 transformedVertex = mMatrix * curVertex;
-		mVertexAndColorData[i].v[0] = transformedVertex[0];
-		mVertexAndColorData[i].v[1] = transformedVertex[1];
-		mVertexAndColorData[i].v[2] = transformedVertex[2];
+	//TODO implement correct if statement
+	//TODO do this only if the matrix is not trivial.
+	//TODO Otherwise keep the 'new' pointer pointing to the 'old' one
+	{
+		v_newVertexAndColorData = new stc_VandC[mNumOfVertices];
+		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, v_newVertexAndColorData);
 
-		/*fprintf(stderr, "[DEBUG] x=%f\ty=%f\tz=%f\tr=%f\tg=%f\tb=%f\n",
-		                 mVertexAndColorData[i].v[0],
-		                 mVertexAndColorData[i].v[1],
-		                 mVertexAndColorData[i].v[2],
-		                 mVertexAndColorData[i].c[0],
-		                 mVertexAndColorData[i].c[1],
-		                 mVertexAndColorData[i].c[2]);*/
+		//fprintf(stderr, "[DEBUG] AppendToGPUvAndC: p_offset=%ld\n", p_offset);
+		for (unsigned int i=0; i<mNumOfVertices; i++) {
+
+			glm::vec4 curVertex(mVertexAndColorData[i].v[0], mVertexAndColorData[i].v[1], mVertexAndColorData[i].v[2], 1.);
+			glm::vec4 transformedVertex = mMatrix * curVertex;
+			v_newVertexAndColorData[i].v[0] = transformedVertex[0];
+			v_newVertexAndColorData[i].v[1] = transformedVertex[1];
+			v_newVertexAndColorData[i].v[2] = transformedVertex[2];
+
+			/*fprintf(stderr, "[DEBUG] x=%f\ty=%f\tz=%f\tr=%f\tg=%f\tb=%f\n",
+			                 v_newVertexAndColorData[i].v[0],
+			                 v_newVertexAndColorData[i].v[1],
+			                 v_newVertexAndColorData[i].v[2],
+			                 v_newVertexAndColorData[i].c[0],
+			                 v_newVertexAndColorData[i].c[1],
+			                 v_newVertexAndColorData[i].c[2]);*/
+		}
+
 	}
 
 	glBindVertexArray(p_VAO);
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, p_VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, p_offset, mNumOfVertices*sizeof(stc_VandC), mVertexAndColorData);
+		glBufferSubData(GL_ARRAY_BUFFER, p_offset, mNumOfVertices*sizeof(stc_VandC), v_newVertexAndColorData);
 		/*glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, v));
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, c));
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);*/ //TODO check that this is not required
 	}
 	glBindVertexArray(0);
+
+	//TODO check that we do not delete the original data!
+	delete [] v_newVertexAndColorData;
 }
 
 void cls_model::AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
@@ -475,14 +544,18 @@ void cls_model::AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned i
 		return;
 	}
 
+	unsigned int* v_newTriangleIndices = new unsigned int[mNumOfTriangles*3];
+
 	//fprintf(stderr, "[DEBUG] AppendToGPUtriangles: p_offset=%ld p_vertOffset=%d\n", p_offset, p_vertOffset);
 	for (unsigned int i=0; i<mNumOfTriangles*3; i++) {
-		mTriangleIndices[i] += p_vertOffset; //TODO this line should not be commented!!!
+		v_newTriangleIndices[i] = mTriangleIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
 		//fprintf(stderr, "[DEBUG] new mTriangleIndices[%d]=%d\n", i, mTriangleIndices[i]);
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, p_offset, mNumOfTriangles*3*sizeof(unsigned int), mTriangleIndices);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, p_offset, mNumOfTriangles*3*sizeof(unsigned int), v_newTriangleIndices);
+
+	delete [] v_newTriangleIndices;
 }
 
 void cls_model::AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
@@ -492,14 +565,18 @@ void cls_model::AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p
 		return;
 	}
 
+	unsigned int* v_newWireIndices = new unsigned int[mNumOfWires*2];
+
 	//fprintf(stderr, "[DEBUG] AppendToGPUwires: p_offset=%ld p_vertOffset=%d\n", p_offset, p_vertOffset);
 	for (unsigned int i=0; i<mNumOfWires*2; i++) {
-		mWireIndices[i] += p_vertOffset; //TODO this line should not be commented!!!
+		v_newWireIndices[i] = mWireIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
 		//fprintf(stderr, "[DEBUG] new mWireIndices[%d]=%d\n", i, mWireIndices[i]);
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, p_offset, mNumOfWires*2*sizeof(unsigned int), mWireIndices);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, p_offset, mNumOfWires*2*sizeof(unsigned int), v_newWireIndices);
+
+	delete [] v_newWireIndices;
 }
 
 void cls_model::AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
@@ -509,14 +586,18 @@ void cls_model::AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int 
 		return;
 	}
 
+	unsigned int* v_newPointsIndices = new unsigned int[mNumOfPoints];
+
 	//fprintf(stderr, "[DEBUG] AppendToGPUpoints: p_offset=%ld p_vertOffset=%d\n", p_offset, p_vertOffset);
 	for (unsigned int i=0; i<mNumOfPoints; i++) {
-		mPointsIndices[i] += p_vertOffset; //TODO this line should not be commented!!!
+		v_newPointsIndices[i] = mPointsIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
 		//fprintf(stderr, "[DEBUG] new mPointsIndices[%d]=%d\n", i, mPointsIndices[i]);
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, p_offset, mNumOfPoints*sizeof(unsigned int), mPointsIndices);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, p_offset, mNumOfPoints*sizeof(unsigned int), v_newPointsIndices);
+
+	delete [] v_newPointsIndices;
 }
 
 void cls_model::DrawTriangles(GLuint p_program, GLuint p_vao, GLuint p_ibo) const

@@ -3,6 +3,6 @@
 cd build
 rm -rf *
 cmake ../
-make
+make -j
 cp -v prog ../
 cd -

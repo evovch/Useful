@@ -51,12 +51,12 @@ set(SOURCE_LIB cls_camera.cpp
 add_library(graphics STATIC ${SOURCE_LIB})
 
 # ===============================================
-# STL parsing library
+# STL interface library
 
-add_subdirectory(stl_parsing)
+add_subdirectory(stl_interface)
 
 
 
 # ===============================================
 
-target_link_libraries(prog graphics stl_parsing)
+target_link_libraries(prog graphics stl_interface)

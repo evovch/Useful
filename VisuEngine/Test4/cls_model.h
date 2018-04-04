@@ -7,7 +7,7 @@
 #ifndef CLS_MODEL_H
 #define CLS_MODEL_H
 
-// STL
+// STD
 #include <string>
 
 // GLM
@@ -44,6 +44,7 @@ public:
 	void AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const;
 	void AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const;
 	void AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const;
+	void SetConstructed(bool p_value = true) { mConstructed = p_value; }
 
 	void DrawTriangles(GLuint p_program, GLuint p_vao, GLuint p_ibo) const;
 	void DrawWires(GLuint p_program, GLuint p_vao, GLuint p_ibo) const;
@@ -62,6 +63,9 @@ public:
 
 	// Operations on the 'model-in-the-scene' matrix
 	void Shift(float p_x, float p_y, float p_z);
+
+private:
+	void Reset(void);
 
 private:
 

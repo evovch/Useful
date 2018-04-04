@@ -1,7 +1,9 @@
 #include "cls_scene.h"
 
+// STD
 #include <cstdio>
 
+// Project
 #include "cls_model.h"
 #include "cls_renderer.h"
 
@@ -45,7 +47,7 @@ void cls_scene::SendToGPU(cls_renderer* p_rend)
 	(*iter)->SendToGPUwires(p_rend->mIBOwire, mTotalNwires);
 	(*iter)->SendToGPUpoints(p_rend->mIBOpoints, mTotalNpoints);
 
-/*	fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", mTotalNvertices);
+	/*fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", mTotalNvertices);
 	fprintf(stderr, "               %d triangles,\n", mTotalNtriangles);
 	fprintf(stderr, "               %d wires,\n", mTotalNwires);
 	fprintf(stderr, "               %d points,\n", mTotalNpoints);*/

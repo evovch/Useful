@@ -1,8 +1,12 @@
-set(SOURCE_LIB_STL_PARSING stl_parsing.flex.cpp stl_parsing.tab.cpp)
+set(SOURCE_LIB_STL_INTERFACE stl_parsing.flex.cpp
+                             stl_parsing.tab.cpp
+                             cls_stl_file.cpp
+                             cls_stl_interface.cpp)
 
-add_library(stl_parsing STATIC ${SOURCE_LIB_STL_PARSING})
+add_library(stl_interface STATIC ${SOURCE_LIB_STL_INTERFACE})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_SOURCE_DIR})
 
 add_custom_command(
     OUTPUT stl_parsing.flex.cpp

@@ -1,14 +1,17 @@
 #include "cls_camera.h"
 
+// STD
+#include <cstdio>
+
 // GLM
 #include "glm/gtx/vector_angle.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+// OpenGL
 #include <GL/glut.h>
 
-#include <cstdio>
-
+// Project
 #include "cls_renderer.h"
 
 cls_camera::cls_camera(glm::vec3 p_center, float p_radius) :
