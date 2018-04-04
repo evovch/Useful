@@ -1,14 +1,13 @@
 #include <cstdio>
 
-#include "../cls_stl_file.h"
+#include "cls_stl_file.h"
 
 extern FILE* yyin;
 extern int yyparse(cls_stl_file*& myStlFile);
 
-int main(int argc, char** argv)
+int main(int /*argc*/, char** /*argv*/)
 {
-
-    FILE* v_inFile = fopen("../input/humanoid.stl", "r");
+    FILE* v_inFile = fopen("../input/teapot.stl", "r");
 
     if (!v_inFile) {
     	fprintf(stderr, "Failed to open file.\n");
@@ -16,8 +15,9 @@ int main(int argc, char** argv)
     } else {
         yyin = v_inFile;
         cls_stl_file* v_stl_file;
-        int res = yyparse(v_stl_file);
+        /*int res = */yyparse(v_stl_file);
         fclose(v_inFile);
+        //v_stl_file->Export("../input/export_test.stl");
     }
 
     return 0;

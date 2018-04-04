@@ -113,25 +113,25 @@ void cls_model::GenerateAxisSystem(void)
 	//// Vertices and colors
 	mVertexAndColorData = new stc_VandC[4]; //// mNumOfVertices
 
-	mVertexAndColorData[0].c[0] = 1.;
-	mVertexAndColorData[0].c[1] = 1.;
-	mVertexAndColorData[0].c[2] = 1.;
-	mVertexAndColorData[1].c[0] = 1.;
-	mVertexAndColorData[1].c[1] = 0.;
-	mVertexAndColorData[1].c[2] = 0.;
-	mVertexAndColorData[2].c[0] = 0.;
-	mVertexAndColorData[2].c[1] = 1.;
-	mVertexAndColorData[2].c[2] = 0.;
-	mVertexAndColorData[3].c[0] = 0.;
-	mVertexAndColorData[3].c[1] = 1.;
-	mVertexAndColorData[3].c[2] = 1.;
+	mVertexAndColorData[0].c[0] = 1.f;
+	mVertexAndColorData[0].c[1] = 1.f;
+	mVertexAndColorData[0].c[2] = 1.f;
+	mVertexAndColorData[1].c[0] = 1.f;
+	mVertexAndColorData[1].c[1] = 0.f;
+	mVertexAndColorData[1].c[2] = 0.f;
+	mVertexAndColorData[2].c[0] = 0.f;
+	mVertexAndColorData[2].c[1] = 1.f;
+	mVertexAndColorData[2].c[2] = 0.f;
+	mVertexAndColorData[3].c[0] = 0.f;
+	mVertexAndColorData[3].c[1] = 1.f;
+	mVertexAndColorData[3].c[2] = 1.f;
 
 	float startX, startY, startZ;
 
 //	if (firstTime) {
-		startX = 0.; //100. * (float)std::rand()/(float)RAND_MAX;
-		startY = 0.; //100. * (float)std::rand()/(float)RAND_MAX;
-		startZ = 0.; //100. * (float)std::rand()/(float)RAND_MAX;
+		startX = 0.f; //100. * (float)std::rand()/(float)RAND_MAX;
+		startY = 0.f; //100. * (float)std::rand()/(float)RAND_MAX;
+		startZ = 0.f; //100. * (float)std::rand()/(float)RAND_MAX;
 //		firstTime = false;
 //	} else {
 //		startX = 100. * (float)std::rand()/(float)RAND_MAX;
@@ -140,10 +140,10 @@ void cls_model::GenerateAxisSystem(void)
 //	}
 
 	//// mNumOfVertices*3
-	float v_coords[4*3] = {startX,       startY,       startZ,
-		                   startX+1000., startY+0.,    startZ+0.,
-		                   startX+0.,    startY+1000., startZ+0.,
-		                   startX+0.,    startY+0.,    startZ+1000.};
+	float v_coords[4*3] = {startX,        startY,        startZ,
+		                   startX+1000.f, startY+0.f,    startZ+0.f,
+		                   startX+0.f,    startY+1000.f, startZ+0.f,
+		                   startX+0.f,    startY+0.f,    startZ+1000.f};
 
 	/*fprintf(stderr, "cls_model::GenerateAxisSystem: startX = %f\n", startX);
 	fprintf(stderr, "                               startY = %f\n", startY);
@@ -272,11 +272,6 @@ void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array
 	mNumOfTriangles += p_nTriangles;
 
 	fprintf(stderr, "mNumOfTriangles=%d\n", mNumOfTriangles);
-}
-
-int cls_model::ImportSTL(const char* p_filename)
-{
-
 }
 
 void cls_model::Dump(void) const

@@ -28,8 +28,6 @@ public:
 	void AppendWires(unsigned int p_nWires, unsigned int* p_array);
 	void AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array);
 
-	int ImportSTL(const char* p_filename);
-
 	void Dump(void) const;
 
 	// Send the display-model to the GPU using given OpenGL object

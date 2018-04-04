@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cd build
-rm -rfv *
+rm -rf *
 cmake ../
-make -j
+make
 cp -v prog ../
 cd -

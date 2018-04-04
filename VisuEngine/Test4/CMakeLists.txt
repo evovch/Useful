@@ -1,6 +1,13 @@
+# ===============================================
+
 cmake_minimum_required(VERSION 3.5)
 
+# ===============================================
+
 project(Test4)
+
+# ===============================================
+# External packages
 
 find_package(OpenGL REQUIRED)
 if (OpenGL_FOUND)
@@ -20,7 +27,20 @@ if (GLUT_FOUND)
     link_libraries(${GLUT_LIBRARIES})
 endif()
 
+# ===============================================
+
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11")
+endif()
+
+# ===============================================
+
 set(SOURCE_EXE main.cpp)
+
+add_executable(prog ${SOURCE_EXE})
+
+# ===============================================
+# Graphics library
 
 set(SOURCE_LIB cls_camera.cpp
                cls_model.cpp
@@ -28,12 +48,15 @@ set(SOURCE_LIB cls_camera.cpp
                cls_scene.cpp
                support.cpp)
 
-set(SOURCE_LIB_STL cls_stl_file.cpp)
-
-add_subdirectory(parsing)
-
 add_library(graphics STATIC ${SOURCE_LIB})
-add_library(stl STATIC ${SOURCE_LIB_STL})
-add_executable(prog ${SOURCE_EXE})
 
-target_link_libraries(prog graphics stl)
+# ===============================================
+# STL parsing library
+
+add_subdirectory(stl_parsing)
+
+
+
+# ===============================================
+
+target_link_libraries(prog graphics stl_parsing)

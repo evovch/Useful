@@ -1,0 +1,6 @@
+g++  main.cpp -o prog1
+g++ -std=c++11 main.cpp -o prog2
+main.cpp: In function ‘int main(int, char**)’:
+main.cpp:7:29: warning: narrowing conversion of ‘(((double)x[1]) + 2.0e+0)’ from ‘double’ to ‘float’ inside { } [-Wnarrowing]
+  float y[3] = { x[0]+1, x[1]+2., x[2]+3.f };
+                             ^
