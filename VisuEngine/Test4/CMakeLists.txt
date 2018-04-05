@@ -27,10 +27,18 @@ if (GLUT_FOUND)
     link_libraries(${GLUT_LIBRARIES})
 endif()
 
+find_package(PNG REQUIRED)
+if (PNG_FOUND)
+    include_directories(${PNG_INCLUDE_DIRS})
+    link_libraries(${PNG_LIBRARIES})
+endif()
+
+# GLM
+
 # ===============================================
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wpedantic -std=c++11")
 endif()
 
 # ===============================================
@@ -45,6 +53,7 @@ add_executable(prog ${SOURCE_EXE})
 set(SOURCE_LIB cls_camera.cpp
                cls_model.cpp
                cls_renderer.cpp
+               cls_offscreen_renderer.cpp
                cls_scene.cpp
                support.cpp)
 

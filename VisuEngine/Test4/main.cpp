@@ -10,6 +10,7 @@
 #include "cls_model.h"
 #include "cls_scene.h"
 #include "cls_renderer.h"
+#include "cls_offscreen_renderer.h"
 
 #include "stl_interface/cls_stl_interface.h"
 #include "stl_interface/cls_stl_file.h"
@@ -55,6 +56,10 @@ static void KeyFunc(unsigned char key, int /*x*/, int /*y*/)
 	switch (key) {
 	case 27: // ESC key
 		exit(0);
+	case 'a':
+		//TODO testing
+		gRenderer->mOffscreenRenderer->RenderModelToBuffer(gScene);
+		gRenderer->mOffscreenRenderer->WritePNGfile("test.png");
 	default:
 		break;
 	}
@@ -83,6 +88,8 @@ static void SpecKeyFunc(int key, int /*x*/, int /*y*/)
 
 static void DisplayFunc(void)
 {
+	//fprintf(stderr, "[DEBUG] DisplayFunc()\n");
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	gScene->Draw(gRenderer);
@@ -189,6 +196,8 @@ static void MouseMoveFunc(int x, int y)
 		mPrevYa = v_ya;
 
 		gCamera->SendCamToGPU(gRenderer);
+
+		glutPostRedisplay();
 	}
 }
 
@@ -201,6 +210,9 @@ static void ReshapeFunc(GLsizei width, GLsizei height)
 		height = 1;
 	}
 
+	//TODO testing
+	gRenderer->mOffscreenRenderer->Resize(width, height);
+
 	gCamera->SetWinSize(width, height);
 	gCamera->SendCamToGPU(gRenderer);
 	glViewport(0, 0, width, height); //TODO why do we need that?
@@ -208,7 +220,8 @@ static void ReshapeFunc(GLsizei width, GLsizei height)
 
 static void IdleFunc(void)
 {
-	glutPostRedisplay();
+	////fprintf(stderr, "[DEBUG] IdleFunc()\n");
+	////glutPostRedisplay();
 }
 
 int main(int argc, char** argv)
@@ -268,6 +281,8 @@ int main(int argc, char** argv)
 	cls_stl_file* v_stlfile4 = cls_stl_interface::ImportBinary("input/Lobster.stl");
 	v_stlfile4->BuildModel(v_model4);
 	v_model4->Shift(0., 0., 0.);
+	//v_model4->Shift(150., 180., -150.); // shoe
+	//v_model4->Shift(-200., -200., -100.); // liver
 	gScene->AddModel(v_model4);
 
 	gScene->SendToGPU(gRenderer);

@@ -19,8 +19,9 @@ cls_model::cls_model() :
 	mTriangleIndices(nullptr),
 	mWireIndices(nullptr),
 	mPointsIndices(nullptr),
-	mConstructed(false)
+	mConstructed(false),
 	//mMatrix
+	mVandCdataUniqueColors(nullptr)
 {
 /*	fprintf(stderr, "%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
 		            mMatrix[0][0], mMatrix[0][1], mMatrix[0][2], mMatrix[0][3],
@@ -51,6 +52,7 @@ void cls_model::Reset(void)
 	mNumOfPoints = 0;
 	mConstructed = false;
 	mMatrix = glm::mat4();
+	if (mVandCdataUniqueColors != nullptr) { delete [] mVandCdataUniqueColors; mVandCdataUniqueColors = nullptr; }
 }
 
 void cls_model::GenerateBox(void)
@@ -308,6 +310,18 @@ void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array
 	fprintf(stderr, "[DEBUG] after: mNumOfTriangles=%d\n", mNumOfTriangles);
 }
 
+void cls_model::PrepareUniqueColors(void)
+{
+	if (mVandCdataUniqueColors) delete [] mVandCdataUniqueColors;
+
+	mVandCdataUniqueColors = new stc_VandC[mNumOfVertices];
+	std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, mVandCdataUniqueColors);
+
+	for (unsigned int i=0; i<mNumOfTriangles; i++) {
+		IntToColor(i, &mVandCdataUniqueColors[mTriangleIndices[i*3+0]]); //TODO check
+	}
+}
+
 void cls_model::Dump(void) const
 {
 	if (!mConstructed) {
@@ -354,6 +368,10 @@ void cls_model::Dump(void) const
 	for (unsigned int i=0; i<mNumOfPoints; i++) {
 		fprintf(stdout, "%d\n", mPointsIndices[i]);
 	}
+
+	//TODO dump mMatrix?
+	//TODO dump mConstructed?
+	//TODO dump mVandCdataUniqueColors?
 
 	fprintf(stdout, "----------------------------------------------------------------------\n");
 }

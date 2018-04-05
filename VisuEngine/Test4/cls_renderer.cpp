@@ -4,13 +4,18 @@
 #include <algorithm>
 #include <cstdio>
 
-cls_renderer::cls_renderer()
+// Project
+#include "cls_offscreen_renderer.h"
+
+cls_renderer::cls_renderer(void) :
+	mOffscreenRenderer(nullptr)
 {
 	this->Init();
 }
 
-cls_renderer::~cls_renderer()
+cls_renderer::~cls_renderer(void)
 {
+	if (mOffscreenRenderer) { delete mOffscreenRenderer; mOffscreenRenderer = nullptr; }
 }
 
 void cls_renderer::Init(void)
@@ -22,6 +27,8 @@ void cls_renderer::Init(void)
 	mProgs.push_back(mShadingDrawProgram); mUnifs.push_back(mMVPshadingUniform);
 	mProgs.push_back(mWireDrawProgram);    mUnifs.push_back(mMVPwireUniform);
 	mProgs.push_back(mPointsDrawProgram);  mUnifs.push_back(mMVPpointsUniform);
+
+	mOffscreenRenderer = new cls_offscreen_renderer(this);
 }
 
 void cls_renderer::InitProgs(void)
@@ -107,7 +114,7 @@ void cls_renderer::InitGLparameters(void)
 	glClearDepth(1.0f);
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	glPointSize(0.);
+	glPointSize(5.);
 
 	//// Set the first vertex of the triangle as the vertex
 	//// holding the color for the whole triangle for flat shading rendering

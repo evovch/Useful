@@ -14,11 +14,13 @@
 // OpenGL
 #include <GL/glew.h>
 
+class cls_offscreen_renderer;
+
 class cls_renderer
 {
 public:
-	cls_renderer();
-	~cls_renderer();
+	cls_renderer(void);
+	~cls_renderer(void);
 
 	void Init(void);
 	void InitProgs(void);
@@ -60,6 +62,8 @@ public:
 
 	std::vector<GLuint> mProgs;
 	std::vector<GLuint> mUnifs;
+
+	cls_offscreen_renderer* mOffscreenRenderer;
 
 };
 

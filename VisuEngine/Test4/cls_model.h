@@ -28,6 +28,8 @@ public:
 	void AppendWires(unsigned int p_nWires, unsigned int* p_array);
 	void AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array);
 
+	void PrepareUniqueColors(void);
+
 	void Dump(void) const;
 
 	// Send the display-model to the GPU using given OpenGL object
@@ -68,7 +70,6 @@ private:
 	void Reset(void);
 
 private:
-
 	unsigned int mNumOfVertices;
 	unsigned int mNumOfTriangles;
 	unsigned int mNumOfWires;
@@ -79,10 +80,17 @@ private:
 	unsigned int* mWireIndices;			// [mNumOfWires*2]
 	unsigned int* mPointsIndices;		// [mNumOfPoints]
 
+	/**
+	 * @brief A flag which indicates if the model is constructed or not yet ready to be used
+	 */
 	bool mConstructed;
 
-	// 'Model-in-the-scene' matrix
+	/**
+	 * @brief 'Model-in-the-scene' matrix
+	 */
 	glm::mat4 mMatrix;
+
+	stc_VandC* mVandCdataUniqueColors;	// [mNumOfVertices]
 
 };
 
