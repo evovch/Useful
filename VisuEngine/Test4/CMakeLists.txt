@@ -48,15 +48,18 @@ set(SOURCE_LIB cls_camera.cpp
                cls_scene.cpp
                support.cpp)
 
-add_library(graphics STATIC ${SOURCE_LIB})
+add_library(graphics SHARED ${SOURCE_LIB})
 
 # ===============================================
 # STL interface library
 
 add_subdirectory(stl_interface)
 
+# ===============================================
+# BREP library
 
+add_subdirectory(brep)
 
 # ===============================================
 
-target_link_libraries(prog graphics stl_interface)
+target_link_libraries(prog graphics stl_interface brep)

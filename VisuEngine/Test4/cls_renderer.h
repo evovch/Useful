@@ -43,6 +43,9 @@ public:
 	// Uniform object for points rendering
 	GLuint mMVPpointsUniform;
 
+	GLuint mEyePosUniform;
+	GLuint mLightPosUniform;
+
 	// Vertex array object
 	GLuint mVAO;
 	// Vertex buffer object

@@ -21,6 +21,7 @@ UNDERSCORE              "_"
 CHARACTER               {DIGIT}|{LOWER}|{UPPER}|{UNDERSCORE}
 
 SIGN                    "+"|"-"
+EXPSIGN                 "e"|"E"
 
 %%
 
@@ -36,9 +37,9 @@ SIGN                    "+"|"-"
 "solid"                 return SOLID;
 "endsolid"              return ENDSOLID;
 
-{SIGN}?{DIGIT}+                                    { yylval.sval = STRDUP(yytext); return INTEGER; }
-{SIGN}?{DIGIT}+"."{DIGIT}*("E"{SIGN}?{DIGIT}+)?    { yylval.sval = STRDUP(yytext); return REAL; }
-{CHARACTER}+                                       { yylval.sval = STRDUP(yytext); return IDENTIFICATOR; }
+{SIGN}?{DIGIT}+                                         { yylval.sval = STRDUP(yytext); return INTEGER; }
+{SIGN}?{DIGIT}+"."{DIGIT}*({EXPSIGN}{SIGN}?{DIGIT}+)?   { yylval.sval = STRDUP(yytext); return REAL; }
+{CHARACTER}+                                            { yylval.sval = STRDUP(yytext); return IDENTIFICATOR; }
 
 %%
 

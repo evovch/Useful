@@ -14,6 +14,8 @@
 #include "stl_interface/cls_stl_interface.h"
 #include "stl_interface/cls_stl_file.h"
 
+#include "brep/cls_circle.h"
+
 cls_renderer* gRenderer;
 cls_scene* gScene;
 cls_camera* gCamera;
@@ -247,17 +249,27 @@ int main(int argc, char** argv)
 	//v_model1->Shift(0., 0., 0.);
 	gScene->AddModel(v_model1);
 
+/*
 	cls_model* v_model2 = new cls_model();
-	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/teapot.stl");
+	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/shoe.stl");
 	v_stlfile2->BuildModel(v_model2);
-	v_model2->Shift(-80., -10., 0.);
+	v_model2->Shift(100., 200., -100.);
 	gScene->AddModel(v_model2);
-
+*/
 /*
 	cls_model* v_model3 = new cls_model();
+	cls_circle* v_circle = new cls_circle();
+	v_circle->BuildModel(v_model3);
 	v_model3->Shift(0., 0., 0.);
 	gScene->AddModel(v_model3);
 */
+
+	cls_model* v_model4 = new cls_model();
+	cls_stl_file* v_stlfile4 = cls_stl_interface::ImportBinary("input/Lobster.stl");
+	v_stlfile4->BuildModel(v_model4);
+	v_model4->Shift(0., 0., 0.);
+	gScene->AddModel(v_model4);
+
 	gScene->SendToGPU(gRenderer);
 
 	gCamera->SendCamToGPU(gRenderer);

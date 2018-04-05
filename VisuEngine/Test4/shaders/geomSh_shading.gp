@@ -2,16 +2,20 @@
 
 layout(triangles) in;
 layout(triangle_strip, max_vertices=3) out;
-//layout(line_strip, max_vertices=2) out;
+//layout(line_strip, max_vertices=3) out;
 
 // input
 in vec4 vertex_Color[];
 
 // output
 out vec4 geom_Color;
+out float geom_k;
 
 // Model view projection matrix - combination of model-to-camera, camera-to-clip
 uniform mat4 MVP;
+
+uniform vec3 EyePos;
+uniform vec3 LightPos;
 
 void main()
 {
@@ -23,7 +27,6 @@ void main()
     }
     EndPrimitive();
 
-/*
     // The three points of the triangle
     vec3 p0 = gl_in[0].gl_Position.xyz;
     vec3 p1 = gl_in[1].gl_Position.xyz;
@@ -39,16 +42,22 @@ void main()
     vec3 norm = cross(e1, e0);
     norm = normalize(norm);
 
+/*
     float k = 5.0;
 
     // First emitted vertex - center of the triangle
-    gl_Position = MVP * vec4(p, 1.0);
-    geom_Color = vec4(1.0, 0.0, 0.0, 1.0);
+    gl_Position = MVP * vec4(p+norm*k, 1.0);
+    geom_Color = vec4(0.0, 1.0, 0.0, 1.0);
     EmitVertex();
 
     // Second emitted vertex
-    gl_Position = MVP * vec4(p+norm*k, 1.0);
-    geom_Color = vec4(0.0, 1.0, 0.0, 1.0);
+    gl_Position = pMvp;
+    geom_Color = vec4(1.0, 0.0, 0.0, 1.0);
+    EmitVertex();
+
+    // Third emitted vertex
+    gl_Position = vec4(normalize(LightPos), 1.0);
+    geom_Color = vec4(0.0, 1.0, 1.0, 1.0);
     EmitVertex();
 
  	EndPrimitive();

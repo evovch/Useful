@@ -18,6 +18,10 @@ private:
 public:
 	static cls_stl_file* Import(const char* p_filename);
 
+	static cls_stl_file* ImportText(const char* p_filename);
+
+	static cls_stl_file* ImportBinary(const char* p_filename);
+
 };
 
 #endif // CLS_STL_INTERFACE_H

@@ -179,7 +179,6 @@ glm::mat4 cls_camera::GetMVP(void) const
 }
 
 // Nice pure vector/matrix operations, no OpenGL stuff
-/*
 glm::vec3 cls_camera::GetViewerPoint(void) const
 {
     glm::vec3 v_lookDirInCamSpace(0.0f, 0.0f, 1.0f);
@@ -189,7 +188,7 @@ glm::vec3 cls_camera::GetViewerPoint(void) const
 
     return (this->GetLookPt() + this->GetDist() * v_lookDirInModelSpace);
 }
-*/
+
 
 /*
 void cls_camera::SendCamToGPU(std::vector<GLuint> p_programs, std::vector<GLuint> p_uniforms) //const
@@ -228,5 +227,15 @@ void cls_camera::SendCamToGPU(cls_renderer* p_renderer)
         ++v_iterP;
         ++v_iterU;
     }
+
+    // Eye point
+    glm::vec3 v_eye = this->GetViewerPoint();
+    glm::vec3 v_lightFromEye = glm::vec3(0., 0., 100.);
+    glm::vec3 v_sum = v_eye + v_lightFromEye;
+
+    glUseProgram(p_renderer->mShadingDrawProgram);
+    glUniform3fv(p_renderer->mEyePosUniform, 1, glm::value_ptr(v_eye));
+    glUniform3fv(p_renderer->mLightPosUniform, 1, glm::value_ptr(v_sum));
+
     glUseProgram(0);
 }

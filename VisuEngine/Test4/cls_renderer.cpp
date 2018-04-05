@@ -43,6 +43,9 @@ void cls_renderer::InitProgs(void)
 	// Connect uniform variables
 	mMVPshadingUniform = glGetUniformLocation(mShadingDrawProgram, "MVP");
 
+	mEyePosUniform = glGetUniformLocation(mShadingDrawProgram, "EyePos");
+	mLightPosUniform = glGetUniformLocation(mShadingDrawProgram, "LightPos");
+
 	// ------------------------------ Wireframe draw program ------------------------------
 	mWireDrawProgram = glCreateProgram();
 	std::vector<GLuint> shaderList2;
@@ -104,7 +107,7 @@ void cls_renderer::InitGLparameters(void)
 	glClearDepth(1.0f);
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	glPointSize(10.);
+	glPointSize(0.);
 
 	//// Set the first vertex of the triangle as the vertex
 	//// holding the color for the whole triangle for flat shading rendering

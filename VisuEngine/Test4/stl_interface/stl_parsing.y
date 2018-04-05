@@ -50,6 +50,13 @@ exchange_file : SOLID solidname facet_list ENDSOLID solidname
                       f->SetFirstFacet($3);
                       $$ = f;
                   }
+              | SOLID solidname facet_list ENDSOLID
+                  {
+                      cls_stl_file* f = new cls_stl_file();
+                      f->SetName($2);
+                      f->SetFirstFacet($3);
+                      $$ = f;
+                  }
               ;
 
 solidname     : IDENTIFICATOR

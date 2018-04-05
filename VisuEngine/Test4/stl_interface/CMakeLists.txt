@@ -3,7 +3,7 @@ set(SOURCE_LIB_STL_INTERFACE stl_parsing.flex.cpp
                              cls_stl_file.cpp
                              cls_stl_interface.cpp)
 
-add_library(stl_interface STATIC ${SOURCE_LIB_STL_INTERFACE})
+add_library(stl_interface SHARED ${SOURCE_LIB_STL_INTERFACE})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR})

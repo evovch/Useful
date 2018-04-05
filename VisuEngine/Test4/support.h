@@ -30,4 +30,10 @@ unsigned int ColorToInt(stc_VandC* p_source);
 
 unsigned int PixelColorToInt(GLubyte* p_source);
 
+unsigned int FourCharsToUintLE(const unsigned char* p_mem);
+
+//unsigned int FourCharsToUintBE(const unsigned char* p_mem); //TODO test
+
+float FourCharsToFloat(const unsigned char* p_mem);
+
 #endif // SUPPORT_H
