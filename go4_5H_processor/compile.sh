@@ -10,6 +10,7 @@ cmake ../
 make -j
 cd -
 
-cp build/*.so .
+cp -v build/*.so .
+cp -v build/*.pcm .
 
 echo "Finished."
