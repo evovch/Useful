@@ -15,13 +15,13 @@ LIBNAME=libUserAnalysis.so
 
 all: $(LIBNAME)
 
-$(LIBNAME): G__UserAnalysis.o UserAnalysis.o UserEvent.o UserProc.o UserEventStep2.o UserProcStep2.o
+$(LIBNAME): G__UserAnalysis.o UserAnalysis.o UserEvent.o UserProc.o UserEventStep2.o UserProcStep2.o UserAnalysisHistos.o
 	g++ $(FLAGS) $^ -shared -o $(LIBNAME)
 
 G__UserAnalysis.o: G__UserAnalysis.cxx
 	g++ $(FLAGS) -c $^ -I$(GO4SYS)/include -I`root-config --incdir`
 
-G__UserAnalysis.cxx: UserAnalysis.h UserEvent.h UserProc.h UserEventStep2.h UserProcStep2.h UserAnalysisLinkDef.h
+G__UserAnalysis.cxx: UserAnalysis.h UserEvent.h UserProc.h UserEventStep2.h UserProcStep2.h UserAnalysisHistos.h UserAnalysisLinkDef.h
 	rootcling -f $@ -I$(GO4SYS)/include $^
 
 UserAnalysis.o: UserAnalysis.cxx
@@ -37,6 +37,9 @@ UserEventStep2.o: UserEventStep2.cxx
 	g++ $(FLAGS) -c $^ -I$(GO4SYS)/include -I`root-config --incdir`
 
 UserProcStep2.o: UserProcStep2.cxx
+	g++ $(FLAGS) -c $^ -I$(GO4SYS)/include -I`root-config --incdir`
+
+UserAnalysisHistos.o: UserAnalysisHistos.cxx
 	g++ $(FLAGS) -c $^ -I$(GO4SYS)/include -I`root-config --incdir`
 
 clean:

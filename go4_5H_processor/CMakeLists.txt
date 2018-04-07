@@ -32,6 +32,7 @@ set(ROOTCLING_HEADERS UserAnalysis.h
                       UserProc.h
                       UserEventStep2.h
                       UserProcStep2.h
+                      UserAnalysisHistos.h
                       )
 
 ROOT_GENERATE_DICTIONARY(G__UserAnalysis ${ROOTCLING_HEADERS} LINKDEF UserAnalysisLinkDef.h)
@@ -42,6 +43,7 @@ set(SOURCE_LIB G__UserAnalysis.cxx
                UserProc.cxx
                UserEventStep2.cxx
                UserProcStep2.cxx
+               UserAnalysisHistos.cxx
                )
 
 add_library(UserAnalysis SHARED ${SOURCE_LIB})

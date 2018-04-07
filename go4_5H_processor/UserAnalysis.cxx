@@ -46,12 +46,16 @@ void UserAnalysis::Construct(void)
 	factory1->DefEventProcessor("UserProc1", "UserProc"); // object name, class name
 	factory1->DefOutputEvent("UserEvent1", "UserEvent"); // object name, class name
 
-	TGo4AnalysisStep* step = new TGo4AnalysisStep("UserAnalysisStep1", factory1);
+	TGo4AnalysisStep* step1 = new TGo4AnalysisStep("UserAnalysisStep1", factory1);
 
-	step->SetSourceEnabled(kTRUE);
-	step->SetStoreEnabled(kFALSE);
-	step->SetProcessEnabled(kTRUE);
-	step->SetErrorStopEnabled(kTRUE);
+	step1->SetSourceEnabled(kTRUE);
+	step1->SetStoreEnabled(kFALSE);
+	step1->SetProcessEnabled(kTRUE);
+	step1->SetErrorStopEnabled(kTRUE);
+
+	TGo4FileStoreParameter* store = new TGo4FileStoreParameter("output.root");
+	step1->SetEventStore(store);
+	step1->SetStoreEnabled(kTRUE);
 
 	// STEP2 - processor - analysis ===============================================================
 
@@ -62,15 +66,15 @@ void UserAnalysis::Construct(void)
 
 	TGo4AnalysisStep* step2 = new TGo4AnalysisStep("UserAnalysisStep2", factory2);
 
-	step->SetSourceEnabled(kFALSE);
-	step->SetStoreEnabled(kFALSE);
-	step->SetProcessEnabled(kTRUE);
-	step->SetErrorStopEnabled(kTRUE);
+	step2->SetSourceEnabled(kFALSE);
+	step2->SetStoreEnabled(kFALSE);
+	step2->SetProcessEnabled(kTRUE);
+	step2->SetErrorStopEnabled(kTRUE);
 
 	// ============================================================================================
 
 	// Add STEPs to the analysis
-	AddAnalysisStep(step);
+	AddAnalysisStep(step1);
 	AddAnalysisStep(step2);
 }
 

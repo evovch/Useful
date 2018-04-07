@@ -11,6 +11,11 @@ public:
 
 	void Clear(Option_t* t = "");
 
+public:
+	Int_t mSubcrate;
+	Int_t mControl;
+	Short_t mProcID;
+
 	ClassDef(UserEvent, 1);
 };
 

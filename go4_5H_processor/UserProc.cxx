@@ -11,36 +11,20 @@ using std::endl;
 #include <TGo4MbsSubEvent.h>
 
 #include "UserEvent.h"
+#include "UserAnalysisHistos.h"
 
 UserProc::UserProc(const char* name) :
 	TGo4EventProcessor(name),
 	mEventCounter(0)
 {
+	mHistoMan = new UserAnalysisHistos();
 }
 
 UserProc::~UserProc()
 {
+	if (mHistoMan) delete mHistoMan;
 }
 
-/**
-	Rather official ROOT coding convention:
-	Variables starting with 'f' are the class data members.
-	They are known everywhere inside the class methods.
-	Do not create local variables starting with 'f'.
-	This will make your code so hard to understand and create
-	potential naming clash...
-
-	Unofficial coding convention:
-	variables starting with 'f' or 'm' are the class data members;
-	variables starting with 'p_' are the parameters of the the method;
-		in case you want to specify explicitly:
-		starting with 'i_' are the input parameters (usually byval);
-		starting with 'o_' are the output parameters (usually byref);
-	variables starting with v_ are the local variables.
-	variables without any identifiable prefix are usually the local ones -
-		thid is usually the case for simple one-letter names:
-		i, j, k, x, y, z, n, etc...
-*/
 Bool_t UserProc::BuildEvent(TGo4EventElement* p_dest)
 {
 	Bool_t v_isValid = kFALSE;
@@ -55,7 +39,11 @@ Bool_t UserProc::BuildEvent(TGo4EventElement* p_dest)
 	}
 	v_isValid = kTRUE;
 
-	cerr << "UserProc: Event " << mEventCounter << endl;
+	cerr << "UserProc: Event " << mEventCounter
+	     << "==========================================================================================================="
+	     << endl;
+
+	mCurrentOutputEvent = v_outputEvent;
 
 	////this->DumpEventHeader(v_input);
 
@@ -69,11 +57,7 @@ Bool_t UserProc::BuildEvent(TGo4EventElement* p_dest)
 	{
 		cerr << "\t" << "SubEvent " << v_subEventCounter << endl;
 
-		Int_t v_intLen = v_pSubevent->GetIntLen(); // Get the size of the current subevent
-		Int_t* v_dataField = v_pSubevent->GetDataField(); // Get the pointer to the data of the subevent
-
-		//this->DumpSubeventData(v_intLen, v_dataField);
-		this->ProcessSubevent(v_intLen, v_dataField);
+		this->ProcessSubevent(v_pSubevent);
 
 		v_subEventCounter++;
 	}
@@ -85,9 +69,39 @@ Bool_t UserProc::BuildEvent(TGo4EventElement* p_dest)
 	return v_isValid;
 }
 
-void UserProc::ProcessSubevent(Int_t p_size, Int_t* p_startAddress)
+void UserProc::ProcessSubevent(TGo4MbsSubEvent* p_subevent)
 {
-	//TODO Do your processing here
+	Int_t v_dLen = p_subevent->GetDlen();
+	Short_t v_type = p_subevent->GetType();
+	Char_t v_subcrate = p_subevent->GetSubcrate();
+	Char_t v_control = p_subevent->GetControl();
+	Short_t v_procID = p_subevent->GetProcid();
+
+	Int_t v_intLen = p_subevent->GetIntLen(); // Get the size of the current subevent
+	Int_t* v_dataField = p_subevent->GetDataField(); // Get the pointer to the data of the subevent
+
+	cerr << "\t" << "v_dLen=" << v_dLen << "\t"
+	             << "v_type=" << v_type << "\t"
+	             << "v_subcrate=" << (Int_t)v_subcrate << "\t"
+	             << "v_control=" << (Int_t)v_control << "\t"
+	             << "procID=" << v_procID << endl;
+
+	/**
+		Сейчас это пока что неверно и оставлено здесь просто для примера.
+		В событиии несколько subevent'ов, и для каждого subevent'а нужно писать
+		выходной объект. Сейчас эти значения пишутся для каждого собтия по
+		значениям из последнего subevent'а.
+	**/
+	mCurrentOutputEvent->mSubcrate = (Int_t)v_subcrate;
+	mCurrentOutputEvent->mControl = (Int_t)v_control;
+	mCurrentOutputEvent->mProcID = v_procID;
+
+	//this->DumpSubeventData(v_intLen, v_dataField);
+	this->ProcessSubeventRaw(v_intLen, v_dataField);
+}
+
+void UserProc::ProcessSubeventRaw(Int_t p_size, Int_t* p_startAddress)
+{
 }
 
 void UserProc::DumpEventHeader(TGo4MbsEvent* p_inp_evt) const
@@ -117,6 +131,7 @@ void UserProc::DumpSubeventData(Int_t p_size, Int_t* p_startAddress) const
 		fprintf(stderr, "%02x", ((v_curWord >> 16) & 0xff));
 		fprintf(stderr, "%02x", ((v_curWord >> 24) & 0xff));
 		fprintf(stderr, " ");
+		if ((i+1)%8 == 0) { cerr << endl; }
 	}
 	cerr << endl;
 }

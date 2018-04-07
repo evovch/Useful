@@ -9,5 +9,6 @@
 #pragma link C++ class UserProc+;
 #pragma link C++ class UserEventStep2+;
 #pragma link C++ class UserProcStep2+;
+#pragma link C++ class UserAnalysisHistos+;
 
 #endif // __CINT__
