@@ -16,7 +16,6 @@ UserEvent::~UserEvent()
 
 void UserEvent::Clear(Option_t* t)
 {
-
 }
 
 ClassImp(UserEvent)

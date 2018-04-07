@@ -30,6 +30,8 @@ include_directories($ENV{GO4SYS}/include)
 set(ROOTCLING_HEADERS UserAnalysis.h
                       UserEvent.h
                       UserProc.h
+                      UserEventStep2.h
+                      UserProcStep2.h
                       )
 
 ROOT_GENERATE_DICTIONARY(G__UserAnalysis ${ROOTCLING_HEADERS} LINKDEF UserAnalysisLinkDef.h)
@@ -38,6 +40,8 @@ set(SOURCE_LIB G__UserAnalysis.cxx
                UserAnalysis.cxx
                UserEvent.cxx
                UserProc.cxx
+               UserEventStep2.cxx
+               UserProcStep2.cxx
                )
 
 add_library(UserAnalysis SHARED ${SOURCE_LIB})

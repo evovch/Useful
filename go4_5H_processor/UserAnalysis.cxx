@@ -8,23 +8,16 @@ using std::endl;
 #include <TGo4Version.h> // for CheckVersion
 
 #include <TGo4StepFactory.h>
-#include <TGo4MbsEvent.h>
 
 UserAnalysis::UserAnalysis(const char* name) :
-	TGo4Analysis(name),
-	fMbsEvent(NULL),
-	fEvents(0),
-	fLastEvent(0)
+	TGo4Analysis(name)
 {
 	this->Construct();
 	cout << "UserAnalysis constructed." << endl;
 }
 
 UserAnalysis::UserAnalysis(int argc, char** argv) :
-	TGo4Analysis(argc, argv),
-	fMbsEvent(NULL),
-	fEvents(0),
-	fLastEvent(0)
+	TGo4Analysis(argc, argv)
 {
 	this->Construct();
 	cout << "UserAnalysis constructed." << endl;
@@ -47,46 +40,43 @@ void UserAnalysis::Construct(void)
 		exit(-1);
 	}
 
-	TGo4StepFactory* factory = new TGo4StepFactory("Factory");
-	factory->DefEventProcessor("UserProc1", "UserProc"); // object name, class name
-	factory->DefOutputEvent("UserEvent1", "UserEvent"); // object name, class name
+	// STEP1 - source - unpacker ==================================================================
 
-	TGo4AnalysisStep* step = new TGo4AnalysisStep("UserAnalysisStep1", factory);
+	TGo4StepFactory* factory1 = new TGo4StepFactory("Factory1");
+	factory1->DefEventProcessor("UserProc1", "UserProc"); // object name, class name
+	factory1->DefOutputEvent("UserEvent1", "UserEvent"); // object name, class name
+
+	TGo4AnalysisStep* step = new TGo4AnalysisStep("UserAnalysisStep1", factory1);
 
 	step->SetSourceEnabled(kTRUE);
-	//step->SetStoreEnabled(kTRUE);
+	step->SetStoreEnabled(kFALSE);
 	step->SetProcessEnabled(kTRUE);
 	step->SetErrorStopEnabled(kTRUE);
 
+	// STEP2 - processor - analysis ===============================================================
+
+	TGo4StepFactory* factory2 = new TGo4StepFactory("Factory2");
+	factory2->DefInputEvent("UserEvent1", "UserEvent"); // object name, class name
+	factory2->DefEventProcessor("UserProc2", "UserProcStep2"); // object name, class name
+	factory2->DefOutputEvent("UserEvent2", "UserEventStep2"); // object name, class name
+
+	TGo4AnalysisStep* step2 = new TGo4AnalysisStep("UserAnalysisStep2", factory2);
+
+	step->SetSourceEnabled(kFALSE);
+	step->SetStoreEnabled(kFALSE);
+	step->SetProcessEnabled(kTRUE);
+	step->SetErrorStopEnabled(kTRUE);
+
+	// ============================================================================================
+
+	// Add STEPs to the analysis
 	AddAnalysisStep(step);
+	AddAnalysisStep(step2);
 }
 
 Int_t UserAnalysis::UserPreLoop(void)
 {
 	cout << "UserAnalysis::UserPreLoop()." << endl;
-
-	// get pointer to input event (used in postloop and event function):
-	fMbsEvent = dynamic_cast<TGo4MbsEvent*> (GetInputEvent("Analysis")); // of step "Analysis"
-	if (fMbsEvent) {
-		// fileheader structure (lmd file only):
-		s_filhe* fileheader = fMbsEvent->GetMbsSourceHeader();
-		if (fileheader)
-		{
-			cout << "\nInput file: " << fileheader->filhe_file << endl;
-			cout << "Tapelabel:\t" << fileheader->filhe_label << endl;
-			cout << "UserName:\t" << fileheader->filhe_user << endl;
-			cout << "RunID:\t" << fileheader->filhe_run << endl;
-			cout << "Explanation: " << fileheader->filhe_exp << endl;
-			cout << "Comments: "<< endl;
-			Int_t numlines=fileheader->filhe_lines;
-			for(Int_t i=0; i<numlines;++i)
-			{
-				cout << "\t" << fileheader->s_strings[i].string << endl;
-			}
-		}
-	}
-	fEvents = 0; // event counter
-	fLastEvent = 0; // number of last event processed
 
 	return 0;
 }
@@ -96,25 +86,12 @@ Int_t UserAnalysis::UserEventFunc(void)
 {
 	//cout << "UserAnalysis::UserEventFunc()." << endl;
 
-	if (fMbsEvent) {
-		fEvents++;
-		fLastEvent = fMbsEvent->GetCount();
-	}
-	if (fEvents == 1 || IsNewInputFile()) {
-		cout << "First event #: " << fLastEvent << endl;
-		SetNewInputFile(kFALSE); // we have to reset the newfile flag
-	}
-
 	return 0;
 }
 
 Int_t UserAnalysis::UserPostLoop(void)
 {
 	cout << "UserAnalysis::UserPostLoop()." << endl;
-
-	cout << "Last event #: " << fLastEvent << " Total events: " << fEvents << endl;
-	fMbsEvent = 0; // reset to avoid invalid pointer if analysis is changed in between
-	fEvents = 0;
 
 	return 0;
 }

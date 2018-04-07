@@ -3,8 +3,6 @@
 
 #include <TGo4Analysis.h> // mother class
 
-class TGo4MbsEvent;
-
 class UserAnalysis : public TGo4Analysis
 {
 public:
@@ -18,10 +16,6 @@ public:
 	virtual Int_t UserEventFunc(void);
 	virtual Int_t UserPostLoop(void);
 
-private:
-	TGo4MbsEvent* fMbsEvent;
-	Int_t fEvents;
-	Int_t fLastEvent;
 
 	ClassDef(UserAnalysis, 1);
 };
