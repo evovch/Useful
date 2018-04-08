@@ -7,7 +7,7 @@ layout(triangle_strip, max_vertices=3) out;
 in vec4 vertex_Color[];
 
 // output
-out vec4 geom_Color;
+flat out vec4 geom_Color;
 
 // Model view projection matrix - combination of model-to-camera, camera-to-clip
 uniform mat4 MVP;

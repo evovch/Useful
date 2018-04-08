@@ -26,6 +26,7 @@ public:
 	void InitProgs(void);
 	void InitBuffers(void);
 	void InitGLparameters(void);
+	void InitDatumAll(void);
 
 	GLuint CreateShader(GLenum p_eShaderType, const std::string p_strShaderFile);
 	void CreateProg(GLuint p_program, const std::vector<GLuint>& p_shaderList);
@@ -65,6 +66,22 @@ public:
 
 	cls_offscreen_renderer* mOffscreenRenderer;
 
+/*
+	// Program object for datum objects rendering
+	GLuint mDatumDrawProgram;
+	// Uniform object for datum objects rendering
+	GLuint mMVPdatumUniform;
+	// Vertex array object for datum objects rendering
+	GLuint mVAOdatum;
+	// Vertex buffer object for datum objects rendering
+	GLuint mVBOdatum;
+	// Index buffer object for datum triangles rendering
+	GLuint mIBOdatumTr;
+	// Index buffer object for datum wires rendering
+	GLuint mIBOdatumW;
+	// Index buffer object for datum points rendering
+	GLuint mIBOdatumP;
+*/
 };
 
 #endif // CLS_RENDERER_H

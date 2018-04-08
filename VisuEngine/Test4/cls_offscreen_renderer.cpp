@@ -11,30 +11,39 @@
 
 // Constructor with default picture size 2000x2000
 cls_offscreen_renderer::cls_offscreen_renderer(cls_renderer* p_renderer) :
-    mRenderer(p_renderer),
 	mPicWidth(2000),
 	mPicHeight(2000),
-	mPixels(nullptr)
+	mPixels(nullptr),
+	mRenderer(p_renderer)
 {
 	this->Construct();
 }
 
 cls_offscreen_renderer::cls_offscreen_renderer(cls_renderer* p_renderer, GLsizei p_width, GLsizei p_height) :
-    mRenderer(p_renderer),
 	mPicWidth(p_width),
 	mPicHeight(p_height),
-	mPixels(nullptr)
+	mPixels(nullptr),
+	mRenderer(p_renderer)
 {
 	this->Construct();
 }
 
 cls_offscreen_renderer::~cls_offscreen_renderer(void)
 {
+	this->Destruct();
+
+	//// mRenderer should not be touched! It is a pointer to an external object.
+}
+
+void cls_offscreen_renderer::Destruct(void)
+{
 	glDeleteRenderbuffers(1, &mRBOcolor);
 	glDeleteRenderbuffers(1, &mRBOdepth);
 	glDeleteFramebuffers(1, &mFBO);
 
 	if (mPixels) delete [] mPixels;
+
+	//// mRenderer should not be touched! It is a pointer to an external object.
 }
 
 void cls_offscreen_renderer::Construct(void)
@@ -65,16 +74,11 @@ void cls_offscreen_renderer::Resize(GLsizei p_width, GLsizei p_height)
 	mPicWidth = p_width;
 	mPicHeight = p_height;
 
-	glDeleteRenderbuffers(1, &mRBOcolor);
-	glDeleteRenderbuffers(1, &mRBOdepth);
-	glDeleteFramebuffers(1, &mFBO);
-
-	if (mPixels) delete [] mPixels;
-
+	this->Destruct();
 	this->Construct();
 }
 
-void cls_offscreen_renderer::RenderModelToBuffer(cls_scene* p_scene)
+void cls_offscreen_renderer::RenderSceneToBuffer(cls_scene* p_scene)
 {
 	// Switch to offscreen buffer and set corresponding window size and viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);

@@ -8,7 +8,7 @@
 #define CLS_SCENE_H
 
 // STD
-#include <list>
+#include <vector>
 
 class cls_model;
 class cls_renderer;
@@ -26,11 +26,13 @@ public:
 	 */
 	void Draw(cls_renderer* p_rend) const;
 
-	void AddModel(cls_model* p_model) { mModels.push_back(p_model); }
+	void AddModel(cls_model* p_model);
+
+	unsigned int GetOffset(unsigned int p_modelIndex) const { return mOffsets[p_modelIndex]; }
 
 private:
 
-	std::list<cls_model*> mModels;
+	std::vector<cls_model*> mModels;
 
 	/**
 	 * These numbers are filled during cls_scene::SendToGPU()
@@ -39,6 +41,11 @@ private:
 	unsigned int mTotalNtriangles;
 	unsigned int mTotalNwires;
 	unsigned int mTotalNpoints;
+
+	/**
+	 *
+	 */
+	std::vector<unsigned int> mOffsets; // Only for vertices by now. Should also implement for triangles, wires and points...
 
 };
 

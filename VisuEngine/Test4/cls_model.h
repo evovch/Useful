@@ -13,7 +13,10 @@
 // GLM
 #include <glm/glm.hpp>
 
+// Project
 #include "support.h"
+
+class cls_scene;
 
 class cls_model
 {
@@ -29,6 +32,8 @@ public:
 	void AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array);
 
 	void PrepareUniqueColors(void);
+
+	void HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_VBO) const;
 
 	void Dump(void) const;
 
@@ -66,6 +71,8 @@ public:
 	// Operations on the 'model-in-the-scene' matrix
 	void Shift(float p_x, float p_y, float p_z);
 
+	void SetScene(cls_scene* p_scene, unsigned int p_index) { mScene = p_scene; mIndexInScene = p_index; }
+
 private:
 	void Reset(void);
 
@@ -91,6 +98,14 @@ private:
 	glm::mat4 mMatrix;
 
 	stc_VandC* mVandCdataUniqueColors;	// [mNumOfVertices]
+
+	/**
+	 * The scene which contains this model, if any.
+	 * The model can be insie one scene.
+	 */
+	cls_scene* mScene;
+
+	unsigned int mIndexInScene;
 
 };
 

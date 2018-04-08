@@ -15,7 +15,24 @@ cls_renderer::cls_renderer(void) :
 
 cls_renderer::~cls_renderer(void)
 {
+	glDeleteProgram(mShadingDrawProgram);
+	glDeleteProgram(mWireDrawProgram);
+	glDeleteProgram(mPointsDrawProgram);
+
+	glDeleteVertexArrays(1, &mVAO);
+	glDeleteBuffers(1, &mVBO);
+	glDeleteBuffers(1, &mIBOshading);
+	glDeleteBuffers(1, &mIBOwire);
+	glDeleteBuffers(1, &mIBOpoints);
+
 	if (mOffscreenRenderer) { delete mOffscreenRenderer; mOffscreenRenderer = nullptr; }
+
+	/*glDeleteProgram(mDatumDrawProgram);
+	glDeleteVertexArrays(1, &mVAOdatum);
+	glDeleteBuffers(1, &mVBOdatum);
+	glDeleteBuffers(1, &mIBOdatumTr);
+	glDeleteBuffers(1, &mIBOdatumW);
+	glDeleteBuffers(1, &mIBOdatumP);*/
 }
 
 void cls_renderer::Init(void)
@@ -29,6 +46,9 @@ void cls_renderer::Init(void)
 	mProgs.push_back(mPointsDrawProgram);  mUnifs.push_back(mMVPpointsUniform);
 
 	mOffscreenRenderer = new cls_offscreen_renderer(this);
+
+	/*this->InitDatumAll();
+	mProgs.push_back(mDatumDrawProgram);  mUnifs.push_back(mMVPdatumUniform);*/
 }
 
 void cls_renderer::InitProgs(void)
@@ -123,6 +143,36 @@ void cls_renderer::InitGLparameters(void)
 	fprintf(stderr, "[INFO] Initialized OpenGL parameters.\n");
 }
 
+void cls_renderer::InitDatumAll(void)
+{
+	// ------------------------------ Shading draw program ------------------------------
+/*	mDatumDrawProgram = glCreateProgram();
+	std::vector<GLuint> v_shaderList;
+	v_shaderList.push_back(CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_datum.vp"));
+	v_shaderList.push_back(CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_datum.gp"));
+	v_shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_datum.fp"));
+
+	this->CreateProg(mDatumDrawProgram, v_shaderList);
+
+	// Cleanup
+	std::for_each(v_shaderList.begin(), v_shaderList.end(), glDeleteShader);
+
+	// Connect uniform variables
+	mMVPdatumUniform = glGetUniformLocation(mDatumDrawProgram, "MVP");
+
+	// ---------------------------------------------------------------------------------
+	fprintf(stderr, "[INFO] Initialized datum programs.\n");
+
+	// ---------------------------------------------------------------------------------
+	glGenVertexArrays(1, &mVAOdatum);
+	glGenBuffers(1, &mVBOdatum);
+	glGenBuffers(1, &mIBOdatumTr);
+	glGenBuffers(1, &mIBOdatumW);
+	glGenBuffers(1, &mIBOdatumP);
+	fprintf(stderr, "[INFO] Initialized datum buffers.\n");*/
+}
+
+/*static*/
 GLuint cls_renderer::CreateShader(GLenum p_eShaderType, const std::string p_strShaderFile)
 {
 	//fprintf(stderr, "[DEBUG] Creating shader from file '%s'\n", p_strShaderFile.c_str());
@@ -179,6 +229,7 @@ GLuint cls_renderer::CreateShader(GLenum p_eShaderType, const std::string p_strS
 	return v_shader;
 }
 
+/*static*/
 void cls_renderer::CreateProg(GLuint p_program, const std::vector<GLuint>& p_shaderList)
 {
 	// (Create the program outside)

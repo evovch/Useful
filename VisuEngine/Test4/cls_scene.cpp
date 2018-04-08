@@ -26,7 +26,7 @@ void cls_scene::SendToGPU(cls_renderer* p_rend)
 	mTotalNwires = 0;
 	mTotalNpoints = 0;
 
-	std::list<cls_model*>::const_iterator iter;
+	std::vector<cls_model*>::const_iterator iter;
 
 	// Count ======================================================================================
 
@@ -42,15 +42,19 @@ void cls_scene::SendToGPU(cls_renderer* p_rend)
 
 	iter = mModels.begin();
 
+	/*
+	fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", mTotalNvertices);
+	fprintf(stderr, "               %d triangles,\n", mTotalNtriangles);
+	fprintf(stderr, "               %d wires,\n", mTotalNwires);
+	fprintf(stderr, "               %d points,\n", mTotalNpoints); //*/
+
 	(*iter)->SendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, mTotalNvertices);
 	(*iter)->SendToGPUtriangles(p_rend->mIBOshading, mTotalNtriangles);
 	(*iter)->SendToGPUwires(p_rend->mIBOwire, mTotalNwires);
 	(*iter)->SendToGPUpoints(p_rend->mIBOpoints, mTotalNpoints);
 
-	/*fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", mTotalNvertices);
-	fprintf(stderr, "               %d triangles,\n", mTotalNtriangles);
-	fprintf(stderr, "               %d wires,\n", mTotalNwires);
-	fprintf(stderr, "               %d points,\n", mTotalNpoints);*/
+	mOffsets.push_back(0);
+
 	unsigned int v_Nvertices = (*iter)->GetNumOfVertices();
 	unsigned int v_Ntriangles = (*iter)->GetNumOfTriangles();
 	unsigned int v_Nwires = (*iter)->GetNumOfWires();
@@ -61,33 +65,39 @@ void cls_scene::SendToGPU(cls_renderer* p_rend)
 	++iter;
 	for (; iter != mModels.end(); ++iter) {
 
+		/*
+		fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", v_Nvertices);
+		fprintf(stderr, "               %d triangles,\n", v_Ntriangles);
+		fprintf(stderr, "               %d wires,\n", v_Nwires);
+		fprintf(stderr, "               %d points,\n", v_Npoints); //*/
+
 		(*iter)->AppendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, v_Nvertices*sizeof(stc_VandC));
 		(*iter)->AppendToGPUtriangles(p_rend->mIBOshading, v_Ntriangles*3*sizeof(unsigned int), v_Nvertices);
 		(*iter)->AppendToGPUwires(p_rend->mIBOwire, v_Nwires*2*sizeof(unsigned int), v_Nvertices);
 		(*iter)->AppendToGPUpoints(p_rend->mIBOpoints, v_Npoints*sizeof(unsigned int), v_Nvertices);
 
-		/*fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", v_Nvertices);
-		fprintf(stderr, "               %d triangles,\n", v_Ntriangles);
-		fprintf(stderr, "               %d wires,\n", v_Nwires);
-		fprintf(stderr, "               %d points,\n", v_Npoints);*/
+		mOffsets.push_back(v_Nvertices);
+
 		v_Nvertices += (*iter)->GetNumOfVertices();
 		v_Ntriangles += (*iter)->GetNumOfTriangles();
 		v_Nwires += (*iter)->GetNumOfWires();
 		v_Npoints += (*iter)->GetNumOfPoints();
 	}
 
-	/*fprintf(stderr, "[DEBUG] Total: %d = %d vertices,\n", v_Nvertices, mTotalNvertices);
+	/*
+	fprintf(stderr, "[DEBUG] Total: %d = %d vertices,\n", v_Nvertices, mTotalNvertices);
 	fprintf(stderr, "               %d = %d triangles,\n", v_Ntriangles, mTotalNtriangles);
 	fprintf(stderr, "               %d = %d wires,\n", v_Nwires, mTotalNwires);
-	fprintf(stderr, "               %d = %d points,\n", v_Npoints, mTotalNpoints);*/
+	fprintf(stderr, "               %d = %d points,\n", v_Npoints, mTotalNpoints); //*/
 }
 
 void cls_scene::Draw(cls_renderer* p_rend) const
 {
-/*	fprintf(stderr, "[DEBUG] Draw:  %d vertices,\n", mTotalNvertices);
+	/*
+	fprintf(stderr, "[DEBUG] Draw:  %d vertices,\n", mTotalNvertices);
 	fprintf(stderr, "               %d triangles,\n", mTotalNtriangles);
 	fprintf(stderr, "               %d wires,\n", mTotalNwires);
-	fprintf(stderr, "               %d points,\n", mTotalNpoints);*/
+	fprintf(stderr, "               %d points,\n", mTotalNpoints); //*/
 
 	glUseProgram(p_rend->mShadingDrawProgram);
 	glBindVertexArray(p_rend->mVAO);
@@ -109,4 +119,11 @@ void cls_scene::Draw(cls_renderer* p_rend) const
 	glDrawElements(GL_POINTS, mTotalNpoints, GL_UNSIGNED_INT, NULL);
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void cls_scene::AddModel(cls_model* p_model)
+{
+	mModels.push_back(p_model);
+	////fprintf(stderr, "mModels.size()=%ld\n", mModels.size());
+	p_model->SetScene(this, mModels.size()-1);
 }

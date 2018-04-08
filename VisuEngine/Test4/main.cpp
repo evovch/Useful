@@ -58,8 +58,12 @@ static void KeyFunc(unsigned char key, int /*x*/, int /*y*/)
 		exit(0);
 	case 'a':
 		//TODO testing
-		gRenderer->mOffscreenRenderer->RenderModelToBuffer(gScene);
+		gRenderer->mOffscreenRenderer->RenderSceneToBuffer(gScene);
 		gRenderer->mOffscreenRenderer->WritePNGfile("test.png");
+	case 'r':
+		gCamera->Reset();
+		gCamera->SendCamToGPU(gRenderer);
+		glutPostRedisplay();
 	default:
 		break;
 	}
@@ -205,7 +209,8 @@ static void ReshapeFunc(GLsizei width, GLsizei height)
 {
 	//fprintf(stderr, "[DEBUG] width=%d, height=%d\n", width, height);
 
-	if (height == 0) {
+	if (height == 0)
+	{
 		fprintf(stderr, "[DEBUG] width=%d, height=%d\n", width, height);
 		height = 1;
 	}
@@ -255,20 +260,31 @@ int main(int argc, char** argv)
 
 	gRenderer = new cls_renderer();
 	gScene = new cls_scene();
-	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 100.);
-
-	cls_model* v_model1 = new cls_model();
-	v_model1->GenerateAxisSystem();
-	//v_model1->Shift(0., 0., 0.);
-	gScene->AddModel(v_model1);
-
+	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 20.);
 /*
-	cls_model* v_model2 = new cls_model();
-	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/shoe.stl");
-	v_stlfile2->BuildModel(v_model2);
-	v_model2->Shift(100., 200., -100.);
-	gScene->AddModel(v_model2);
+	cls_model* v_modelDatum = new cls_model();
+	cls_stl_file* v_stlfileDatum = cls_stl_interface::Import("input/datum.stl");
+	if (v_stlfileDatum != nullptr) {
+		v_stlfileDatum->BuildModel(v_modelDatum);
+		v_modelDatum->Shift(0., 0., 0.);
+		gScene->AddModel(v_modelDatum);
+	}
 */
+	cls_model* v_model2 = new cls_model();
+	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/humanoid.stl");
+	if (v_stlfile2 != nullptr) {
+		v_stlfile2->BuildModel(v_model2);
+		v_model2->Shift(-5., 0., -5.);
+		gScene->AddModel(v_model2);
+	}
+	cls_model* v_model5 = new cls_model();
+	cls_stl_file* v_stlfile5 = cls_stl_interface::Import("input/humanoid.stl");
+	if (v_stlfile5 != nullptr) {
+		v_stlfile5->BuildModel(v_model5);
+		v_model5->Shift(5., 0., -5.);
+		gScene->AddModel(v_model5);
+	}
+
 /*
 	cls_model* v_model3 = new cls_model();
 	cls_circle* v_circle = new cls_circle();
@@ -276,14 +292,17 @@ int main(int argc, char** argv)
 	v_model3->Shift(0., 0., 0.);
 	gScene->AddModel(v_model3);
 */
-
+/*
 	cls_model* v_model4 = new cls_model();
-	cls_stl_file* v_stlfile4 = cls_stl_interface::ImportBinary("input/Lobster.stl");
-	v_stlfile4->BuildModel(v_model4);
-	v_model4->Shift(0., 0., 0.);
-	//v_model4->Shift(150., 180., -150.); // shoe
-	//v_model4->Shift(-200., -200., -100.); // liver
-	gScene->AddModel(v_model4);
+	cls_stl_file* v_stlfile4 = cls_stl_interface::Import("input/Lobster.stl");
+	if (v_stlfile4 != nullptr) {
+		v_stlfile4->BuildModel(v_model4);
+		v_model4->Shift(0., 0., 0.);
+		//v_model4->Shift(150., 180., -150.); // shoe
+		//v_model4->Shift(-200., -200., -100.); // liver
+		gScene->AddModel(v_model4);
+	}
+*/
 
 	gScene->SendToGPU(gRenderer);
 

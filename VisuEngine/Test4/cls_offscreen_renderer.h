@@ -20,29 +20,30 @@ public:
 	cls_offscreen_renderer(cls_renderer* p_renderer, GLsizei p_width, GLsizei p_height);
 	~cls_offscreen_renderer(void);
 
+	void Destruct(void);
 	void Construct(void);
 
 	void Resize(GLsizei p_width, GLsizei p_height);
 
-	void RenderModelToBuffer(cls_scene* p_scene);
+	void RenderSceneToBuffer(cls_scene* p_scene);
 
 	void WritePNGfile(const char* p_filename);
 
 private:
-	// Corresponding renderer
-	cls_renderer* mRenderer;
-
 	// Size of the output picture
 	GLsizei mPicWidth;
 	GLsizei mPicHeight;
-
-	// Container for pixels received from GPU
-	GLubyte* mPixels;
 
 	// Renderbuffer objects for color and depth and framebuffer object
 	GLuint mRBOcolor;
 	GLuint mRBOdepth;
 	GLuint mFBO;
+
+	// Container for pixels received from GPU
+	GLubyte* mPixels;
+
+	// Corresponding renderer
+	cls_renderer* mRenderer;
 
 };
 

@@ -2,6 +2,7 @@
 
 // STD
 #include <cstdio>
+#include <cstring>
 
 // Project
 #include "cls_stl_file.h"
@@ -18,7 +19,65 @@ cls_stl_interface::~cls_stl_interface()
 {
 }
 
+/* static */
 cls_stl_file* cls_stl_interface::Import(const char* p_filename)
+{
+    FILE* v_inFile = fopen(p_filename, "r");
+
+    if (!v_inFile) {
+        fprintf(stderr, "[ERROR] Failed to open file '%s'\n", p_filename);
+        return nullptr;
+    } else {
+
+        //TODO invent some other better way to identify binary STL files from text STL files.
+
+        // Read first 100 bytes of the file
+        char v_buffer[100];
+        fgets(v_buffer, 100, v_inFile);
+        //TODO check fgets result?
+        fclose(v_inFile);
+
+        // Find first symbol in the read buffer (not whitespace)
+        unsigned int cursor=0;
+        while (v_buffer[cursor] == ' ' || v_buffer[cursor] == '\t') {
+            cursor++;
+        }
+        // Build the first 5-symbols word of the file (after whitespaces)
+        char v_firstWord[6];
+        for (unsigned int i=0; i<5; i++) { v_firstWord[i] = v_buffer[cursor+i]; }
+        v_firstWord[5] = '\0';
+        //fprintf(stderr, "|%s|\n", v_firstWord);
+
+        // If it is 'solid' - a text STL file, otherwise - binary!
+        if (strcmp(v_firstWord, "solid") == 0) {
+            fprintf(stderr, "[INFO] Input file '%s' identified as a text STL file.\n", p_filename);
+            return cls_stl_interface::ImportText(p_filename);
+        } else {
+            fprintf(stderr, "[INFO] Input file '%s' identified as a binary STL file.\n", p_filename);
+            return cls_stl_interface::ImportBinary(p_filename);
+        }
+    }
+}
+
+/**
+
+    solid name
+
+    facet normal ni nj nk
+        outer loop
+            vertex v1x v1y v1z
+            vertex v2x v2y v2z
+            vertex v3x v3y v3z
+        endloop
+    endfacet
+
+    ...
+
+    endsolid name
+
+*/
+/* static */
+cls_stl_file* cls_stl_interface::ImportText(const char* p_filename)
 {
     FILE* v_inFile = fopen(p_filename, "r");
 
@@ -34,25 +93,21 @@ cls_stl_file* cls_stl_interface::Import(const char* p_filename)
     }
 }
 
-cls_stl_file* cls_stl_interface::ImportText(const char* /*p_filename*/)
-{
-
-}
-
 /**
 
-UINT8[80] – Header
-UINT32 – Number of triangles
+    UINT8[80] – Header
+    UINT32 – Number of triangles
 
-foreach triangle
-REAL32[3] – Normal vector
-REAL32[3] – Vertex 1
-REAL32[3] – Vertex 2
-REAL32[3] – Vertex 3
-UINT16 – Attribute byte count
-end
+    foreach triangle
+    REAL32[3] – Normal vector
+    REAL32[3] – Vertex 1
+    REAL32[3] – Vertex 2
+    REAL32[3] – Vertex 3
+    UINT16 – Attribute byte count
+    end
 
-**/
+*/
+/* static */
 cls_stl_file* cls_stl_interface::ImportBinary(const char* p_filename)
 {
     FILE* v_inFile = fopen(p_filename, "rb");
