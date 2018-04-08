@@ -33,6 +33,7 @@ float mStartFrAngle;        // Zooming (perspective)
 float mStartPBS;            // Zooming (parallel), PBS - parallel box size
 
 bool mMouseTracked = false;
+bool mMouseMoved = false;
 
 bool mFullScreenMode = false;
 int mWindowWidth  = 800;
@@ -59,10 +60,16 @@ static void KeyFunc(unsigned char key, int /*x*/, int /*y*/)
 		//TODO testing
 		gRenderer->mOffscreenRenderer->RenderSceneToBuffer(gScene);
 		gRenderer->mOffscreenRenderer->WritePNGfile("test.png");
+		break;
 	case 'r':
 		gCamera->Reset();
 		gCamera->SendCamToGPU(gRenderer);
 		glutPostRedisplay();
+		break;
+	case 'w':
+		gScene->SendToGPU(gRenderer, true);
+		glutPostRedisplay();
+		break;
 	default:
 		break;
 	}
@@ -144,8 +151,35 @@ static void MouseFunc(int button, int state, int x, int y)
 		}
 
 		mMouseTracked = true;
+		mMouseMoved = false;
 	} else if (state == GLUT_UP) {
 		LOG(DEBUG3) << "main::MouseFunc(): release at x=" << x << ", y=" << y << cls_logger::endl;
+
+		if (!mMouseMoved) {
+			LOG(DEBUG3) << "Click!" << cls_logger::endl;
+
+			// 4 is max. Exact number is store in the NUMOFCOMPONENTS macro in the cls_offscreen_renderer class
+			GLubyte v_pickedColor[4];
+			gRenderer->mOffscreenRenderer->RenderSceneToBuffer(gScene);
+			gRenderer->mOffscreenRenderer->PickColor(x, y, v_pickedColor);
+			unsigned int v_triangleID = PixelColorToInt(v_pickedColor);
+
+			//fprintf(stderr, "%02x %02x %02x %02x\n", v_pickedColor[0], v_pickedColor[1], v_pickedColor[2], v_pickedColor[3]);
+
+			LOG(DEBUG2) << "Color: " << (unsigned int)(v_pickedColor[0]) << ", "
+			                         << (unsigned int)(v_pickedColor[1]) << ", "
+			                         << (unsigned int)(v_pickedColor[2]) << ", "
+			                         << (unsigned int)(v_pickedColor[3]) << ". "
+			                         << "Triangle ID = " << v_triangleID
+			                         << cls_logger::endl;
+
+			//if ((unsigned int)(v_pickedColor[3]) != 255)
+			{
+				gScene->HighlightTriangle(v_triangleID, gRenderer->mVAO, gRenderer->mVBO);
+				glutPostRedisplay();
+			}
+
+		}
 
 		mCurrentAction = ACT_NO_ACT;
 
@@ -157,22 +191,25 @@ static void MouseMoveFunc(int x, int y)
 {
 	if (mMouseTracked) {
 
+		mMouseMoved = true;
+
 		//// Current values
 
 		//// local coordinates (from screen center)
 		float v_xa = (float)(x - glutGet(GLUT_WINDOW_WIDTH)/2);
 		float v_ya = -(float)(y - glutGet(GLUT_WINDOW_HEIGHT)/2);
 
-		LOG(DEBUG3) << "main::MouseMoveFunc(): move at "
-		            << "x=" << x << ", y=" << y << ", "
-		            << "xa=" << v_xa << ", ya=" << v_ya
-		            << cls_logger::endl;
-
 		float v_sphR = GetSphR();
 		float v_za = sqrt(v_sphR*v_sphR - v_xa*v_xa - v_ya*v_ya);
 		float v_za2;
 		if (std::isnan(v_za)) v_za2 = 0.0f; //TODO check
 		else v_za2 = v_za;
+
+		LOG(DEBUG3) << "main::MouseMoveFunc(): move at "
+		            << "x=" << x << ", y=" << y << ", "
+		            << "xa=" << v_xa << ", ya=" << v_ya
+		            << "za=" << v_za << ", v_za2=" << v_za2
+		            << cls_logger::endl;
 
 		glm::vec3 v_localDir;
 
@@ -231,7 +268,7 @@ static void IdleFunc(void)
 
 int main(int argc, char** argv)
 {
-	cls_logger::SetLevel(DEBUG3);
+	cls_logger::SetLevel(DEBUG2);
 
 	glutInit(&argc, argv);
 
@@ -272,14 +309,17 @@ int main(int argc, char** argv)
 		gScene->AddModel(v_modelDatum);
 	}
 */
-
+/*
 	cls_model* v_model2 = new cls_model();
 	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/humanoid.stl");
 	if (v_stlfile2 != nullptr) {
 		v_stlfile2->BuildModel(v_model2);
-		v_model2->Shift(-5., 0., -5.);
+		v_model2->Shift(0., 0., -10.);
+		//v_model2->RotateZ(90.);
+		//v_model2->RotateY(90.);
 		gScene->AddModel(v_model2);
 	}
+
 	cls_model* v_model5 = new cls_model();
 	cls_stl_file* v_stlfile5 = cls_stl_interface::Import("input/humanoid.stl");
 	if (v_stlfile5 != nullptr) {
@@ -287,7 +327,7 @@ int main(int argc, char** argv)
 		v_model5->Shift(5., 0., -5.);
 		gScene->AddModel(v_model5);
 	}
-
+*/
 /*
 	cls_model* v_model3 = new cls_model();
 	cls_circle* v_circle = new cls_circle();
@@ -297,21 +337,31 @@ int main(int argc, char** argv)
 */
 /*
 	cls_model* v_model4 = new cls_model();
-	cls_stl_file* v_stlfile4 = cls_stl_interface::ImportBinary("input/Spiral_Vase1.STL");
+	cls_stl_file* v_stlfile4 = cls_stl_interface::Import("input/liver.stl");
 	if (v_stlfile4 != nullptr) {
 		v_stlfile4->BuildModel(v_model4);
-		v_model4->Shift(0., 0., 0.);
+		//v_model4->Shift(0., 0., 0.);
 		//v_model4->Shift(150., 180., -150.); // shoe
-		//v_model4->Shift(-200., -200., -100.); // liver
+		v_model4->Shift(-200., -200., -100.); // liver
 		gScene->AddModel(v_model4);
 	}
 */
 
+	cls_model* v_model6 = new cls_model();
+	cls_stl_file* v_stlfile6 = cls_stl_interface::Import("input/Lobster.stl");
+	if (v_stlfile6 != nullptr) {
+		v_stlfile6->BuildModel(v_model6);
+		//v_model6->Shift(200., 200., 0.);
+		gScene->AddModel(v_model6);
+	}
+
 	gScene->SendToGPU(gRenderer);
 
-	v_model2->HighlightTriangle(5, gRenderer->mVAO, gRenderer->mVBO);
+	//v_model2->HighlightTriangle(5, gRenderer->mVAO, gRenderer->mVBO);
 
 	gCamera->SendCamToGPU(gRenderer);
+
+	//gScene->Dump();
 
 	glutMainLoop();
 

@@ -1,7 +1,7 @@
 #include "cls_renderer.h"
 
 // STD
-#include <algorithm>
+#include <algorithm> // for for_each
 #include <cstdio>
 
 // Project
@@ -48,6 +48,9 @@ void cls_renderer::Init(void)
 
 	mOffscreenRenderer = new cls_offscreen_renderer(this);
 
+	mProgs.push_back(mOffscreenRenderer->mPickDrawProgram);
+	mUnifs.push_back(mOffscreenRenderer->mMVPpickUniform);
+
 	/*this->InitDatumAll();
 	mProgs.push_back(mDatumDrawProgram);  mUnifs.push_back(mMVPdatumUniform);*/
 }
@@ -59,11 +62,11 @@ void cls_renderer::InitProgs(void)
 	// ------------------------------ Shading draw program ------------------------------
 	mShadingDrawProgram = glCreateProgram();
 	std::vector<GLuint> v_shaderList;
-	v_shaderList.push_back(CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_shading.vp"));
-	v_shaderList.push_back(CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_shading.gp"));
-	v_shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_shading.fp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_shading.vp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_shading.gp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_shading.fp"));
 
-	this->CreateProg(mShadingDrawProgram, v_shaderList);
+	cls_renderer::CreateProg(mShadingDrawProgram, v_shaderList);
 
 	// Cleanup
 	std::for_each(v_shaderList.begin(), v_shaderList.end(), glDeleteShader);
@@ -77,11 +80,11 @@ void cls_renderer::InitProgs(void)
 	// ------------------------------ Wireframe draw program ------------------------------
 	mWireDrawProgram = glCreateProgram();
 	std::vector<GLuint> shaderList2;
-	shaderList2.push_back(CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_wire.vp"));
-	shaderList2.push_back(CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_wire.gp"));
-	shaderList2.push_back(CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_wire.fp"));
+	shaderList2.push_back(cls_renderer::CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_wire.vp"));
+	shaderList2.push_back(cls_renderer::CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_wire.gp"));
+	shaderList2.push_back(cls_renderer::CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_wire.fp"));
 
-	this->CreateProg(mWireDrawProgram, shaderList2);
+	cls_renderer::CreateProg(mWireDrawProgram, shaderList2);
 
 	// Cleanup
 	std::for_each(shaderList2.begin(), shaderList2.end(), glDeleteShader);
@@ -92,11 +95,11 @@ void cls_renderer::InitProgs(void)
 	// ------------------------------ Points draw program ------------------------------
 	mPointsDrawProgram = glCreateProgram();
 	std::vector<GLuint> v_shaderList3;
-	v_shaderList3.push_back(CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_points.vp"));
-	v_shaderList3.push_back(CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_points.gp"));
-	v_shaderList3.push_back(CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_points.fp"));
+	v_shaderList3.push_back(cls_renderer::CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_points.vp"));
+	v_shaderList3.push_back(cls_renderer::CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_points.gp"));
+	v_shaderList3.push_back(cls_renderer::CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_points.fp"));
 
-	this->CreateProg(mPointsDrawProgram, v_shaderList3);
+	cls_renderer::CreateProg(mPointsDrawProgram, v_shaderList3);
 
 	// Cleanup
 	std::for_each(v_shaderList3.begin(), v_shaderList3.end(), glDeleteShader);
@@ -149,11 +152,11 @@ void cls_renderer::InitDatumAll(void)
 	// ------------------------------ Shading draw program ------------------------------
 /*	mDatumDrawProgram = glCreateProgram();
 	std::vector<GLuint> v_shaderList;
-	v_shaderList.push_back(CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_datum.vp"));
-	v_shaderList.push_back(CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_datum.gp"));
-	v_shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_datum.fp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_datum.vp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_datum.gp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_datum.fp"));
 
-	this->CreateProg(mDatumDrawProgram, v_shaderList);
+	cls_renderer::CreateProg(mDatumDrawProgram, v_shaderList);
 
 	// Cleanup
 	std::for_each(v_shaderList.begin(), v_shaderList.end(), glDeleteShader);

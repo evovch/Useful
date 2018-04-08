@@ -28,8 +28,8 @@ public:
 	void InitGLparameters(void);
 	void InitDatumAll(void);
 
-	GLuint CreateShader(GLenum p_eShaderType, const std::string p_strShaderFile);
-	void CreateProg(GLuint p_program, const std::vector<GLuint>& p_shaderList);
+	static GLuint CreateShader(GLenum p_eShaderType, const std::string p_strShaderFile);
+	static void CreateProg(GLuint p_program, const std::vector<GLuint>& p_shaderList);
 
 public:
 	// Program object for shading-style rendering

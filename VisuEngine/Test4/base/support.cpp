@@ -23,8 +23,6 @@ float UnitToScaleFactor(const char* p_unit)
 	return 1.;
 }
 
-// Transform the value of some field into the color
-// Blue is minimum, green is 1/2 and red is maximum
 void ValueToColor(float p_inVal, float p_inValMin, float p_inValMax, stc_VandC* o_destination)
 {
 	float v_x = (p_inVal - p_inValMin) / (p_inValMax - p_inValMin);
@@ -42,8 +40,6 @@ void ValueToColor(float p_inVal, float p_inValMin, float p_inValMax, stc_VandC* 
 	}
 }
 
-// Transform unique number of the triangle into unique color
-// Color is coded by 3 floats, each [0.0; 1.0]
 void IntToColor(unsigned int p_inVal, stc_VandC* o_destination)
 {
 	unsigned int v_R, v_G, v_B;
@@ -57,8 +53,6 @@ void IntToColor(unsigned int p_inVal, stc_VandC* o_destination)
 	o_destination->c[2] = (float)v_B / 255.0f;
 }
 
-// Transform unique color into unique number of the triangle
-// Color is coded by 3 floats, each [0.0; 1.0]
 unsigned int ColorToInt(stc_VandC* p_source)
 {
 	unsigned int v_R, v_G, v_B;
@@ -70,8 +64,6 @@ unsigned int ColorToInt(stc_VandC* p_source)
 	return v_R + v_G*256 + v_B*256*256;
 }
 
-// Transform unique color into unique number of the triangle
-// Color is coded by 3 bytes, each [0; 255]
 unsigned int PixelColorToInt(unsigned char* p_source)
 {
 	return p_source[0] + p_source[1]*256 + p_source[2]*256*256;
@@ -84,6 +76,7 @@ unsigned int FourCharsToUintLE(const unsigned char* p_mem)
 	unsigned int v_res = (p_mem[3] << 24) | (p_mem[2] << 16) | (p_mem[1] << 8) | (p_mem[0]);
 	return v_res;
 }
+
 /*
 // Big-endian
 unsigned int FourCharsToUintBE(const unsigned char* p_mem)

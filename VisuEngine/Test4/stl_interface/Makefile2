@@ -1,0 +1,60 @@
+# And at this moment he realized that writing Makefiles is painful.
+
+TARGET=prog
+
+COMPILER=g++
+FLAGS=-std=c++11 -Wall -Wextra -Wpedantic -fPIC
+
+.PHONY: all clean
+
+all: libbase.so libstlinter.so $(TARGET)
+
+# $(TARGET) =======================================================================================
+
+$(TARGET): main.o libstlinter.so libbase.so
+	$(COMPILER) $(FLAGS) $^ -o $(TARGET) -L. -lstlinter -lbase
+
+main.o: main.cpp
+	$(COMPILER) $(FLAGS) -c $^
+
+# libbase =========================================================================================
+
+libbase.so: support.o cls_logger.o
+	$(COMPILER) $(FLAGS) -shared $^ -o $@
+
+support.o: ../base/support.cpp
+	$(COMPILER) $(FLAGS) -c $^
+
+cls_logger.o: ../base/cls_logger.cpp
+	$(COMPILER) $(FLAGS) -c $^
+
+# libstlinter =====================================================================================
+
+libstlinter.so: cls_stl_file.o cls_stl_interface.o stl_parsing.flex.o stl_parsing.tab.o
+	$(COMPILER) $(FLAGS) -shared $^ -o $@
+
+cls_stl_file.o: cls_stl_file.cpp
+	$(COMPILER) $(FLAGS) -c $^ -I../
+
+cls_stl_interface.o: cls_stl_interface.cpp
+	$(COMPILER) $(FLAGS) -c $^ -I../
+
+stl_parsing.flex.o: stl_parsing.flex.cpp
+	$(COMPILER) $(FLAGS) -c $^
+
+stl_parsing.tab.o: stl_parsing.tab.cpp
+	$(COMPILER) $(FLAGS) -c $^
+
+stl_parsing.flex.cpp: stl_parsing.l stl_parsing.tab.cpp
+	flex --header-file=stl_parsing.flex.h -o $@ stl_parsing.l
+
+stl_parsing.tab.cpp: stl_parsing.y
+	bison --defines=stl_parsing.tab.h -o $@ stl_parsing.y
+
+# clean ===========================================================================================
+
+clean:
+	rm -fv $(TARGET) libstlinter.so libbase.so
+	rm -fv *.o
+	rm -fv stl_parsing.tab.h stl_parsing.tab.cpp
+	rm -fv stl_parsing.flex.h stl_parsing.flex.cpp

@@ -27,7 +27,22 @@ public:
 
 	void RenderSceneToBuffer(cls_scene* p_scene);
 
+	/**
+	 * Output o_color has NUMOFCOMPONENTS components
+	 */
+	void PickColor(GLsizei p_x, GLsizei p_y, GLubyte* o_color) const;
+
 	void WritePNGfile(const char* p_filename);
+
+public:
+	// Program object for offscreen rendering for triangle picking
+	GLuint mPickDrawProgram;
+
+	// Uniform object for offscreen rendering for triangle picking
+	GLuint mMVPpickUniform;
+
+	// Corresponding renderer
+	cls_renderer* mRenderer;
 
 private:
 	// Size of the output picture
@@ -42,8 +57,6 @@ private:
 	// Container for pixels received from GPU
 	GLubyte* mPixels;
 
-	// Corresponding renderer
-	cls_renderer* mRenderer;
 
 };
 

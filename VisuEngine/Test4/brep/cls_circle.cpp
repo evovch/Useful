@@ -16,13 +16,11 @@ cls_circle::cls_circle()
 	// Normal and RefDir should be normalized
 	mNormal = glm::normalize(mNormal);
 	mRefDir = glm::normalize(mRefDir);
-
+/*
 	double az = glm::dot(mRefDir, mNormal); // az = a*z
-
 	glm::dvec3 azz = az * mNormal; // azz = (a*z) z
 	glm::dvec3 X = mRefDir - azz; // Exact X axis. // X = a - (a*z) x z // 'x' meaning cross product
-
-
+*/
 
 	mR = 20.;
 }

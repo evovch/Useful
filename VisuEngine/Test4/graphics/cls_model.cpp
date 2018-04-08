@@ -19,6 +19,7 @@ cls_model::cls_model() :
 	mConstructed(false),
 	//mMatrix
 	mVandCdataUniqueColors(nullptr),
+	mUniqueColorPrepared(false),
 	mScene(nullptr),
 	mIndexInScene(0)
 {
@@ -51,6 +52,7 @@ void cls_model::Reset(void)
 	mConstructed = false;
 	mMatrix = glm::mat4();
 	if (mVandCdataUniqueColors != nullptr) { delete [] mVandCdataUniqueColors; mVandCdataUniqueColors = nullptr; }
+	mUniqueColorPrepared = false;
 }
 
 void cls_model::GenerateBox(void)
@@ -307,16 +309,34 @@ void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array
 	LOG(DEBUG) << "after: mNumOfTriangles=" << mNumOfTriangles << cls_logger::endl;
 }
 
-void cls_model::PrepareUniqueColors(void)
+//TODO check
+// p_vertOffset not in bytes, as it is not about bytes at all
+void cls_model::PrepareUniqueColors(unsigned int p_vertOffset) const
 {
+	/*LOG(DEBUG) << "cls_model::PrepareUniqueColors: p_vertOffset=" << p_vertOffset << cls_logger::endl;*/
+
 	if (mVandCdataUniqueColors) delete [] mVandCdataUniqueColors;
 
 	mVandCdataUniqueColors = new stc_VandC[mNumOfVertices];
-	std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, mVandCdataUniqueColors);
+	std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, mVandCdataUniqueColors); // not in bytes?
 
 	for (unsigned int i=0; i<mNumOfTriangles; i++) {
-		IntToColor(i, &mVandCdataUniqueColors[mTriangleIndices[i*3+0]]); //TODO check
+
+		unsigned int v_vertexIndex = mTriangleIndices[i*3+0];
+		unsigned int v_fullIndex = p_vertOffset+i;
+
+		LOG(DEBUG3) << "PrepareUniqueColors: "
+		            << "p_vertOffset=" << p_vertOffset << "\t"
+		            << "i=" << i << "\t" << "v_vertexIndex=" << v_vertexIndex << "\t"
+		            << "full index=" << v_fullIndex
+		            << cls_logger::endl;
+
+		IntToColor(v_fullIndex, &mVandCdataUniqueColors[v_vertexIndex+0]);
+		IntToColor(v_fullIndex, &mVandCdataUniqueColors[v_vertexIndex+1]); // This is redundant, only the first vertex is enough
+		IntToColor(v_fullIndex, &mVandCdataUniqueColors[v_vertexIndex+2]); // This is redundant, only the first vertex is enough
 	}
+
+	mUniqueColorPrepared = true;
 }
 
 void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_VBO) const
@@ -360,17 +380,17 @@ void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 	v_newVertexAndColorData[2].c[1] = 1.0;
 	v_newVertexAndColorData[2].c[2] = 0.0;*/
 
-	unsigned int v_offset = v_vertexIndex0;
+	unsigned int v_localOffset = v_vertexIndex0;
 	unsigned int v_size = 1*sizeof(stc_VandC);
 	unsigned int v_offsetInScene = mScene->GetOffset(mIndexInScene);
 
 	LOG(DEBUG2) << "highlight triangle_index=" << p_index
 	           << ", vertex_index0=" << v_vertexIndex0
-	           << ", offset=" << v_offset
+	           << ", local offset=" << v_localOffset
 	           << ", v_offsetInScene=" << v_offsetInScene
 	           << ", v_size=" << v_size << cls_logger::endl;
 
-	unsigned int v_fullOffsetInBytes = (v_offsetInScene + v_offset)*sizeof(stc_VandC);
+	unsigned int v_fullOffsetInBytes = (v_offsetInScene + v_localOffset)*sizeof(stc_VandC);
 
 	glBindVertexArray(p_VAO);
 	{
@@ -386,11 +406,14 @@ void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 void cls_model::Dump(void) const
 {
 	if (!mConstructed) {
-		LOG(ERROR) << "cls_model::Dump(): model is not yet constructed." << cls_logger::endl;
+		LOG(ERROR) << "cls_model::Dump(): model is not yet constructed (mConstructed = false)" << cls_logger::endl;
 		return;
 	}
 
 	LOG(INFO) << "----------------------------------------------------------------------" << cls_logger::endl;
+
+	LOG(INFO) << "mConstructed=true" << cls_logger::endl;
+	LOG(INFO) << "mIndexInScene=" << mIndexInScene << cls_logger::endl;
 
 	LOG(INFO) << "mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
 	LOG(INFO) << "mNumOfTriangles=" << mNumOfTriangles << cls_logger::endl;
@@ -401,7 +424,8 @@ void cls_model::Dump(void) const
 
 	for (unsigned int i=0; i<mNumOfVertices; i++) {
 
-		LOG(INFO) << "x=" << mVertexAndColorData[i].v[0] << "\t"
+		LOG(INFO) << "i=" << i << ":\t"
+		          << "x=" << mVertexAndColorData[i].v[0] << "\t"
 		          << "y=" << mVertexAndColorData[i].v[1] << "\t"
 		          << "z=" << mVertexAndColorData[i].v[2] << "\t"
 		          << "r=" << mVertexAndColorData[i].c[0] << "\t"
@@ -413,39 +437,69 @@ void cls_model::Dump(void) const
 	LOG(INFO) << "Triangles ============================================================" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfTriangles; i++) {
-		LOG(INFO) << "(" << mTriangleIndices[i*3+0] << "," << mTriangleIndices[i*3+1] << "," << mTriangleIndices[i*3+2] << ") ";
-		if ((i+1)%4 == 0) { LOG(INFO) << cls_logger::endl; }
+		LOG(INFO) << "(" << mTriangleIndices[i*3+0] << "," << mTriangleIndices[i*3+1] << "," << mTriangleIndices[i*3+2] << ") " << cls_logger::endl;
+		//if ((i+1)%4 == 0) { LOG(INFO) << cls_logger::endl; }
 	}
-	LOG(INFO) << cls_logger::endl;
+	//LOG(INFO) << cls_logger::endl;
 
 	LOG(INFO) << "Wires ================================================================" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfWires; i++) {
-		LOG(INFO) << "(" << mWireIndices[i*2+0] << "," << mWireIndices[i*2+1] << ") ";
-		if ((i+1)%8 == 0) { LOG(INFO) << cls_logger::endl; }
+		LOG(INFO) << "(" << mWireIndices[i*2+0] << "," << mWireIndices[i*2+1] << ") " << cls_logger::endl;
+		//if ((i+1)%8 == 0) { LOG(INFO) << cls_logger::endl; }
 	}
-	LOG(INFO) << cls_logger::endl;
+	//LOG(INFO) << cls_logger::endl;
 
 	LOG(INFO) << "Points ===============================================================" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfPoints; i++) {
-		LOG(INFO) << mPointsIndices[i] << ", ";
-		if ((i+1)%16 == 0) { LOG(INFO) << cls_logger::endl; }
+		LOG(INFO) << mPointsIndices[i] << ", " << cls_logger::endl;
+		//if ((i+1)%16 == 0) { LOG(INFO) << cls_logger::endl; }
 	}
-	LOG(INFO) << cls_logger::endl;
+	//LOG(INFO) << cls_logger::endl;
+
+	LOG(INFO) << "Unique vertices and colors ===========================================" << cls_logger::endl;
+
+	if (mUniqueColorPrepared) {
+		LOG(INFO) << "mUniqueColorPrepared = true" << cls_logger::endl;
+
+		for (unsigned int i=0; i<mNumOfVertices; i++) {
+			unsigned int v_reconstrIndex = ColorToInt(&mVandCdataUniqueColors[i]);
+			LOG(INFO) << "i=" << i << ":\t"
+		              << "x=" << mVandCdataUniqueColors[i].v[0] << "\t"
+			          << "y=" << mVandCdataUniqueColors[i].v[1] << "\t"
+			          << "z=" << mVandCdataUniqueColors[i].v[2] << "\t"
+			          << "r=" << mVandCdataUniqueColors[i].c[0] << "\t"
+			          << "g=" << mVandCdataUniqueColors[i].c[1] << "\t"
+			          << "b=" << mVandCdataUniqueColors[i].c[2] << "\t"
+			          << "tr=" << v_reconstrIndex
+			          << cls_logger::endl;
+		}
+	} else {
+		LOG(INFO) << "Unique colors are not prepared (mUniqueColorPrepared = false)" << cls_logger::endl;
+	}
 
 	//TODO dump mMatrix?
-	//TODO dump mConstructed?
-	//TODO dump mVandCdataUniqueColors?
 
 	LOG(INFO) << "----------------------------------------------------------------------" << cls_logger::endl;
 }
 
-void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overrideNvertices) const
+void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overrideNvertices, bool p_uniqueColor) const
 {
 	if (!mConstructed) {
 		LOG(ERROR) << "cls_model::SendToGPUvAndC(): model is not yet constructed." << cls_logger::endl;
 		return;
+	}
+
+	LOG(DEBUG) << "cls_model::SendToGPUvAndC p_overrideNvertices=" << p_overrideNvertices
+	           << " mIndexInScene=" << mIndexInScene << cls_logger::endl;
+
+	stc_VandC* v_VandCdataPointer;
+	if (p_uniqueColor) {
+		if (!mUniqueColorPrepared) { this->PrepareUniqueColors(0); }
+		v_VandCdataPointer = mVandCdataUniqueColors;
+	} else {
+		v_VandCdataPointer = mVertexAndColorData;
 	}
 
 	stc_VandC* v_newVertexAndColorData;
@@ -455,18 +509,19 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 	//TODO Otherwise keep the 'new' pointer pointing to the 'old' one
 	{
 		v_newVertexAndColorData = new stc_VandC[mNumOfVertices];
-		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, v_newVertexAndColorData);
+		std::copy(v_VandCdataPointer, v_VandCdataPointer + mNumOfVertices, v_newVertexAndColorData);
 
 		LOG(DEBUG) << "SendToGPUvAndC: (activate DEBUG4 level to see the data)" << cls_logger::endl;
 		for (unsigned int i=0; i<mNumOfVertices; i++) {
 
-			glm::vec4 curVertex(mVertexAndColorData[i].v[0], mVertexAndColorData[i].v[1], mVertexAndColorData[i].v[2], 1.);
+			glm::vec4 curVertex(v_VandCdataPointer[i].v[0], v_VandCdataPointer[i].v[1], v_VandCdataPointer[i].v[2], 1.);
 			glm::vec4 transformedVertex = mMatrix * curVertex;
 			v_newVertexAndColorData[i].v[0] = transformedVertex[0];
 			v_newVertexAndColorData[i].v[1] = transformedVertex[1];
 			v_newVertexAndColorData[i].v[2] = transformedVertex[2];
 
-			LOG(DEBUG4) << "x=" << v_newVertexAndColorData[i].v[0] << "\t"
+			LOG(DEBUG4) << "i=" << i << ":\t"
+		                << "x=" << v_newVertexAndColorData[i].v[0] << "\t"
 			            << "y=" << v_newVertexAndColorData[i].v[1] << "\t"
 			            << "z=" << v_newVertexAndColorData[i].v[2] << "\t"
 			            << "r=" << v_newVertexAndColorData[i].c[0] << "\t"
@@ -514,7 +569,10 @@ void cls_model::SendToGPUtriangles(GLuint p_IBO, unsigned int p_overrideNtriangl
 	if (p_overrideNtriangles == 0) {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mNumOfTriangles*3*sizeof(unsigned int), mTriangleIndices, GL_STATIC_DRAW);
 	} else {
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_overrideNtriangles*3*sizeof(unsigned int), mTriangleIndices, GL_STATIC_DRAW);
+		// Allocate memory - give full size
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_overrideNtriangles*3*sizeof(unsigned int), NULL, GL_STATIC_DRAW);
+		// Send the data - give only the size of the data sent (offset = 0)
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, mNumOfTriangles*3*sizeof(unsigned int), mTriangleIndices);
 	}
 }
 
@@ -534,7 +592,10 @@ void cls_model::SendToGPUwires(GLuint p_IBO, unsigned int p_overrideNwires) cons
 	if (p_overrideNwires == 0) {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mNumOfWires*2*sizeof(unsigned int), mWireIndices, GL_STATIC_DRAW);
 	} else {
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_overrideNwires*2*sizeof(unsigned int), mWireIndices, GL_STATIC_DRAW);
+		// Allocate memory - give full size
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_overrideNwires*2*sizeof(unsigned int), NULL, GL_STATIC_DRAW);
+		// Send the data - give only the size of the data sent (offset = 0)
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, mNumOfWires*2*sizeof(unsigned int), mWireIndices);
 	}
 }
 
@@ -554,7 +615,10 @@ void cls_model::SendToGPUpoints(GLuint p_IBO, unsigned int p_overrideNpoints) co
 	if (p_overrideNpoints == 0) {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mNumOfPoints*sizeof(unsigned int), mPointsIndices, GL_STATIC_DRAW);
 	} else {
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_overrideNpoints*sizeof(unsigned int), mPointsIndices, GL_STATIC_DRAW);
+		// Allocate memory - give full size
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_overrideNpoints*sizeof(unsigned int), NULL, GL_STATIC_DRAW);
+		// Send the data - give only the size of the data sent (offset = 0)
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, mNumOfPoints*sizeof(unsigned int), mPointsIndices);
 	}
 }
 
@@ -571,11 +635,26 @@ void cls_model::SendToGPUFull(GLuint p_VAO, GLuint p_VBO, GLuint p_IBOtr, GLuint
 	this->SendToGPUpoints(p_IBOpoints);
 }
 
-void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) const
+// Offset in bytes
+void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset, bool p_uniqueColor) const
 {
 	if (!mConstructed) {
 		LOG(ERROR) << "cls_model::AppendToGPUvAndC(): model is not yet constructed." << cls_logger::endl;
 		return;
+	}
+
+	LOG(DEBUG) << "cls_model::AppendToGPUvAndC p_offset=" << p_offset
+	           << " mIndexInScene=" << mIndexInScene << cls_logger::endl;
+
+	stc_VandC* v_VandCdataPointer;
+	if (p_uniqueColor) {
+		if (!mUniqueColorPrepared) {
+			unsigned int v_off = mScene->GetOffset(mIndexInScene);
+			this->PrepareUniqueColors(v_off);
+		}
+		v_VandCdataPointer = mVandCdataUniqueColors;
+	} else {
+		v_VandCdataPointer = mVertexAndColorData;
 	}
 
 	stc_VandC* v_newVertexAndColorData;
@@ -585,19 +664,20 @@ void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) 
 	//TODO Otherwise keep the 'new' pointer pointing to the 'old' one
 	{
 		v_newVertexAndColorData = new stc_VandC[mNumOfVertices];
-		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, v_newVertexAndColorData);
+		std::copy(v_VandCdataPointer, v_VandCdataPointer + mNumOfVertices, v_newVertexAndColorData);
 
-		LOG(DEBUG) << "AppendToGPUvAndC: p_offset=" << p_offset
+		LOG(DEBUG) << "AppendToGPUvAndC: p_offset=" << p_offset << " bytes"
 		           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
 		for (unsigned int i=0; i<mNumOfVertices; i++) {
 
-			glm::vec4 curVertex(mVertexAndColorData[i].v[0], mVertexAndColorData[i].v[1], mVertexAndColorData[i].v[2], 1.);
+			glm::vec4 curVertex(v_VandCdataPointer[i].v[0], v_VandCdataPointer[i].v[1], v_VandCdataPointer[i].v[2], 1.);
 			glm::vec4 transformedVertex = mMatrix * curVertex;
 			v_newVertexAndColorData[i].v[0] = transformedVertex[0];
 			v_newVertexAndColorData[i].v[1] = transformedVertex[1];
 			v_newVertexAndColorData[i].v[2] = transformedVertex[2];
 
-			LOG(DEBUG4) << "x=" << v_newVertexAndColorData[i].v[0] << "\t"
+			LOG(DEBUG4) << "i=" << i << ":\t"
+		                << "x=" << v_newVertexAndColorData[i].v[0] << "\t"
 			            << "y=" << v_newVertexAndColorData[i].v[1] << "\t"
 			            << "z=" << v_newVertexAndColorData[i].v[2] << "\t"
 			            << "r=" << v_newVertexAndColorData[i].c[0] << "\t"
@@ -622,6 +702,8 @@ void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) 
 	delete [] v_newVertexAndColorData;
 }
 
+// Offset in bytes
+// p_vertOffset not in bytes, as it is not about bytes at all
 void cls_model::AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
 {
 	if (!mConstructed) {
@@ -631,7 +713,7 @@ void cls_model::AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned i
 
 	unsigned int* v_newTriangleIndices = new unsigned int[mNumOfTriangles*3];
 
-	LOG(DEBUG) << "AppendToGPUtriangles: p_offset=" << p_offset << " p_vertOffset=" << p_vertOffset
+	LOG(DEBUG) << "AppendToGPUtriangles: p_offset=" << p_offset << " bytes, p_vertOffset=" << p_vertOffset
 	           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfTriangles*3; i++) {
@@ -645,6 +727,8 @@ void cls_model::AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned i
 	delete [] v_newTriangleIndices;
 }
 
+// Offset in bytes
+// p_vertOffset not in bytes, as it is not about bytes at all
 void cls_model::AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
 {
 	if (!mConstructed) {
@@ -654,7 +738,7 @@ void cls_model::AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p
 
 	unsigned int* v_newWireIndices = new unsigned int[mNumOfWires*2];
 
-	LOG(DEBUG) << "AppendToGPUwires: p_offset=" << p_offset << " p_vertOffset=" << p_vertOffset
+	LOG(DEBUG) << "AppendToGPUwires: p_offset=" << p_offset << " bytes, p_vertOffset=" << p_vertOffset
 	           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
 	for (unsigned int i=0; i<mNumOfWires*2; i++) {
 		v_newWireIndices[i] = mWireIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
@@ -667,6 +751,8 @@ void cls_model::AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p
 	delete [] v_newWireIndices;
 }
 
+// Offset in bytes
+// p_vertOffset not in bytes, as it is not about bytes at all
 void cls_model::AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
 {
 	if (!mConstructed) {
@@ -676,7 +762,7 @@ void cls_model::AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int 
 
 	unsigned int* v_newPointsIndices = new unsigned int[mNumOfPoints];
 
-	LOG(DEBUG) << "AppendToGPUpoints: p_offset=" << p_offset << " p_vertOffset=" << p_vertOffset
+	LOG(DEBUG) << "AppendToGPUpoints: p_offset=" << p_offset << " bytes, p_vertOffset=" << p_vertOffset
 	           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
 	for (unsigned int i=0; i<mNumOfPoints; i++) {
 		v_newPointsIndices[i] = mPointsIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
@@ -743,4 +829,19 @@ void cls_model::Shift(float p_x, float p_y, float p_z)
 		        << "\t\t" << mMatrix[1][0] << " " << mMatrix[1][1] << " " << mMatrix[1][2] << " " << mMatrix[1][3] << cls_logger::endl
 		        << "\t\t" << mMatrix[2][0] << " " << mMatrix[2][1] << " " << mMatrix[2][2] << " " << mMatrix[2][3] << cls_logger::endl
 		        << "\t\t" << mMatrix[3][0] << " " << mMatrix[3][1] << " " << mMatrix[3][2] << " " << mMatrix[3][3] << cls_logger::endl;
+}
+
+void cls_model::RotateX(float p_angle)
+{
+	mMatrix = glm::rotate(mMatrix, p_angle, glm::vec3(1., 0., 0.));
+}
+
+void cls_model::RotateY(float p_angle)
+{
+	mMatrix = glm::rotate(mMatrix, p_angle, glm::vec3(0., 1., 0.));
+}
+
+void cls_model::RotateZ(float p_angle)
+{
+	mMatrix = glm::rotate(mMatrix, p_angle, glm::vec3(0., 0., 1.));
 }

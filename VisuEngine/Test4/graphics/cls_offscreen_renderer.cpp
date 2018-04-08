@@ -1,9 +1,13 @@
 #include "cls_offscreen_renderer.h"
 
+// STD
+#include <algorithm> // for for_each
+
 // PNG
 #include <libpng/png.h>
 
 // Project
+#include "base/cls_logger.h"
 #include "cls_renderer.h"
 #include "cls_scene.h"
 
@@ -11,19 +15,19 @@
 
 // Constructor with default picture size 2000x2000
 cls_offscreen_renderer::cls_offscreen_renderer(cls_renderer* p_renderer) :
+	mRenderer(p_renderer),
 	mPicWidth(2000),
 	mPicHeight(2000),
-	mPixels(nullptr),
-	mRenderer(p_renderer)
+	mPixels(nullptr)
 {
 	this->Construct();
 }
 
 cls_offscreen_renderer::cls_offscreen_renderer(cls_renderer* p_renderer, GLsizei p_width, GLsizei p_height) :
+	mRenderer(p_renderer),
 	mPicWidth(p_width),
 	mPicHeight(p_height),
-	mPixels(nullptr),
-	mRenderer(p_renderer)
+	mPixels(nullptr)
 {
 	this->Construct();
 }
@@ -37,6 +41,8 @@ cls_offscreen_renderer::~cls_offscreen_renderer(void)
 
 void cls_offscreen_renderer::Destruct(void)
 {
+	glDeleteProgram(mPickDrawProgram);
+
 	glDeleteRenderbuffers(1, &mRBOcolor);
 	glDeleteRenderbuffers(1, &mRBOdepth);
 	glDeleteFramebuffers(1, &mFBO);
@@ -48,6 +54,23 @@ void cls_offscreen_renderer::Destruct(void)
 
 void cls_offscreen_renderer::Construct(void)
 {
+	// ---------------- Program for offscreen rendering for triangle picking -----------
+	mPickDrawProgram = glCreateProgram();
+	std::vector<GLuint> v_shaderList;
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_VERTEX_SHADER, "shaders/vertSh_pick.vp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_GEOMETRY_SHADER, "shaders/geomSh_pick.gp"));
+	v_shaderList.push_back(cls_renderer::CreateShader(GL_FRAGMENT_SHADER, "shaders/frSh_pick.fp"));
+
+	cls_renderer::CreateProg(mPickDrawProgram, v_shaderList);
+
+	// Cleanup
+	std::for_each(v_shaderList.begin(), v_shaderList.end(), glDeleteShader);
+
+	// Connect uniform variables
+	mMVPpickUniform = glGetUniformLocation(mPickDrawProgram, "MVP");
+
+	// ---------------------------------------------------------------------------------
+
 	// Generate a renderbuffer for color and set its size
 	glGenRenderbuffers(1, &mRBOcolor);
 	glBindRenderbuffer(GL_RENDERBUFFER, mRBOcolor);
@@ -83,14 +106,33 @@ void cls_offscreen_renderer::RenderSceneToBuffer(cls_scene* p_scene)
 	// Switch to offscreen buffer and set corresponding window size and viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
 
-	p_scene->Draw(mRenderer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//TODO this approach is terribly slow!!!
+	p_scene->SendToGPUvAndC(mRenderer, true);
+	p_scene->Draw(this);
+	p_scene->SendToGPUvAndC(mRenderer, false);
 
 	// Read data from the offscreen buffer
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+	//// https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glReadPixels.xhtml
+	////glReadPixels(x, y, width, height, format, type, *data)
 	glReadPixels(0, 0, mPicWidth, mPicHeight, GL_RGBA, GL_UNSIGNED_BYTE, mPixels);
 
 	// Switch back to screen rendering and restore windows size and viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void cls_offscreen_renderer::PickColor(GLsizei p_x, GLsizei p_y, GLubyte* o_color) const
+{
+	LOG(DEBUG) << "x=" << p_x << ", y=" << p_y
+	           << ", width=" << mPicWidth << ", height=" << mPicHeight << cls_logger::endl;
+
+	o_color[0] = mPixels[(mPicHeight-p_y-1)*mPicWidth*NUMOFCOMPONENTS + p_x*NUMOFCOMPONENTS + 0];
+	o_color[1] = mPixels[(mPicHeight-p_y-1)*mPicWidth*NUMOFCOMPONENTS + p_x*NUMOFCOMPONENTS + 1];
+	o_color[2] = mPixels[(mPicHeight-p_y-1)*mPicWidth*NUMOFCOMPONENTS + p_x*NUMOFCOMPONENTS + 2];
+	o_color[3] = mPixels[(mPicHeight-p_y-1)*mPicWidth*NUMOFCOMPONENTS + p_x*NUMOFCOMPONENTS + 3];
 }
 
 void cls_offscreen_renderer::WritePNGfile(const char* p_filename)
