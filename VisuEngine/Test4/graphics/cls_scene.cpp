@@ -1,9 +1,7 @@
 #include "cls_scene.h"
 
-// STD
-#include <cstdio>
-
 // Project
+#include "base/cls_logger.h"
 #include "cls_model.h"
 #include "cls_renderer.h"
 
@@ -42,11 +40,11 @@ void cls_scene::SendToGPU(cls_renderer* p_rend)
 
 	iter = mModels.begin();
 
-	/*
-	fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", mTotalNvertices);
-	fprintf(stderr, "               %d triangles,\n", mTotalNtriangles);
-	fprintf(stderr, "               %d wires,\n", mTotalNwires);
-	fprintf(stderr, "               %d points,\n", mTotalNpoints); //*/
+	LOG(DEBUG) << "Current: " << mTotalNvertices << " vertices,\t"
+	                          << mTotalNtriangles << " triangles,\t"
+	                          << mTotalNwires << " wires,\t"
+	                          << mTotalNpoints << " points."
+	                          << cls_logger::endl;
 
 	(*iter)->SendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, mTotalNvertices);
 	(*iter)->SendToGPUtriangles(p_rend->mIBOshading, mTotalNtriangles);
@@ -65,11 +63,11 @@ void cls_scene::SendToGPU(cls_renderer* p_rend)
 	++iter;
 	for (; iter != mModels.end(); ++iter) {
 
-		/*
-		fprintf(stderr, "[DEBUG] Curnt: %d vertices,\n", v_Nvertices);
-		fprintf(stderr, "               %d triangles,\n", v_Ntriangles);
-		fprintf(stderr, "               %d wires,\n", v_Nwires);
-		fprintf(stderr, "               %d points,\n", v_Npoints); //*/
+		LOG(DEBUG) << "Current: " << v_Nvertices << " vertices,\t"
+		                          << v_Ntriangles << " triangles,\t"
+		                          << v_Nwires << " wires,\t"
+		                          << v_Npoints << " points."
+		                          << cls_logger::endl;
 
 		(*iter)->AppendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, v_Nvertices*sizeof(stc_VandC));
 		(*iter)->AppendToGPUtriangles(p_rend->mIBOshading, v_Ntriangles*3*sizeof(unsigned int), v_Nvertices);
@@ -84,20 +82,20 @@ void cls_scene::SendToGPU(cls_renderer* p_rend)
 		v_Npoints += (*iter)->GetNumOfPoints();
 	}
 
-	/*
-	fprintf(stderr, "[DEBUG] Total: %d = %d vertices,\n", v_Nvertices, mTotalNvertices);
-	fprintf(stderr, "               %d = %d triangles,\n", v_Ntriangles, mTotalNtriangles);
-	fprintf(stderr, "               %d = %d wires,\n", v_Nwires, mTotalNwires);
-	fprintf(stderr, "               %d = %d points,\n", v_Npoints, mTotalNpoints); //*/
+	LOG(DEBUG) << "Total:   " << v_Nvertices << " vertices,\t"
+	                          << v_Ntriangles << " triangles,\t"
+	                          << v_Nwires << " wires,\t"
+	                          << v_Npoints << " points."
+	                          << cls_logger::endl;
 }
 
 void cls_scene::Draw(cls_renderer* p_rend) const
 {
-	/*
-	fprintf(stderr, "[DEBUG] Draw:  %d vertices,\n", mTotalNvertices);
-	fprintf(stderr, "               %d triangles,\n", mTotalNtriangles);
-	fprintf(stderr, "               %d wires,\n", mTotalNwires);
-	fprintf(stderr, "               %d points,\n", mTotalNpoints); //*/
+	LOG(DEBUG) << "Draw:    " << mTotalNvertices << " vertices,\t"
+                              << mTotalNtriangles << " triangles,\t"
+                              << mTotalNwires << " wires,\t"
+                              << mTotalNpoints << " points."
+                              << cls_logger::endl;
 
 	glUseProgram(p_rend->mShadingDrawProgram);
 	glBindVertexArray(p_rend->mVAO);
@@ -124,6 +122,6 @@ void cls_scene::Draw(cls_renderer* p_rend) const
 void cls_scene::AddModel(cls_model* p_model)
 {
 	mModels.push_back(p_model);
-	////fprintf(stderr, "mModels.size()=%ld\n", mModels.size());
 	p_model->SetScene(this, mModels.size()-1);
+	LOG(DEBUG3) << "Added a new model into the scene. New total number of models: " << mModels.size() << cls_logger::endl;
 }

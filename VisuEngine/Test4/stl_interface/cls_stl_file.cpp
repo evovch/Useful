@@ -2,10 +2,10 @@
 
 // STD
 #include <fstream> // for ofstream
-using std::endl;
 
 // Project
-#include "cls_model.h"
+#include "base/cls_logger.h"
+#include "graphics/cls_model.h"
 
 cls_stl_file::cls_stl_file() :
 	mName(""),
@@ -21,16 +21,16 @@ void cls_stl_file::Export(std::string p_filename) const
 {
 	//TODO tune output stream such that we do not loose any precision!!!
 	std::ofstream f(p_filename);
-	f << "solid " << mName << endl;
+	f << "solid " << mName << std::endl;
 	struct facet_t* curfacet = mFirstFacet;
 	do {
-		f << "facet normal " << curfacet->mNormal->mX << " " << curfacet->mNormal->mY << " " << curfacet->mNormal->mZ << endl;
-		f << " outer loop" << endl;
-		f << "  vertex " << curfacet->mLoop->mV1->mX << " " << curfacet->mLoop->mV1->mY << " " << curfacet->mLoop->mV1->mZ << endl;
-		f << "  vertex " << curfacet->mLoop->mV2->mX << " " << curfacet->mLoop->mV2->mY << " " << curfacet->mLoop->mV2->mZ << endl;
-		f << "  vertex " << curfacet->mLoop->mV3->mX << " " << curfacet->mLoop->mV3->mY << " " << curfacet->mLoop->mV3->mZ << endl;
-		f << " endloop" << endl;
-		f << "endfacet" << endl;
+		f << "facet normal " << curfacet->mNormal->mX << " " << curfacet->mNormal->mY << " " << curfacet->mNormal->mZ << std::endl;
+		f << " outer loop" << std::endl;
+		f << "  vertex " << curfacet->mLoop->mV1->mX << " " << curfacet->mLoop->mV1->mY << " " << curfacet->mLoop->mV1->mZ << std::endl;
+		f << "  vertex " << curfacet->mLoop->mV2->mX << " " << curfacet->mLoop->mV2->mY << " " << curfacet->mLoop->mV2->mZ << std::endl;
+		f << "  vertex " << curfacet->mLoop->mV3->mX << " " << curfacet->mLoop->mV3->mY << " " << curfacet->mLoop->mV3->mZ << std::endl;
+		f << " endloop" << std::endl;
+		f << "endfacet" << std::endl;
 	} while ((curfacet = curfacet->GetNext()) != nullptr);
 }
 
@@ -47,8 +47,11 @@ void cls_stl_file::BuildModel(cls_model* p_model) const
 	unsigned long int v_nVertices = v_nFacets*3; // each facet is 3 vertices, so *3
 	unsigned long int v_nWires = v_nFacets*3; // each facet is 3 wires, so *3
 	unsigned long int v_nTriangs = v_nFacets; // one facet = one triangle
-	fprintf(stderr, "[INFO] Found %ld facets, thus %ld vertices, %ld wires.\n",
-		    v_nFacets, v_nVertices, v_nWires);
+
+	LOG(INFO) << "Found " << v_nFacets << " facets, thus "
+	                      << v_nVertices << " vertices, "
+	                      << v_nWires << " wires."
+	                      << cls_logger::endl;
 
 	// Allocate memory
 	float* v_vertices = new float[v_nVertices*3]; // each vertex is 3 cordinates, so *3

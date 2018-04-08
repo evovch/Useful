@@ -4,7 +4,8 @@
 #include <glm/gtc/constants.hpp>
 
 // Project
-#include "cls_model.h"
+#include "base/cls_logger.h"
+#include "graphics/cls_model.h"
 
 cls_circle::cls_circle()
 {
@@ -42,7 +43,9 @@ void cls_circle::BuildModel(cls_model* p_model)
 	// Compute number of vertices, wires and triangles
 	unsigned long int v_nVertices = nSections+1;
 	unsigned long int v_nWires = nSections;
-	fprintf(stderr, "[INFO] Circle: %ld vertices, %ld wires.\n", v_nVertices, v_nWires);
+
+	LOG(INFO) << "Circle: " << v_nVertices << " vertices, " << v_nWires << " wires." << cls_logger::endl;
+	//fprintf(stderr, "[INFO] Circle: %ld vertices, %ld wires.\n", v_nVertices, v_nWires);
 
 	// Allocate memory
 	float* v_vertices = new float[v_nVertices*3]; // each vertex is 3 cordinates, so *3
@@ -58,7 +61,8 @@ void cls_circle::BuildModel(cls_model* p_model)
 		v_wires[iSection*2+0] = iSection;
 		v_wires[iSection*2+1] = iSection+1;
 
-		/*fprintf(stderr, "[DEBUG] wire: %d-%d\n", iSection, iSection+1);*/
+		LOG(DEBUG) << "Wire " << iSection << "-" << iSection+1 << cls_logger::endl;
+		//fprintf(stderr, "[DEBUG] wire: %d-%d\n", iSection, iSection+1);
 
 		curPhi += stepPhi;
 	}

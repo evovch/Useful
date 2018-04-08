@@ -5,6 +5,7 @@
 #include <cstdio>
 
 // Project
+#include "base/cls_logger.h"
 #include "cls_offscreen_renderer.h"
 
 cls_renderer::cls_renderer(void) :
@@ -104,7 +105,7 @@ void cls_renderer::InitProgs(void)
 	mMVPpointsUniform = glGetUniformLocation(mPointsDrawProgram, "MVP");
 
 	// ---------------------------------------------------------------------------------
-	fprintf(stderr, "[INFO] Initialized programs.\n");
+	LOG(INFO) << "Initialized programs." << cls_logger::endl;
 }
 
 void cls_renderer::InitBuffers(void)
@@ -114,7 +115,7 @@ void cls_renderer::InitBuffers(void)
 	glGenBuffers(1, &mIBOshading);
 	glGenBuffers(1, &mIBOwire);
 	glGenBuffers(1, &mIBOpoints);
-	fprintf(stderr, "[INFO] Initialized buffers.\n");
+	LOG(INFO) << "Initialized buffers." << cls_logger::endl;
 }
 
 void cls_renderer::InitGLparameters(void)
@@ -140,7 +141,7 @@ void cls_renderer::InitGLparameters(void)
 	//// holding the color for the whole triangle for flat shading rendering
 	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 
-	fprintf(stderr, "[INFO] Initialized OpenGL parameters.\n");
+	LOG(INFO) << "Initialized OpenGL parameters." << cls_logger::endl;
 }
 
 void cls_renderer::InitDatumAll(void)
@@ -161,7 +162,7 @@ void cls_renderer::InitDatumAll(void)
 	mMVPdatumUniform = glGetUniformLocation(mDatumDrawProgram, "MVP");
 
 	// ---------------------------------------------------------------------------------
-	fprintf(stderr, "[INFO] Initialized datum programs.\n");
+	LOG(INFO) << "[INFO] Initialized datum programs." << cls_logger::endl;
 
 	// ---------------------------------------------------------------------------------
 	glGenVertexArrays(1, &mVAOdatum);
@@ -169,20 +170,20 @@ void cls_renderer::InitDatumAll(void)
 	glGenBuffers(1, &mIBOdatumTr);
 	glGenBuffers(1, &mIBOdatumW);
 	glGenBuffers(1, &mIBOdatumP);
-	fprintf(stderr, "[INFO] Initialized datum buffers.\n");*/
+	LOG(INFO) << "[INFO] Initialized datum buffers." << cls_logger::endl;*/
 }
 
 /*static*/
 GLuint cls_renderer::CreateShader(GLenum p_eShaderType, const std::string p_strShaderFile)
 {
-	//fprintf(stderr, "[DEBUG] Creating shader from file '%s'\n", p_strShaderFile.c_str());
+	LOG(DEBUG) << "Creating a shader from the source file '" << p_strShaderFile << "'" << cls_logger::endl;
 
 	// Open and read input file with shader code
 	FILE* v_inFile = NULL;
 	v_inFile = fopen(p_strShaderFile.c_str(), "rb");
 	//TODO check return value of fopen
 	if (v_inFile == NULL) {
-		fprintf(stderr, "[ERROR] Could not open file '%s'\n", p_strShaderFile.c_str());
+		LOG(FATAL) << "Could not open shader source file '" << p_strShaderFile << "'" << cls_logger::endl;
 		return 0;
 	}
 
@@ -218,10 +219,13 @@ GLuint cls_renderer::CreateShader(GLenum p_eShaderType, const std::string p_strS
 		GLchar *v_strInfoLog = new GLchar[v_infoLogLength + 1];
 		glGetShaderInfoLog(v_shader, v_infoLogLength, NULL, v_strInfoLog);
 
-		fprintf(stderr, "[ERROR] Compile failure in %s shader from %s:\n%s\n", v_strShaderType.c_str(), p_strShaderFile.c_str(), v_strInfoLog);
+		LOG(FATAL) << "Compile failure in " << v_strShaderType << " shader from '" << p_strShaderFile << "':\n"
+		           << v_strInfoLog
+		           << cls_logger::endl;
+
 		delete[] v_strInfoLog;
 	} else {
-		fprintf(stderr, "[INFO] Successfully compiled %s shader from %s.\n", v_strShaderType.c_str(), p_strShaderFile.c_str());
+		LOG(INFO) << "Successfully compiled " << v_strShaderType << " shader from '" << p_strShaderFile << "'" << cls_logger::endl;
 	}
 
 	// Finalize
@@ -248,7 +252,7 @@ void cls_renderer::CreateProg(GLuint p_program, const std::vector<GLuint>& p_sha
 
 		GLchar *v_strInfoLog = new GLchar[v_infoLogLength + 1];
 		glGetProgramInfoLog(p_program, v_infoLogLength, NULL, v_strInfoLog);
-		fprintf(stderr, "[ERROR] Linker failure: %s\n", v_strInfoLog);
+		LOG(FATAL) << "Linker failure: " << v_strInfoLog << cls_logger::endl;
 		delete[] v_strInfoLog;
 	}
 

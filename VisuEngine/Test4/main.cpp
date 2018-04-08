@@ -1,19 +1,18 @@
-// STD
-#include <cstdio>
-
 // OpenGL
 #include <GL/glew.h>
 #include <GL/glut.h>
 
 // Project
-#include "cls_camera.h"
-#include "cls_model.h"
-#include "cls_scene.h"
-#include "cls_renderer.h"
-#include "cls_offscreen_renderer.h"
+#include "base/cls_logger.h"
 
-#include "stl_interface/cls_stl_interface.h"
+#include "graphics/cls_camera.h"
+#include "graphics/cls_model.h"
+#include "graphics/cls_offscreen_renderer.h"
+#include "graphics/cls_renderer.h"
+#include "graphics/cls_scene.h"
+
 #include "stl_interface/cls_stl_file.h"
+#include "stl_interface/cls_stl_interface.h"
 
 #include "brep/cls_circle.h"
 
@@ -92,7 +91,7 @@ static void SpecKeyFunc(int key, int /*x*/, int /*y*/)
 
 static void DisplayFunc(void)
 {
-	//fprintf(stderr, "[DEBUG] DisplayFunc()\n");
+	LOG(DEBUG3) << "main::DisplayFunc()" << cls_logger::endl;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -104,7 +103,7 @@ static void DisplayFunc(void)
 static void MouseFunc(int button, int state, int x, int y)
 {
 	if (state == GLUT_DOWN) {
-		//fprintf(stderr, "[DEBUG] DOWN x=%d, y=%d\n", x, y);
+		LOG(DEBUG3) << "main::MouseFunc(): press at x=" << x << ", y=" << y << cls_logger::endl;
 
 		//// Current values
 
@@ -146,7 +145,7 @@ static void MouseFunc(int button, int state, int x, int y)
 
 		mMouseTracked = true;
 	} else if (state == GLUT_UP) {
-		//fprintf(stderr, "[DEBUG] UP x=%d, y=%d\n", x, y);
+		LOG(DEBUG3) << "main::MouseFunc(): release at x=" << x << ", y=" << y << cls_logger::endl;
 
 		mCurrentAction = ACT_NO_ACT;
 
@@ -164,7 +163,10 @@ static void MouseMoveFunc(int x, int y)
 		float v_xa = (float)(x - glutGet(GLUT_WINDOW_WIDTH)/2);
 		float v_ya = -(float)(y - glutGet(GLUT_WINDOW_HEIGHT)/2);
 
-		//fprintf(stderr, "[DEBUG] MOVE xa=%f, ya=%f\n", v_xa, v_ya);
+		LOG(DEBUG3) << "main::MouseMoveFunc(): move at "
+		            << "x=" << x << ", y=" << y << ", "
+		            << "xa=" << v_xa << ", ya=" << v_ya
+		            << cls_logger::endl;
 
 		float v_sphR = GetSphR();
 		float v_za = sqrt(v_sphR*v_sphR - v_xa*v_xa - v_ya*v_ya);
@@ -207,11 +209,9 @@ static void MouseMoveFunc(int x, int y)
 
 static void ReshapeFunc(GLsizei width, GLsizei height)
 {
-	//fprintf(stderr, "[DEBUG] width=%d, height=%d\n", width, height);
+	LOG(DEBUG3) << "main::ReshapeFunc(): width=" << width << ", height=" << height << cls_logger::endl;
 
-	if (height == 0)
-	{
-		fprintf(stderr, "[DEBUG] width=%d, height=%d\n", width, height);
+	if (height == 0) {
 		height = 1;
 	}
 
@@ -225,12 +225,14 @@ static void ReshapeFunc(GLsizei width, GLsizei height)
 
 static void IdleFunc(void)
 {
-	////fprintf(stderr, "[DEBUG] IdleFunc()\n");
+	//LOG(DEBUG4) << "main::IdleFunc()" << cls_logger::endl;
 	////glutPostRedisplay();
 }
 
 int main(int argc, char** argv)
 {
+	cls_logger::SetLevel(DEBUG3);
+
 	glutInit(&argc, argv);
 
 	glutInitDisplayMode(GLUT_DOUBLE);
@@ -243,12 +245,12 @@ int main(int argc, char** argv)
 
 	if (GLEW_OK != err) {
 		// Problem: glewInit failed, something is seriously wrong.
-		fprintf(stderr, "[ERROR] %s\n", glewGetErrorString(err));
+		LOG(FATAL) << "main: " << glewGetErrorString(err) << cls_logger::endl;
 		return 1;
 	}
 
-	fprintf(stderr, "[INFO] Using GLEW %s\n", glewGetString(GLEW_VERSION));
-	fprintf(stderr, "[INFO] Version of OpenGL detected in the system: '%s'\n", glGetString(GL_VERSION));
+	LOG(INFO) << "Using GLEW '" << glewGetString(GLEW_VERSION) << "'" << cls_logger::endl;
+	LOG(INFO) << "Version of OpenGL detected in the system: '" << glGetString(GL_VERSION) << "'" << cls_logger::endl;
 
 	glutKeyboardFunc(KeyFunc);
 	glutSpecialFunc(SpecKeyFunc);
@@ -270,6 +272,7 @@ int main(int argc, char** argv)
 		gScene->AddModel(v_modelDatum);
 	}
 */
+
 	cls_model* v_model2 = new cls_model();
 	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/humanoid.stl");
 	if (v_stlfile2 != nullptr) {
@@ -294,7 +297,7 @@ int main(int argc, char** argv)
 */
 /*
 	cls_model* v_model4 = new cls_model();
-	cls_stl_file* v_stlfile4 = cls_stl_interface::Import("input/Lobster.stl");
+	cls_stl_file* v_stlfile4 = cls_stl_interface::ImportBinary("input/Spiral_Vase1.STL");
 	if (v_stlfile4 != nullptr) {
 		v_stlfile4->BuildModel(v_model4);
 		v_model4->Shift(0., 0., 0.);
@@ -305,6 +308,8 @@ int main(int argc, char** argv)
 */
 
 	gScene->SendToGPU(gRenderer);
+
+	v_model2->HighlightTriangle(5, gRenderer->mVAO, gRenderer->mVBO);
 
 	gCamera->SendCamToGPU(gRenderer);
 

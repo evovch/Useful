@@ -1,12 +1,9 @@
 #include "cls_stl_interface.h"
 
-// STD
-#include <cstdio>
-#include <cstring>
-
 // Project
+#include "base/support.h"
+#include "base/cls_logger.h"
 #include "cls_stl_file.h"
-#include "support.h"
 
 extern FILE* yyin;
 extern int yyparse(cls_stl_file*& myStlFile);
@@ -25,7 +22,7 @@ cls_stl_file* cls_stl_interface::Import(const char* p_filename)
     FILE* v_inFile = fopen(p_filename, "r");
 
     if (!v_inFile) {
-        fprintf(stderr, "[ERROR] Failed to open file '%s'\n", p_filename);
+        LOG(ERROR) << "Failed to open file '" << p_filename << "'" << cls_logger::endl;
         return nullptr;
     } else {
 
@@ -46,14 +43,14 @@ cls_stl_file* cls_stl_interface::Import(const char* p_filename)
         char v_firstWord[6];
         for (unsigned int i=0; i<5; i++) { v_firstWord[i] = v_buffer[cursor+i]; }
         v_firstWord[5] = '\0';
-        //fprintf(stderr, "|%s|\n", v_firstWord);
+        LOG(DEBUG3) << "First word in the file: '" << v_firstWord << "'" << cls_logger::endl;
 
         // If it is 'solid' - a text STL file, otherwise - binary!
         if (strcmp(v_firstWord, "solid") == 0) {
-            fprintf(stderr, "[INFO] Input file '%s' identified as a text STL file.\n", p_filename);
+            LOG(INFO) << "Input file '" << p_filename << "' identified as a text STL file." << cls_logger::endl;
             return cls_stl_interface::ImportText(p_filename);
         } else {
-            fprintf(stderr, "[INFO] Input file '%s' identified as a binary STL file.\n", p_filename);
+            LOG(INFO) << "Input file '" << p_filename << "' identified as a binary STL file." << cls_logger::endl;
             return cls_stl_interface::ImportBinary(p_filename);
         }
     }
@@ -82,7 +79,7 @@ cls_stl_file* cls_stl_interface::ImportText(const char* p_filename)
     FILE* v_inFile = fopen(p_filename, "r");
 
     if (!v_inFile) {
-        fprintf(stderr, "[ERROR] Failed to open file '%s'\n", p_filename);
+        LOG(ERROR) << "Failed to open file '" << p_filename << "'" << cls_logger::endl;
         return nullptr;
     } else {
         yyin = v_inFile;
@@ -113,7 +110,7 @@ cls_stl_file* cls_stl_interface::ImportBinary(const char* p_filename)
     FILE* v_inFile = fopen(p_filename, "rb");
 
     if (!v_inFile) {
-        fprintf(stderr, "[ERROR] Failed to open file '%s'\n", p_filename);
+        LOG(ERROR) << "Failed to open file '" << p_filename << "'" << cls_logger::endl;
         return nullptr;
     } else {
 
@@ -124,28 +121,28 @@ cls_stl_file* cls_stl_interface::ImportBinary(const char* p_filename)
         long int v_fileSize = ftell(v_inFile);
         rewind(v_inFile);
 
-        fprintf(stderr, "File size: %ld\n", v_fileSize);
+        LOG(INFO) << "File size: " << v_fileSize << " bytes." << cls_logger::endl;
 
         // Header
         unsigned char v_bufferHeader[81];
         v_bufferHeader[80] = '\0';
         fread(v_bufferHeader, 80, 1, v_inFile);
-        fprintf(stderr, "HEADER =========================================================================\n");
-        fprintf(stderr, "%s\n", v_bufferHeader);
-        fprintf(stderr, "================================================================================\n");
+        LOG(INFO) << "HEADER =========================================================================" << cls_logger::endl;
+        LOG(INFO) << v_bufferHeader << cls_logger::endl;
+        LOG(INFO) << "================================================================================" << cls_logger::endl;
 
         // Number of triangles
         unsigned char v_bufferN[4];
         fread(v_bufferN, 4, 1, v_inFile);
         unsigned int v_N = FourCharsToUintLE(v_bufferN);
-        fprintf(stderr, "%d triangles declared in the header.\n", v_N);
+        LOG(INFO) << v_N << " triangles declared in the header." << cls_logger::endl;
 
         // Facets
         // 4*3*4 - (normal, vertex, vertex, vertex) * (x, y, z) * (4 bytes each)
         // 2 - Attribute byte count (whatever it is)
         unsigned int v_sizeOfFacet = 4*3*4 + 2;
         unsigned char* v_dataBuffer = new unsigned char[v_N*v_sizeOfFacet];
-        fprintf(stderr, "Awaited data size: %d bytes.\n", v_N*v_sizeOfFacet);
+        LOG(INFO) << "Awaited data size: " << v_N*v_sizeOfFacet << "bytes." << cls_logger::endl;
 
         fread(v_dataBuffer, v_N*v_sizeOfFacet, 1, v_inFile);
 
@@ -170,11 +167,11 @@ cls_stl_file* cls_stl_interface::ImportBinary(const char* p_filename)
             v_vertex[7] = FourCharsToFloat(&v_dataBuffer[v_offset + 4*10]);
             v_vertex[8] = FourCharsToFloat(&v_dataBuffer[v_offset + 4*11]);
 
-            /*fprintf(stderr, "facet normal %f %f %f\n", v_normal[0], v_normal[1], v_normal[2]);
-            fprintf(stderr, " vertex %f %f %f\n", v_vertex[0], v_vertex[1], v_vertex[2]);
-            fprintf(stderr, " vertex %f %f %f\n", v_vertex[3], v_vertex[4], v_vertex[5]);
-            fprintf(stderr, " vertex %f %f %f\n", v_vertex[6], v_vertex[7], v_vertex[8]);
-            fprintf(stderr, "endfacet\n");*/
+            LOG(DEBUG4) << "facet normal " << v_normal[0] << " " << v_normal[1] << " " << v_normal[2] << cls_logger::endl;
+            LOG(DEBUG4) << "vertex " << v_vertex[0] << " " << v_vertex[1] << " " << v_vertex[2] << cls_logger::endl;
+            LOG(DEBUG4) << "vertex " << v_vertex[3] << " " << v_vertex[4] << " " << v_vertex[5] << cls_logger::endl;
+            LOG(DEBUG4) << "vertex " << v_vertex[6] << " " << v_vertex[7] << " " << v_vertex[8] << cls_logger::endl;
+            LOG(DEBUG4) << "endfacet" << cls_logger::endl;
 
             struct normal_t* n = new struct normal_t(v_normal[0], v_normal[1], v_normal[2]);
             struct vertex_t* v1 = new struct vertex_t(v_vertex[0], v_vertex[1], v_vertex[2]);

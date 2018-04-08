@@ -1,19 +1,16 @@
 #include "cls_logger.h"
 
+/*static*/ cls_logger* cls_logger::mInstance = nullptr;
+
 cls_logger::cls_logger() :
-	mScreenStream(&std::cout)
+	mErrStream(&std::cerr),
+	mOutStream(&std::cout),
+	mNullStream(new std::ostream(0)),
+	mCurStream(&std::cerr),
+	mCurLevel(INFO)
 {
 }
 
 cls_logger::~cls_logger()
 {
-}
-
-/*static*/
-cls_logger* cls_logger::Instance(void)
-{
-	if (!mInstance) {
-		mInstance = new cls_logger();
-	}
-	return mInstance;
 }

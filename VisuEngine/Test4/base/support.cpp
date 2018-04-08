@@ -80,7 +80,7 @@ unsigned int PixelColorToInt(unsigned char* p_source)
 // Lillte-endian
 unsigned int FourCharsToUintLE(const unsigned char* p_mem)
 {
-    //fprintf(stderr, "%02x %02x %02x %02x\n", p_mem[0], p_mem[1], p_mem[2], p_mem[3]);
+    ////fprintf(stderr, "%02x %02x %02x %02x\n", p_mem[0], p_mem[1], p_mem[2], p_mem[3]);
 	unsigned int v_res = (p_mem[3] << 24) | (p_mem[2] << 16) | (p_mem[1] << 8) | (p_mem[0]);
 	return v_res;
 }

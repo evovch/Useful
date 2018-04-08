@@ -45,20 +45,19 @@ endif()
 
 set(SOURCE_EXE main.cpp)
 
+include_directories(${CMAKE_SOURCE_DIR})
+
 add_executable(prog ${SOURCE_EXE})
+
+# ===============================================
+# Base
+
+add_subdirectory(base)
 
 # ===============================================
 # Graphics library
 
-set(SOURCE_LIB cls_camera.cpp
-               cls_model.cpp
-               cls_renderer.cpp
-               cls_offscreen_renderer.cpp
-               cls_scene.cpp
-               cls_logger.cpp
-               support.cpp)
-
-add_library(graphics SHARED ${SOURCE_LIB})
+add_subdirectory(graphics)
 
 # ===============================================
 # STL interface library
@@ -72,4 +71,4 @@ add_subdirectory(brep)
 
 # ===============================================
 
-target_link_libraries(prog graphics stl_interface brep)
+target_link_libraries(prog base graphics stl_interface brep)

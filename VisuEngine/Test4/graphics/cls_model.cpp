@@ -1,16 +1,10 @@
 #include "cls_model.h"
 
-// STD
-#include <cstdio>
-#include <cstdlib>
-#include <algorithm>
-#include <fstream>
-#include <vector>
-
 // GLM
 #include <glm/gtc/matrix_transform.hpp>
 
 // Project
+#include "base/cls_logger.h"
 #include "cls_scene.h"
 
 cls_model::cls_model() :
@@ -28,12 +22,11 @@ cls_model::cls_model() :
 	mScene(nullptr),
 	mIndexInScene(0)
 {
-/*	fprintf(stderr, "%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
-		            mMatrix[0][0], mMatrix[0][1], mMatrix[0][2], mMatrix[0][3],
-		            mMatrix[1][0], mMatrix[1][1], mMatrix[1][2], mMatrix[1][3],
-		            mMatrix[2][0], mMatrix[2][1], mMatrix[2][2], mMatrix[2][3],
-		            mMatrix[3][0], mMatrix[3][1], mMatrix[3][2], mMatrix[3][3]);*/
-
+	LOG(DEBUG3) << "mMatrix at cls_model construction:" << cls_logger::endl
+		        << "\t\t" << mMatrix[0][0] << " " << mMatrix[0][1] << " " << mMatrix[0][2] << " " << mMatrix[0][3] << cls_logger::endl
+		        << "\t\t" << mMatrix[1][0] << " " << mMatrix[1][1] << " " << mMatrix[1][2] << " " << mMatrix[1][3] << cls_logger::endl
+		        << "\t\t" << mMatrix[2][0] << " " << mMatrix[2][1] << " " << mMatrix[2][2] << " " << mMatrix[2][3] << cls_logger::endl
+		        << "\t\t" << mMatrix[3][0] << " " << mMatrix[3][1] << " " << mMatrix[3][2] << " " << mMatrix[3][3] << cls_logger::endl;
 	// mMatrix seems to be automatically initialized with E (diagonal unity matrix)
 
 	//this->GenerateAxisSystem();
@@ -185,9 +178,7 @@ void cls_model::GenerateAxisSystem(void)
 		                   startX+0.f,    startY+v_size, startZ+0.f,
 		                   startX+0.f,    startY+0.f,    startZ+v_size};
 
-	/*fprintf(stderr, "cls_model::GenerateAxisSystem: startX = %f\n", startX);
-	fprintf(stderr, "                               startY = %f\n", startY);
-	fprintf(stderr, "                               startZ = %f\n", startZ);*/
+	LOG(DEBUG) << "Generate axis system: start point: (" << startX << ", " << startY << ", " << startZ << ")" << cls_logger::endl;
 
 	//// Vertices
 	for (unsigned int i=0; i<4; i++) { //// mNumOfVertices
@@ -224,8 +215,8 @@ void cls_model::GenerateAxisSystem(void)
 
 void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 {
-	fprintf(stderr, "[DEBUG] before: mNumOfVertices=%d\n", mNumOfVertices);
-	fprintf(stderr, "[DEBUG] parameter: p_nPoints=%d\n", p_nPoints);
+	LOG(DEBUG) << "before: mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
+	LOG(DEBUG) << "parameter: p_nPoints=" << p_nPoints << cls_logger::endl;
 
 	// --------------------------------------------------------------------------------------------
 
@@ -246,12 +237,12 @@ void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 
 	mNumOfVertices += p_nPoints;
 
-	fprintf(stderr, "[DEBUG] after: mNumOfVertices=%d\n", mNumOfVertices);
+	LOG(DEBUG) << "after: mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
 
 	// --------------------------------------------------------------------------------------------
 
-	fprintf(stderr, "[DEBUG] before: mNumOfPoints=%d\n", mNumOfPoints);
-	fprintf(stderr, "[DEBUG] parameter: p_nPoints=%d\n", p_nPoints);
+	LOG(DEBUG) << "before: mNumOfPoints=" << mNumOfPoints << cls_logger::endl;
+	LOG(DEBUG) << "parameter: p_nPoints=" << p_nPoints << cls_logger::endl;
 
 	// Expand mPointsIndices by p_nPoints elements
 	unsigned int* tmpPointsIndices = new unsigned int[mNumOfPoints+p_nPoints]; //// mNumOfPoints + p_nPoints
@@ -266,15 +257,15 @@ void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 	// Increase the number
 	mNumOfPoints += p_nPoints;
 
-	fprintf(stderr, "[DEBUG] after: mNumOfPoints=%d\n", mNumOfPoints);
+	LOG(DEBUG) << "after: mNumOfPoints=" << mNumOfPoints << cls_logger::endl;
 
 	// --------------------------------------------------------------------------------------------
 }
 
 void cls_model::AppendWires(unsigned int p_nWires, unsigned int* p_array)
 {
-	fprintf(stderr, "[DEBUG] before: mNumOfWires=%d\n", mNumOfWires);
-	fprintf(stderr, "[DEBUG] parameter: p_nWires=%d\n", p_nWires);
+	LOG(DEBUG) << "before: mNumOfWires=" << mNumOfWires << cls_logger::endl;
+	LOG(DEBUG) << "parameter: p_nWires=" << p_nWires << cls_logger::endl;
 
 	// --------------------------------------------------------------------------------------------
 
@@ -290,13 +281,14 @@ void cls_model::AppendWires(unsigned int p_nWires, unsigned int* p_array)
 
 	mNumOfWires += p_nWires;
 
-	fprintf(stderr, "[DEBUG] after: mNumOfWires=%d\n", mNumOfWires);
+	LOG(DEBUG) << "after: mNumOfWires=" << mNumOfWires << cls_logger::endl;
 }
 
 void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array)
 {
-	fprintf(stderr, "[DEBUG] before: mNumOfTriangles=%d\n", mNumOfTriangles);
-	fprintf(stderr, "[DEBUG] parameter: p_nTriangles=%d\n", p_nTriangles);
+
+	LOG(DEBUG) << "before: mNumOfTriangles=" << mNumOfTriangles << cls_logger::endl;
+	LOG(DEBUG) << "parameter: p_nTriangles=" << p_nTriangles << cls_logger::endl;
 
 	// --------------------------------------------------------------------------------------------
 
@@ -312,7 +304,7 @@ void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array
 
 	mNumOfTriangles += p_nTriangles;
 
-	fprintf(stderr, "[DEBUG] after: mNumOfTriangles=%d\n", mNumOfTriangles);
+	LOG(DEBUG) << "after: mNumOfTriangles=" << mNumOfTriangles << cls_logger::endl;
 }
 
 void cls_model::PrepareUniqueColors(void)
@@ -372,8 +364,11 @@ void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 	unsigned int v_size = 1*sizeof(stc_VandC);
 	unsigned int v_offsetInScene = mScene->GetOffset(mIndexInScene);
 
-	fprintf(stderr, "[DEBUG] triangle_index=%d, vertex_index0=%d, offset=%d, v_offsetInScene=%d, v_size=%d\n",
-		    p_index, v_vertexIndex0, v_offset, v_offsetInScene, v_size);
+	LOG(DEBUG2) << "highlight triangle_index=" << p_index
+	           << ", vertex_index0=" << v_vertexIndex0
+	           << ", offset=" << v_offset
+	           << ", v_offsetInScene=" << v_offsetInScene
+	           << ", v_size=" << v_size << cls_logger::endl;
 
 	unsigned int v_fullOffsetInBytes = (v_offsetInScene + v_offset)*sizeof(stc_VandC);
 
@@ -391,67 +386,65 @@ void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 void cls_model::Dump(void) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::Dump(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::Dump(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
-	fprintf(stderr, "----------------------------------------------------------------------\n");
+	LOG(INFO) << "----------------------------------------------------------------------" << cls_logger::endl;
 
-	fprintf(stderr, "mNumOfVertices=%d\n", mNumOfVertices);
-	fprintf(stderr, "mNumOfTriangles=%d\n", mNumOfTriangles);
-	fprintf(stderr, "mNumOfWires=%d\n", mNumOfWires);
-	fprintf(stderr, "mNumOfPoints=%d\n", mNumOfPoints);
+	LOG(INFO) << "mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
+	LOG(INFO) << "mNumOfTriangles=" << mNumOfTriangles << cls_logger::endl;
+	LOG(INFO) << "mNumOfWires=" << mNumOfWires << cls_logger::endl;
+	LOG(INFO) << "mNumOfPoints=" << mNumOfPoints << cls_logger::endl;
 
-	fprintf(stderr, "Vertices and colors ==================================================\n");
+	LOG(INFO) << "Vertices and colors ==================================================" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfVertices; i++) {
-		fprintf(stderr, "x=%f\ty=%f\tz=%f\tr=%f\tg=%f\tb=%f\n",
-		        mVertexAndColorData[i].v[0],
-		        mVertexAndColorData[i].v[1],
-		        mVertexAndColorData[i].v[2],
-		        mVertexAndColorData[i].c[0],
-		        mVertexAndColorData[i].c[1],
-		        mVertexAndColorData[i].c[2]);
+
+		LOG(INFO) << "x=" << mVertexAndColorData[i].v[0] << "\t"
+		          << "y=" << mVertexAndColorData[i].v[1] << "\t"
+		          << "z=" << mVertexAndColorData[i].v[2] << "\t"
+		          << "r=" << mVertexAndColorData[i].c[0] << "\t"
+		          << "g=" << mVertexAndColorData[i].c[1] << "\t"
+		          << "b=" << mVertexAndColorData[i].c[2] << cls_logger::endl;
+
 	}
 
-	fprintf(stderr, "Triangles ============================================================\n");
+	LOG(INFO) << "Triangles ============================================================" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfTriangles; i++) {
-		fprintf(stderr, "(%d, %d, %d) ", mTriangleIndices[i*3+0],
-		                                mTriangleIndices[i*3+1],
-		                                mTriangleIndices[i*3+2]);
-		if ((i+1)%4 == 0) { fprintf(stderr, "\n"); }
+		LOG(INFO) << "(" << mTriangleIndices[i*3+0] << "," << mTriangleIndices[i*3+1] << "," << mTriangleIndices[i*3+2] << ") ";
+		if ((i+1)%4 == 0) { LOG(INFO) << cls_logger::endl; }
 	}
-	fprintf(stderr, "\n");
+	LOG(INFO) << cls_logger::endl;
 
-	fprintf(stderr, "Wires ================================================================\n");
+	LOG(INFO) << "Wires ================================================================" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfWires; i++) {
-		fprintf(stderr, "(%d,%d) ", mWireIndices[i*2+0],
-		                            mWireIndices[i*2+1]);
-		if ((i+1)%8 == 0) { fprintf(stderr, "\n"); }
+		LOG(INFO) << "(" << mWireIndices[i*2+0] << "," << mWireIndices[i*2+1] << ") ";
+		if ((i+1)%8 == 0) { LOG(INFO) << cls_logger::endl; }
 	}
-	fprintf(stderr, "\n");
+	LOG(INFO) << cls_logger::endl;
 
-	fprintf(stderr, "Points ===============================================================\n");
+	LOG(INFO) << "Points ===============================================================" << cls_logger::endl;
 
 	for (unsigned int i=0; i<mNumOfPoints; i++) {
-		fprintf(stderr, "%d, ", mPointsIndices[i]);
-		if ((i+1)%16 == 0) { fprintf(stderr, "\n"); }
+		LOG(INFO) << mPointsIndices[i] << ", ";
+		if ((i+1)%16 == 0) { LOG(INFO) << cls_logger::endl; }
 	}
-	fprintf(stderr, "\n");
+	LOG(INFO) << cls_logger::endl;
 
 	//TODO dump mMatrix?
 	//TODO dump mConstructed?
 	//TODO dump mVandCdataUniqueColors?
 
-	fprintf(stderr, "----------------------------------------------------------------------\n");
+	LOG(INFO) << "----------------------------------------------------------------------" << cls_logger::endl;
 }
 
 void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overrideNvertices) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUvAndC(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::SendToGPUvAndC(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
@@ -464,7 +457,7 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 		v_newVertexAndColorData = new stc_VandC[mNumOfVertices];
 		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, v_newVertexAndColorData);
 
-		//fprintf(stderr, "[DEBUG] SendToGPUvAndC:\n");
+		LOG(DEBUG) << "SendToGPUvAndC: (activate DEBUG4 level to see the data)" << cls_logger::endl;
 		for (unsigned int i=0; i<mNumOfVertices; i++) {
 
 			glm::vec4 curVertex(mVertexAndColorData[i].v[0], mVertexAndColorData[i].v[1], mVertexAndColorData[i].v[2], 1.);
@@ -473,13 +466,12 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 			v_newVertexAndColorData[i].v[1] = transformedVertex[1];
 			v_newVertexAndColorData[i].v[2] = transformedVertex[2];
 
-			/*fprintf(stderr, "[DEBUG] x=%f\ty=%f\tz=%f\tr=%f\tg=%f\tb=%f\n",
-			                 v_newVertexAndColorData[i].v[0],
-			                 v_newVertexAndColorData[i].v[1],
-			                 v_newVertexAndColorData[i].v[2],
-			                 v_newVertexAndColorData[i].c[0],
-			                 v_newVertexAndColorData[i].c[1],
-			                 v_newVertexAndColorData[i].c[2]);*/
+			LOG(DEBUG4) << "x=" << v_newVertexAndColorData[i].v[0] << "\t"
+			            << "y=" << v_newVertexAndColorData[i].v[1] << "\t"
+			            << "z=" << v_newVertexAndColorData[i].v[2] << "\t"
+			            << "r=" << v_newVertexAndColorData[i].c[0] << "\t"
+			            << "g=" << v_newVertexAndColorData[i].c[1] << "\t"
+			            << "b=" << v_newVertexAndColorData[i].c[2] << cls_logger::endl;
 		}
 
 	}
@@ -509,14 +501,14 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 void cls_model::SendToGPUtriangles(GLuint p_IBO, unsigned int p_overrideNtriangles) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUtriangles(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::SendToGPUtriangles(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
-	/*fprintf(stderr, "[DEBUG] SendToGPUtriangles:\n");
+	LOG(DEBUG) << "SendToGPUtriangles: (activate DEBUG4 level to see the data)" << cls_logger::endl;
 	for (unsigned int i=0; i<mNumOfTriangles*3; i++) {
-		fprintf(stderr, "[DEBUG] mTriangleIndices[%d]=%d\n", i, mTriangleIndices[i]);
-	}*/
+		LOG(DEBUG4) << "mTriangleIndices[" << i << "]=" << mTriangleIndices[i] << cls_logger::endl;
+	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
 	if (p_overrideNtriangles == 0) {
@@ -529,14 +521,14 @@ void cls_model::SendToGPUtriangles(GLuint p_IBO, unsigned int p_overrideNtriangl
 void cls_model::SendToGPUwires(GLuint p_IBO, unsigned int p_overrideNwires) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUwires(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::SendToGPUwires(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
-	/*fprintf(stderr, "[DEBUG] SendToGPUwires:\n");
+	LOG(DEBUG) << "SendToGPUwires: (activate DEBUG4 level to see the data)" << cls_logger::endl;
 	for (unsigned int i=0; i<mNumOfWires*2; i++) {
-		fprintf(stderr, "[DEBUG] mWireIndices[%d]=%d\n", i, mWireIndices[i]);
-	}*/
+		LOG(DEBUG4) << "mWireIndices[" << i << "]=" << mWireIndices[i] << cls_logger::endl;
+	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
 	if (p_overrideNwires == 0) {
@@ -549,14 +541,14 @@ void cls_model::SendToGPUwires(GLuint p_IBO, unsigned int p_overrideNwires) cons
 void cls_model::SendToGPUpoints(GLuint p_IBO, unsigned int p_overrideNpoints) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUpoints(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::SendToGPUpoints(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
-	/*fprintf(stderr, "[DEBUG] SendToGPUpoints:\n");
+	LOG(DEBUG) << "SendToGPUpoints: (activate DEBUG4 level to see the data)" << cls_logger::endl;
 	for (unsigned int i=0; i<mNumOfPoints; i++) {
-		fprintf(stderr, "[DEBUG] mPointsIndices[%d]=%d\n", i, mPointsIndices[i]);
-	}*/
+		LOG(DEBUG4) << "mPointsIndices[" << i << "]=" << mPointsIndices[i] << cls_logger::endl;
+	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
 	if (p_overrideNpoints == 0) {
@@ -569,7 +561,7 @@ void cls_model::SendToGPUpoints(GLuint p_IBO, unsigned int p_overrideNpoints) co
 void cls_model::SendToGPUFull(GLuint p_VAO, GLuint p_VBO, GLuint p_IBOtr, GLuint p_IBOwire, GLuint p_IBOpoints) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUFull(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::SendToGPUFull(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
@@ -582,7 +574,7 @@ void cls_model::SendToGPUFull(GLuint p_VAO, GLuint p_VBO, GLuint p_IBOtr, GLuint
 void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUvAndC(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::AppendToGPUvAndC(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
@@ -595,7 +587,8 @@ void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) 
 		v_newVertexAndColorData = new stc_VandC[mNumOfVertices];
 		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, v_newVertexAndColorData);
 
-		//fprintf(stderr, "[DEBUG] AppendToGPUvAndC: p_offset=%ld\n", p_offset);
+		LOG(DEBUG) << "AppendToGPUvAndC: p_offset=" << p_offset
+		           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
 		for (unsigned int i=0; i<mNumOfVertices; i++) {
 
 			glm::vec4 curVertex(mVertexAndColorData[i].v[0], mVertexAndColorData[i].v[1], mVertexAndColorData[i].v[2], 1.);
@@ -604,13 +597,12 @@ void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) 
 			v_newVertexAndColorData[i].v[1] = transformedVertex[1];
 			v_newVertexAndColorData[i].v[2] = transformedVertex[2];
 
-			/*fprintf(stderr, "[DEBUG] x=%f\ty=%f\tz=%f\tr=%f\tg=%f\tb=%f\n",
-			                 v_newVertexAndColorData[i].v[0],
-			                 v_newVertexAndColorData[i].v[1],
-			                 v_newVertexAndColorData[i].v[2],
-			                 v_newVertexAndColorData[i].c[0],
-			                 v_newVertexAndColorData[i].c[1],
-			                 v_newVertexAndColorData[i].c[2]);*/
+			LOG(DEBUG4) << "x=" << v_newVertexAndColorData[i].v[0] << "\t"
+			            << "y=" << v_newVertexAndColorData[i].v[1] << "\t"
+			            << "z=" << v_newVertexAndColorData[i].v[2] << "\t"
+			            << "r=" << v_newVertexAndColorData[i].c[0] << "\t"
+			            << "g=" << v_newVertexAndColorData[i].c[1] << "\t"
+			            << "b=" << v_newVertexAndColorData[i].c[2] << cls_logger::endl;
 		}
 
 	}
@@ -633,16 +625,18 @@ void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset) 
 void cls_model::AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUtriangles(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::AppendToGPUtriangles(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
 	unsigned int* v_newTriangleIndices = new unsigned int[mNumOfTriangles*3];
 
-	//fprintf(stderr, "[DEBUG] AppendToGPUtriangles: p_offset=%ld p_vertOffset=%d\n", p_offset, p_vertOffset);
+	LOG(DEBUG) << "AppendToGPUtriangles: p_offset=" << p_offset << " p_vertOffset=" << p_vertOffset
+	           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
+
 	for (unsigned int i=0; i<mNumOfTriangles*3; i++) {
 		v_newTriangleIndices[i] = mTriangleIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
-		//fprintf(stderr, "[DEBUG] new mTriangleIndices[%d]=%d\n", i, mTriangleIndices[i]);
+		LOG(DEBUG4) << "new mTriangleIndices[" << i << "]=" << mTriangleIndices[i] << cls_logger::endl;
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
@@ -654,16 +648,17 @@ void cls_model::AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned i
 void cls_model::AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUwires(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::AppendToGPUwires(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
 	unsigned int* v_newWireIndices = new unsigned int[mNumOfWires*2];
 
-	//fprintf(stderr, "[DEBUG] AppendToGPUwires: p_offset=%ld p_vertOffset=%d\n", p_offset, p_vertOffset);
+	LOG(DEBUG) << "AppendToGPUwires: p_offset=" << p_offset << " p_vertOffset=" << p_vertOffset
+	           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
 	for (unsigned int i=0; i<mNumOfWires*2; i++) {
 		v_newWireIndices[i] = mWireIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
-		//fprintf(stderr, "[DEBUG] new mWireIndices[%d]=%d\n", i, mWireIndices[i]);
+		LOG(DEBUG4) << "new mWireIndices[" << i << "]=" << mWireIndices[i] << cls_logger::endl;
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
@@ -675,16 +670,17 @@ void cls_model::AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p
 void cls_model::AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::SendToGPUpoints(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::AppendToGPUpoints(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
 	unsigned int* v_newPointsIndices = new unsigned int[mNumOfPoints];
 
-	//fprintf(stderr, "[DEBUG] AppendToGPUpoints: p_offset=%ld p_vertOffset=%d\n", p_offset, p_vertOffset);
+	LOG(DEBUG) << "AppendToGPUpoints: p_offset=" << p_offset << " p_vertOffset=" << p_vertOffset
+	           << " (activate DEBUG4 level to see the data)" << cls_logger::endl;
 	for (unsigned int i=0; i<mNumOfPoints; i++) {
 		v_newPointsIndices[i] = mPointsIndices[i] + p_vertOffset; //TODO this line should not be commented!!!
-		//fprintf(stderr, "[DEBUG] new mPointsIndices[%d]=%d\n", i, mPointsIndices[i]);
+		LOG(DEBUG4) << "new mPointsIndices[" << i << "]=" << mPointsIndices[i] << cls_logger::endl;
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p_IBO);
@@ -696,7 +692,7 @@ void cls_model::AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int 
 void cls_model::DrawTriangles(GLuint p_program, GLuint p_vao, GLuint p_ibo) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::DrawTriangles(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::DrawTriangles(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
@@ -711,7 +707,7 @@ void cls_model::DrawTriangles(GLuint p_program, GLuint p_vao, GLuint p_ibo) cons
 void cls_model::DrawWires(GLuint p_program, GLuint p_vao, GLuint p_ibo) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::DrawWires(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::DrawWires(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
@@ -726,7 +722,7 @@ void cls_model::DrawWires(GLuint p_program, GLuint p_vao, GLuint p_ibo) const
 void cls_model::DrawPoints(GLuint p_program, GLuint p_vao, GLuint p_ibo) const
 {
 	if (!mConstructed) {
-		fprintf(stderr, "[ERROR] cls_model::DrawPoints(): model is not yet constructed.\n");
+		LOG(ERROR) << "cls_model::DrawPoints(): model is not yet constructed." << cls_logger::endl;
 		return;
 	}
 
@@ -742,9 +738,9 @@ void cls_model::Shift(float p_x, float p_y, float p_z)
 {
 	mMatrix = glm::translate(mMatrix, glm::vec3(p_x, p_y, p_z));
 
-	/*fprintf(stderr, "%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
-		            mMatrix[0][0], mMatrix[0][1], mMatrix[0][2], mMatrix[0][3],
-		            mMatrix[1][0], mMatrix[1][1], mMatrix[1][2], mMatrix[1][3],
-		            mMatrix[2][0], mMatrix[2][1], mMatrix[2][2], mMatrix[2][3],
-		            mMatrix[3][0], mMatrix[3][1], mMatrix[3][2], mMatrix[3][3]);*/
+	LOG(DEBUG3) << "mMatrix after Shift():" << cls_logger::endl
+		        << "\t\t" << mMatrix[0][0] << " " << mMatrix[0][1] << " " << mMatrix[0][2] << " " << mMatrix[0][3] << cls_logger::endl
+		        << "\t\t" << mMatrix[1][0] << " " << mMatrix[1][1] << " " << mMatrix[1][2] << " " << mMatrix[1][3] << cls_logger::endl
+		        << "\t\t" << mMatrix[2][0] << " " << mMatrix[2][1] << " " << mMatrix[2][2] << " " << mMatrix[2][3] << cls_logger::endl
+		        << "\t\t" << mMatrix[3][0] << " " << mMatrix[3][1] << " " << mMatrix[3][2] << " " << mMatrix[3][3] << cls_logger::endl;
 }
