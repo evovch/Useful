@@ -6,6 +6,9 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+#include "UserEvent.h"
+#include "UserEventStep2.h"
+
 UserProcStep2::UserProcStep2(const char* name) :
 	TGo4EventProcessor(name),
 	mEventCounter(0)
@@ -18,9 +21,115 @@ UserProcStep2::~UserProcStep2()
 
 Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 {
-	cerr << "UserProcStep2: Event " << mEventCounter << endl;
+	Bool_t v_isValid = kFALSE;
+	UserEventStep2* v_outputEvent = (UserEventStep2*)p_dest;
+
+	UserEvent* v_input = (UserEvent*)GetInputEvent();
+	if (v_input == NULL)
+	{
+		cerr << "UserProcStep2::BuildEvent(): no input event!" << endl;
+		v_outputEvent->SetValid(v_isValid);
+		return v_isValid;
+	}
+	v_isValid = kTRUE;
+
+	cerr << "UserProcStep2: Event " << mEventCounter
+	     << " ==========================================================================================================="
+	     << endl;
+
+	mCurrentOutputEvent = v_outputEvent;
+
+	//TODO do the processing here
+
+	UShort_t* v_inputCAMAC = v_input->mCAMAC;
+
+	// Transform pairs of shorts into normal ints
+	UInt_t v_line[4];
+	v_line[0] = ((v_inputCAMAC[1] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[0] << 0)  & 0x0000ffff);
+	v_line[1] = ((v_inputCAMAC[3] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[2] << 0)  & 0x0000ffff);
+	v_line[2] = ((v_inputCAMAC[5] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[4] << 0)  & 0x0000ffff);
+	v_line[3] = ((v_inputCAMAC[7] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[6] << 0)  & 0x0000ffff);
+
+	// Just print - shorts
+	fprintf(stderr, "--------------------------------\n");
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[1]);
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[0]);
+	fprintf(stderr, "\n");
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[3]);
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[2]);
+	fprintf(stderr, "\n");
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[5]);
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[4]);
+	fprintf(stderr, "\n");
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[7]);
+	PrintBits(sizeof(UShort_t), &v_inputCAMAC[6]);
+	fprintf(stderr, "\n");
+	fprintf(stderr, "--------------------------------\n");
+
+	// Just print - ints
+	fprintf(stderr, "--------------------------------\n");
+	PrintBits(sizeof(UInt_t), &v_line[0]);	fprintf(stderr, "\n");
+	PrintBits(sizeof(UInt_t), &v_line[1]);	fprintf(stderr, "\n");
+	PrintBits(sizeof(UInt_t), &v_line[2]);	fprintf(stderr, "\n");
+	PrintBits(sizeof(UInt_t), &v_line[3]);	fprintf(stderr, "\n");
+	fprintf(stderr, "--------------------------------\n");
+
+	// Just print - bits
+	fprintf(stderr, "--------------------------------\n");
+	for (unsigned int i=0; i<4; i++) {
+		for (unsigned char v_wire=0; v_wire<32; v_wire++) {
+			unsigned char v_bitValue = (v_line[i] >> (32-v_wire-1)) & 0x1;
+			fprintf(stderr, "%d", v_bitValue);
+		}
+		fprintf(stderr, "\n");
+	}
+	fprintf(stderr, "--------------------------------\n");
+
+	// Analyse - extract necessary numbers and fill the output structures
+	for (unsigned int i=0; i<4; i++) {
+		unsigned char v_id = 0;
+		unsigned char v_planeNb = (i%2)+1;
+		unsigned char v_mwpcNb = (i/2)+1;
+		for (unsigned char v_wire=0; v_wire<32; v_wire++) {
+			unsigned char v_bitValue = (v_line[i] >> (32-v_wire)) & 0x1;
+			if (v_bitValue == 1) {
+				fprintf(stderr, "planeNb=%d mwpcNb=%d ID=%d wire=%d\n",
+				    v_planeNb, v_mwpcNb, v_id, v_wire);
+				// HERE WE HAVE IT
+				v_id++;
+			}
+		}
+	}
+
+	// --------------------------
+
+	v_outputEvent->SetValid(v_isValid);
+
 	mEventCounter++;
-	return kTRUE;
+
+	return v_isValid;
+}
+
+// Assumes little endian
+void UserProcStep2::PrintBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+
+    for (i=size-1; i>=0; i--)
+    {
+        for (j=7; j>=0; j--)
+        {
+            byte = (b[i] >> j) & 1;
+            fprintf(stderr, "%u", byte);
+        }
+    }
+    //puts(""); // ?
 }
 
 ClassImp(UserProcStep2)

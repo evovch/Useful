@@ -27,6 +27,8 @@ public:
 	void ProcessSubeventRawVME1(Int_t p_size, Int_t* p_startAddress);
 	void ProcessSubeventRawCAMAC(Int_t p_size, Int_t* p_startAddress);
 
+	void ProcessSubeventRawCAMACmwpc(Int_t p_size, Int_t* p_startAddress);
+
 	static enu_VENDOR CheckNextHeader(Int_t* p_startAddress);
 
 	/**

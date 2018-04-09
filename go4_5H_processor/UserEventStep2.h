@@ -3,6 +3,8 @@
 
 #include <TGo4EventElement.h> // mother class
 
+//class TClonesArray;
+
 class UserEventStep2 : public TGo4EventElement
 {
 public:
@@ -10,6 +12,10 @@ public:
 	virtual ~UserEventStep2();
 
 	void Clear(Option_t* t = "");
+
+private:
+
+	//TClonesArray* mMWPCdigi;
 
 	ClassDef(UserEventStep2, 1);
 };

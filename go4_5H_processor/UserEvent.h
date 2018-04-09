@@ -16,6 +16,8 @@ public:
 	Int_t mControl;
 	Short_t mProcID;
 
+	UShort_t mCAMAC[8];
+
 	ClassDef(UserEvent, 1);
 };
 

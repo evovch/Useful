@@ -112,7 +112,7 @@ void UserProc::ProcessSubevent(TGo4MbsSubEvent* p_subevent)
 		break;
 	case 101:
 		cerr << "CAMAC" << endl;
-		this->ProcessSubeventRawCAMAC(v_intLen, v_dataField);
+		this->ProcessSubeventRawCAMACmwpc(v_intLen, v_dataField);
 		break;
 	default:
 		break;
@@ -196,15 +196,79 @@ void UserProc::ProcessSubeventRawCAMAC(Int_t p_size, Int_t* p_startAddress)
 	//cerr << "\t" << "Skipping." << endl;
 
 	for (unsigned int v_cursor=0; v_cursor<p_size; v_cursor++) {
-
 		unsigned int v_curWord = p_startAddress[v_cursor];
 		unsigned int v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
-
 		fprintf(stderr, "%d: %08x\tgeo=%u\n", v_cursor, p_startAddress[v_cursor], v_geo);
+	}
+}
 
+void UserProc::ProcessSubeventRawCAMACmwpc(Int_t p_size, Int_t* p_startAddress)
+{
+	cerr << "Processing raw subevent from CAMAC. size=" << p_size << endl;
+	//cerr << "\t" << "Skipping." << endl;
 
+	// Currently we rely on the fact that p_size=16
+	// We also rely that the words come in order from the blocks
+	// with geo = 20, 21, 22, 23
+
+	if (p_size != 16) {
+		cerr << "size != 16, Skipping!" << endl;
 	}
 
+	unsigned int v_curWord;
+	unsigned int v_geo;
+
+	// HEADER
+	v_curWord = p_startAddress[0];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	// DATA0
+	v_curWord = p_startAddress[1];
+	mCurrentOutputEvent->mCAMAC[0] = (v_curWord & 0xFFFF);
+	// DATA1
+	v_curWord = p_startAddress[2];
+	mCurrentOutputEvent->mCAMAC[1] = (v_curWord & 0xFFFF);
+	// FOOTER
+	v_curWord = p_startAddress[3];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+
+	// HEADER
+	v_curWord = p_startAddress[4];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	// DATA2
+	v_curWord = p_startAddress[5];
+	mCurrentOutputEvent->mCAMAC[2] = (v_curWord & 0xFFFF);
+	// DATA3
+	v_curWord = p_startAddress[6];
+	mCurrentOutputEvent->mCAMAC[3] = (v_curWord & 0xFFFF);
+	// FOOTER
+	v_curWord = p_startAddress[7];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+
+	// HEADER
+	v_curWord = p_startAddress[8+0];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	// DATA4
+	v_curWord = p_startAddress[8+1];
+	mCurrentOutputEvent->mCAMAC[4] = (v_curWord & 0xFFFF);
+	// DATA5
+	v_curWord = p_startAddress[8+2];
+	mCurrentOutputEvent->mCAMAC[5] = (v_curWord & 0xFFFF);
+	// FOOTER
+	v_curWord = p_startAddress[8+3];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+
+	// HEADER
+	v_curWord = p_startAddress[8+4];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	// DATA6
+	v_curWord = p_startAddress[8+5];
+	mCurrentOutputEvent->mCAMAC[6] = (v_curWord & 0xFFFF);
+	// DATA7
+	v_curWord = p_startAddress[8+6];
+	mCurrentOutputEvent->mCAMAC[7] = (v_curWord & 0xFFFF);
+	// FOOTER
+	v_curWord = p_startAddress[8+7];
+	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 }
 
 /*static*/

@@ -4,6 +4,7 @@
 #include <TGo4EventProcessor.h> // mother class
 
 class TGo4EventElement;
+class UserEventStep2;
 
 class UserProcStep2 : public TGo4EventProcessor
 {
@@ -15,6 +16,10 @@ public:
 
 private:
 	unsigned long int mEventCounter;
+
+	UserEventStep2* mCurrentOutputEvent;
+
+	void PrintBits(size_t const size, void const * const ptr);
 
 	ClassDef(UserProcStep2, 1);
 };
