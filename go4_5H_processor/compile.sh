@@ -12,5 +12,6 @@ cd -
 
 cp -v build/*.so .
 cp -v build/*.pcm .
+cp -v build/*.rootmap .
 
 echo "Finished."

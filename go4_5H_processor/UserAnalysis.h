@@ -12,10 +12,9 @@ public:
 
 	void Construct(void);
 
-	virtual Int_t UserPreLoop(void);
-	virtual Int_t UserEventFunc(void);
-	virtual Int_t UserPostLoop(void);
-
+	virtual Int_t UserPreLoop();
+	virtual Int_t UserEventFunc();
+	virtual Int_t UserPostLoop();
 
 	ClassDef(UserAnalysis, 1);
 };

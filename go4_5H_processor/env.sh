@@ -7,6 +7,10 @@ SOFTDIR=/home/evovch/soft
 #export ERSYS=${SOFTDIR}/er
 #export ERBUILD=${SOFTDIR}/er_build
 
-#. ${ERBUILD}/config.sh
+#cd ${ERBUILD}/
+#. ./config.sh
+#cd -
 
-. ${SOFTDIR}/go4-5.3.0/go4login
+cd ${SOFTDIR}/go4-5.3.0/
+. ./go4login
+cd -
