@@ -71,6 +71,10 @@ void UserAnalysis::Construct(void)
 	step2->SetProcessEnabled(kTRUE);
 	step2->SetErrorStopEnabled(kTRUE);
 
+	TGo4FileStoreParameter* store2 = new TGo4FileStoreParameter("output2.root");
+	step2->SetEventStore(store2);
+	step2->SetStoreEnabled(kTRUE);
+
 	// ============================================================================================
 
 	// Add STEPs to the analysis

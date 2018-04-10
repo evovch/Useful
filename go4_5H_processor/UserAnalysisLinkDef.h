@@ -11,4 +11,6 @@
 #pragma link C++ class UserProcStep2+;
 #pragma link C++ class UserAnalysisHistos+;
 
+#pragma link C++ class BeamDetMWPCDigi+;
+
 #endif // __CINT__

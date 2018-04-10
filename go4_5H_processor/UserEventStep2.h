@@ -3,7 +3,7 @@
 
 #include <TGo4EventElement.h> // mother class
 
-//class TClonesArray;
+class TClonesArray;
 
 class UserEventStep2 : public TGo4EventElement
 {
@@ -13,9 +13,8 @@ public:
 
 	void Clear(Option_t* t = "");
 
-private:
-
-	//TClonesArray* mMWPCdigi;
+public:
+	TClonesArray* mMWPCdigi;
 
 	ClassDef(UserEventStep2, 1);
 };

@@ -6,8 +6,12 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+#include <TClonesArray.h>
+
+// Project
 #include "UserEvent.h"
 #include "UserEventStep2.h"
+#include "data/BeamDetMWPCDigi.h"
 
 UserProcStep2::UserProcStep2(const char* name) :
 	TGo4EventProcessor(name),
@@ -38,6 +42,9 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	     << endl;
 
 	mCurrentOutputEvent = v_outputEvent;
+
+	// Clear the output event!!!
+	mCurrentOutputEvent->Clear();
 
 	//TODO do the processing here
 
@@ -89,18 +96,33 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	}
 	fprintf(stderr, "--------------------------------\n");
 
+	unsigned int v_globalId = 0;
+
 	// Analyse - extract necessary numbers and fill the output structures
 	for (unsigned int i=0; i<4; i++) {
 		unsigned char v_id = 0;
-		unsigned char v_planeNb = (i%2)+1;
-		unsigned char v_mwpcNb = (i/2)+1;
+		unsigned char v_plane = (i%2)+1;
+		unsigned char v_mwpc = (i/2)+1;
 		for (unsigned char v_wire=0; v_wire<32; v_wire++) {
 			unsigned char v_bitValue = (v_line[i] >> (32-v_wire)) & 0x1;
 			if (v_bitValue == 1) {
 				fprintf(stderr, "planeNb=%d mwpcNb=%d ID=%d wire=%d\n",
-				    v_planeNb, v_mwpcNb, v_id, v_wire);
+				    v_plane, v_mwpc, v_id, v_wire);
 				// HERE WE HAVE IT
+
+				//BeamDetMWPCDigi* v_curDigi = new BeamDetMWPCDigi(v_id, v_mwpc, v_plane, v_wire, 0., 0.f);
+
+				//TClonesArray* v_outArray = mCurrentOutputEvent->mMWPCdigi;
+
+				BeamDetMWPCDigi* v_constructedObject =
+				    (BeamDetMWPCDigi*)mCurrentOutputEvent->mMWPCdigi->ConstructedAt(v_globalId);
+				v_constructedObject->SetData(v_id, v_mwpc, v_plane, v_wire, 0., 0.f);
+
+				//new(&v_outArray[v_globalId]) BeamDetMWPCDigi(v_id, v_mwpc, v_plane, v_wire, 0., 0.f);
+
+
 				v_id++;
+				v_globalId++;
 			}
 		}
 	}
