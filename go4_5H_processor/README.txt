@@ -93,3 +93,51 @@ You can clean up after 'make' by:
 
 # For rootcling (or older rootcint) see official site, there's not so much to read:
 # https://root.cern.ch/cling
+
+
+
+EVENT
+=====
+An event consists of a header and optionally subevents.
+I have no idea if an event has a footer because the MbsAPI,
+provided by the Go4 framework, is used and no raw data is accessed at this level.
+
+event header
+subevent
+subevent
+...
+subevent
+[event footer]
+
+SUBEVENT
+========
+Each subevent consists of a header and optionally subsubevents.
+Again, I have no idea if a subevent has a footer because the MbsAPI,
+provided by the Go4 framework, is used and no raw data is accessed at this level.
+The subevent header contains the size of the subevent data payload which is used
+to loop over the words in a for-style loop. The pointer to the first word of the
+first subsubevent is provided.
+
+subevent header
+subsubevent
+subsubevent
+...
+subsubevent
+[subevent footer]
+
+SUBSUBEVENT
+===========
+One subsubevent is a group of words of the following structure:
+
+subsubevent header
+data word
+data word
+...
+data word
+subsubevent footer
+
+Subsubevent header and footer each have the length of one word (32 bits).
+A data word (32 bits) can be coming from a unit by one of the vendors - CAEN or MESYTEC.
+The subsubevent header is used to identify the vendor.
+The footer is used only to separate the subsubevents.
+It can be (and currently is) used to identify the length of the subsubevent.

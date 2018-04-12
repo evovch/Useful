@@ -31,9 +31,10 @@ endif()
 
 # ===============================================
 
-# if (CMAKE_COMPILER_IS_GNUCXX)
-#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wpedantic -std=c++11")
-# endif()
+#if (CMAKE_COMPILER_IS_GNUCXX)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wpedantic")
+#    # -std=c++11
+#endif()
 
 # ===============================================
 # ROOT dictionary
@@ -47,6 +48,7 @@ set(ROOTCLING_HEADERS UserAnalysis.h
                       UserProcStep2.h
                       UserAnalysisHistos.h
                       data/BeamDetMWPCDigi.h
+                      data/RawMessage.h
                       )
 
 ROOT_GENERATE_DICTIONARY(G__UserAnalysis ${ROOTCLING_HEADERS} LINKDEF UserAnalysisLinkDef.h)
@@ -61,6 +63,8 @@ set(SOURCE_LIB G__UserAnalysis.cxx
                UserProcStep2.cxx
                UserAnalysisHistos.cxx
                data/BeamDetMWPCDigi.cxx
+               data/RawMessage.cxx
+               Support.cxx
                )
 
 add_library(UserAnalysis SHARED ${SOURCE_LIB})

@@ -12,5 +12,6 @@
 #pragma link C++ class UserAnalysisHistos+;
 
 #pragma link C++ class BeamDetMWPCDigi+;
+#pragma link C++ class RawMessage+;
 
 #endif // __CINT__

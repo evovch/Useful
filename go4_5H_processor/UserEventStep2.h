@@ -1,3 +1,9 @@
+/**
+
+	@class UserEventStep2
+
+*/
+
 #ifndef USEREVENTSTEP2_H
 #define USEREVENTSTEP2_H
 

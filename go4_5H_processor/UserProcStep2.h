@@ -1,3 +1,9 @@
+/**
+
+	@class UserProcStep2
+
+*/
+
 #ifndef USERPROCSTEP2
 #define USERPROCSTEP2
 

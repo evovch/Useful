@@ -79,7 +79,7 @@ void UserAnalysis::Construct(void)
 
 	// Add STEPs to the analysis
 	AddAnalysisStep(step1);
-	AddAnalysisStep(step2);
+	//AddAnalysisStep(step2); //TODO
 }
 
 Int_t UserAnalysis::UserPreLoop(void)

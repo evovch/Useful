@@ -1,3 +1,9 @@
+/**
+
+	@class UserAnalysisHistos
+
+*/
+
 #ifndef USERANALYSISHISTOS_H
 #define USERANALYSISHISTOS_H
 

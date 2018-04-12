@@ -1,7 +1,15 @@
+/**
+
+	@class UserEvent
+
+*/
+
 #ifndef USEREVENT_H
 #define USEREVENT_H
 
 #include <TGo4EventElement.h> // mother class
+
+class TClonesArray;
 
 class UserEvent : public TGo4EventElement
 {
@@ -12,9 +20,8 @@ public:
 	void Clear(Option_t* t = "");
 
 public:
-	Int_t mSubcrate;
-	Int_t mControl;
-	Short_t mProcID;
+
+	TClonesArray* mRawMessages;
 
 	UShort_t mCAMAC[8];
 
