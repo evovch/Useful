@@ -5,6 +5,9 @@
 using std::cerr;
 using std::endl;
 
+// ROOT
+#include <TClonesArray.h>
+
 // Go4
 #include <TGo4EventElement.h>
 #include <TGo4MbsEvent.h>
@@ -14,10 +17,11 @@ using std::endl;
 #include "Support.h"
 #include "UserEvent.h"
 #include "UserAnalysisHistos.h"
+#include "data/RawMessage.h"
 
 /*static*/ bool UserProc::mInsidePackage = false;
 
-#define PRINTDEBUGINFO
+//#define PRINTDEBUGINFO
 
 UserProc::UserProc(const char* name) :
 	TGo4EventProcessor(name),
@@ -122,7 +126,9 @@ void UserProc::ProcessSubevent(TGo4MbsSubEvent* p_subevent)
 	//TODO I did not actually find the corrent subevent header length
 	mHeadersWords += 3;
 
-	//this->DumpSubeventData2(v_intLen, v_dataField);
+	#ifdef PRINTDEBUGINFO
+	this->DumpSubeventData2(v_intLen, v_dataField);
+	#endif
 	////this->ProcessSubeventRaw(v_intLen, v_dataField);
 
 	/**
@@ -358,9 +364,12 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 		Int_t tmp = p_startAddress[v_cursor];
 		Int_t v_curWord = tmp;
 
+		// Common for all types of messages
 		Int_t v_type = (v_curWord >> 30) & 0x3; // 2 bits
 
 		Int_t v_module_id;
+		Int_t v_subsubeventSize;
+		Int_t v_eventCounter; // event counter or time stamp
 		Int_t v_channel;
 		Int_t v_valueQA; // QDC and ADC
 		Int_t v_valueT; // TDC
@@ -369,20 +378,29 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 		case 1: // MESYTEC header
 			mInsidePackage = true;
 			v_module_id = (v_curWord >> 16) & 0xff; // 8 bits
+			v_subsubeventSize = v_curWord & 0x3ff; // 10 bits
 			mNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "MESYTEC header module_id=" << v_module_id << endl;
+			cerr << "[" << v_cursor << "]\t" << "MESYTEC header"
+			     << "\ttype=" << v_type
+			     << "\tmodule_id=" << v_module_id
+			     << "\tsize=" << v_subsubeventSize
+			     << endl;
 			#endif
 			break;
 		case 3: // MESYTEC footer
 			mInsidePackage = false;
+			v_eventCounter = v_curWord & 0x3fffffff; // 30 bits
 			mNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "MESYTEC footer" << endl;
+			cerr << "[" << v_cursor << "]\t" << "MESYTEC footer"
+			     << "\ttype=" << v_type
+			     << "\teventCounter=" << v_eventCounter
+			     << endl;
 			#endif
 			break;
 		case 0: // MESYTEC data
@@ -395,8 +413,16 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << "[" << v_cursor << "]\t" << "MESYTEC data"
-			     << "\tch=" << v_channel << "\tvalueQA=" << v_valueQA << "\tvalueT=" << v_valueT << endl;
+			     << "\ttype=" << v_type
+			     << "\tch=" << v_channel
+			     << "\tvalueQA=" << v_valueQA
+			     << "\tvalueT=" << v_valueT
+			     << endl;
 			#endif
+
+			// HERE WE WRITE OUT
+
+
 			if (!mInsidePackage) {
 				cerr << "[ERROR ] MESYTEC data word found not between the header and the footer." << endl;
 			}
@@ -406,7 +432,8 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 			#ifdef PRINTDEBUGINFO
 			cerr << "[ERROR ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "Unknown MESYTEC type" << endl;
+			cerr << "[" << v_cursor << "]\t" << "MESYTEC unknown"
+			     << "\ttype=" << v_type << endl;
 			#endif
 			break;
 		} // end of switch
@@ -429,8 +456,11 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 		Int_t tmp = p_startAddress[v_cursor];
 		Int_t v_curWord = tmp;
 
+		// Common for all types of messages
 		Int_t v_type = (v_curWord >> 24) & 0x7; // 3 bits
 		Int_t v_geo = (v_curWord >> 27) & 0x1f; // 5 bits
+
+		Int_t v_eventCounter;
 		Int_t v_channel;
 		Int_t v_value;
 
@@ -441,16 +471,24 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "CAEN header" << "\ttype=" << v_type << "\tgeo=" << v_geo << endl;
+			cerr << "[" << v_cursor << "]\t" << "CAEN header"
+			     << "\ttype=" << v_type
+			     << "\tgeo=" << v_geo
+			     << endl;
 			#endif
 			break;
 		case 4: // CAEN footer
 			mInsidePackage = false;
+			v_eventCounter = v_curWord & 0xffffff; // 24 bits
 			mNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "CAEN footer" << "\ttype=" << v_type << "\tgeo=" << v_geo << endl;
+			cerr << "[" << v_cursor << "]\t" << "CAEN footer"
+			     << "\ttype=" << v_type
+			     << "\tgeo=" << v_geo
+			     << "\teventCounter=" << v_eventCounter
+			     << endl;
 			#endif
 			break;
 		case 6: // CAEN no valid data
@@ -458,7 +496,10 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "CAEN no valid data" << "\ttype=" << v_type << "\tgeo=" << v_geo << endl;
+			cerr << "[" << v_cursor << "]\t" << "CAEN no valid data"
+			     << "\ttype=" << v_type
+			     << "\tgeo=" << v_geo
+			     << endl;
 			#endif
 			break;
 		case 0: // CAEN data
@@ -468,9 +509,17 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "CAEN data" << "\ttype=" << v_type << "\tgeo=" << v_geo
-			     << " ch=" << v_channel << " value=" << v_value << endl;
+			cerr << "[" << v_cursor << "]\t" << "CAEN data"
+			     << "\ttype=" << v_type
+			     << "\tgeo=" << v_geo
+			     << "\tch=" << v_channel
+			     << "\tvalue=" << v_value
+			     << endl;
 			#endif
+
+			// HERE WE WRITE OUT
+			this->AddOutputRawMessage(v_geo, v_channel, v_value);
+
 			if (!mInsidePackage) {
 				cerr << "[ERROR ] CAEN data word found not between the header and the footer." << endl;
 			}
@@ -480,7 +529,10 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 			#ifdef PRINTDEBUGINFO
 			cerr << "[ERROR ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
-			cerr << "[" << v_cursor << "]\t" << "CAEN unknown" << "\ttype=" << v_type << "\tgeo=" << v_geo << endl;
+			cerr << "[" << v_cursor << "]\t" << "CAEN unknown"
+			     << "\ttype=" << v_type
+			     << "\tgeo=" << v_geo
+			     << endl;
 			#endif
 			break;
 		} // end of switch
@@ -490,6 +542,17 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
 }
+
+void UserProc::AddOutputRawMessage(Int_t p_geo,
+                                   Int_t p_ch,
+                                   Int_t p_val)
+{
+	TClonesArray& v_coll = *(mCurrentOutputEvent->mRawMessages);
+	Int_t v_size = v_coll.GetEntriesFast();
+	/*return*/ new(v_coll[v_size])RawMessage(p_geo, p_ch, p_val);
+}
+
+// static methods =================================================================================
 
 /*static*/
 enu_VENDOR UserProc::CheckNextHeader(const Int_t* p_startAddress)
@@ -527,7 +590,8 @@ enu_VENDOR UserProc::CheckNextHeader(const Int_t* p_startAddress)
 			} else {
 				#ifdef PRINTDEBUGINFO
 				cerr << "[DEBUG ] Checking "
-				     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t";
+				     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t"
+				     << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "\t";
 				cerr << "Identified as UNKNOWN block" << endl;
 				#endif
 				return OTHER;

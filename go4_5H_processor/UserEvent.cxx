@@ -19,6 +19,7 @@ UserEvent::UserEvent(const char* name) :
 
 UserEvent::~UserEvent()
 {
+	//TODO delete mRawMessages?
 }
 
 void UserEvent::Clear(Option_t* t)

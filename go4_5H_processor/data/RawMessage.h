@@ -13,6 +13,9 @@ class RawMessage : public TObject
 {
 public:
 	RawMessage();
+	RawMessage(Int_t p_geo,
+	           Int_t p_ch,
+	           Int_t p_val);
 	virtual ~RawMessage();
 
 public:

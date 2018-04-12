@@ -20,7 +20,8 @@ enum enu_VENDOR {MESYTEC, CAEN, OTHER, AFFEAFFE};
 
 class UserProc : public TGo4EventProcessor
 {
-public:
+public: // methods
+
 	UserProc(const char* name = "UserProc");
 	virtual ~UserProc();
 
@@ -37,10 +38,17 @@ public:
 	void ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddress);
 	void ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress);
 
-private:
+private: // methods
+
+	void AddOutputRawMessage(Int_t p_geo,
+	                         Int_t p_ch,
+	                         Int_t p_val);
+
+private: // static methods
+
 	//NOTE: static methods do not change any class data members.
 	// Here they basically look into the data and do something
-	// nice and clean - find something and  return found word position,
+	// nice and clean - find something and return found word position,
 	// check the type of the word,
 	// print something on the screen, etc.
 	// no counters are (at least should be) changed
@@ -80,13 +88,23 @@ private:
 	 */
 	static void DumpSubeventData2(Int_t p_size, const Int_t* p_startAddress);
 
-private:
-	unsigned long int mEventCounter;
+private: // data members
 
+	/**
+	 * Counters
+	 */
+	unsigned long int mEventCounter;
 	unsigned long int mHeadersWords;
 	unsigned long int mNknownWords;
 	unsigned long int mNunknownWords;
 
+	/**
+	 * Output event object.
+	 * This object is clear at the end of the previous event.
+	 * Then it is filled during BuildEvent() and all the method
+	 * which are called by BuildEvent() and then this object
+	 * is written out by the framework after BuildEvent()
+	 */
 	UserEvent* mCurrentOutputEvent;
 
 	/**
@@ -96,8 +114,8 @@ private:
 	UserAnalysisHistos* mHistoMan;
 
 	/**
-		This flag is set true when a header is found and
-		false when a footer is found
+	 * This flag is set true when a header is found and
+	 * false when a footer is found
 	*/
 	static bool mInsidePackage;
 
