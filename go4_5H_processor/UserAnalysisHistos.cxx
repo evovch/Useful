@@ -18,9 +18,9 @@ UserAnalysisHistos::UserAnalysisHistos()
 UserAnalysisHistos::~UserAnalysisHistos()
 {
 	/**
-		Not 100% sure, but it looks as if you do not need to delete your histograms yourself.
-		TGo4AnalysisObjectManager, as part of the singleton TGo4Analysis, will take care.
-	**/
+	 * Not 100% sure, but it looks as if you do not need to delete your histograms yourself.
+	 * TGo4AnalysisObjectManager, as part of the singleton TGo4Analysis, will take care.
+	 */
 }
 
 ClassImp(UserAnalysisHistos)

@@ -4,8 +4,8 @@
 
 */
 
-#ifndef USERPROCSTEP2
-#define USERPROCSTEP2
+#ifndef USERPROCSTEP2_H
+#define USERPROCSTEP2_H
 
 #include <TGo4EventProcessor.h> // mother class
 
@@ -30,4 +30,4 @@ private:
 	ClassDef(UserProcStep2, 1);
 };
 
-#endif // USERPROCSTEP2
+#endif // USERPROCSTEP2_H

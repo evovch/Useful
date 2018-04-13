@@ -9,7 +9,7 @@ using std::endl;
 #include <TClonesArray.h>
 
 // Project
-#include "UserEvent.h"
+#include "UserEventUnpacking.h"
 #include "UserEventStep2.h"
 #include "data/BeamDetMWPCDigi.h"
 

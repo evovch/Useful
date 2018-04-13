@@ -13,35 +13,69 @@ class RawMessage : public TObject
 {
 public:
 	RawMessage();
-	RawMessage(Int_t p_geo,
-	           Int_t p_ch,
-	           Int_t p_val);
+	RawMessage(const RawMessage &obj);
 	virtual ~RawMessage();
 
 public:
-
 	/**
 	 * From the event header
 	 */
+	Short_t mEventType;
+	Short_t mEventSubtype;
+	Short_t mEventDummy;
+	Short_t mEventTrigger;
+	Int_t   mEventCount;
 
 	/**
 	 * From the subevent header
 	 */
-	Int_t mSubcrate;
-	Int_t mControl;
-	Short_t mProcID;
+	Int_t   mSubeventDlen;
+	Short_t mSubeventType;
+	Char_t  mSubeventSubcrate;
+	Char_t  mSubeventControl;
+	Int_t   mSubeventFullID;
+	Short_t mSubeventProcID;
 
 	/**
 	 * From the subsubevent header
+	 * See UserProc.h header
+	 * {OTHER=0, MESYTEC=1, CAEN=2, AFFEAFFE=3}
 	 */
-	Int_t mGeo;
-	Int_t mModule;
+	Char_t mSubsubeventVendor;
+
+	/**
+	 * From the subsubevent header
+	 * CAEN only
+	 * Geo is actually taken from each CAEN word, while module - only from the MESYTEC header
+	 * Geo is written by the DAQ system into all types of words of the CAEN block
+	 * (the header, data word, footer, etc.)
+	 * Module is written only in the header of the MESYTEC block
+	 */
+	Int_t mSubsubeventGeo;
+
+	/**
+	 * From the subsubevent header
+	 * MESYTEC only
+	 * Geo is actually taken from each CAEN word, while module - only from the MESYTEC header
+	 * Geo is written by the DAQ system into all types of words of the CAEN block
+	 * (the header, data word, footer, etc.)
+	 * Module is written only in the header of the MESYTEC block
+	 */
+	Int_t mSubsubeventModule;
 
 	/**
 	 * From the message
 	 */
-	Int_t mCh;
-	Int_t mVal;
+	Int_t mChannel;
+	Int_t mValueQA;
+	Int_t mValueT;
+
+	/**
+	 * From the subsubevent footer
+	 * Both CAEN and MESYTEC write some counter in the footer
+	 * though the formats are different
+	 */
+	Int_t mSubsubeventFooterCounter;
 
 	ClassDef(RawMessage, 1);
 };

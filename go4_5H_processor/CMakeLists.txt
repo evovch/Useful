@@ -42,11 +42,12 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(ROOTCLING_HEADERS UserAnalysis.h
-                      UserEvent.h
-                      UserProc.h
+                      UserEventUnpacking.h
+                      UserProcUnpacking.h
+                      UserAnalysisHistos.h
+                      UserProcMonitoring.h
                       UserEventStep2.h
                       UserProcStep2.h
-                      UserAnalysisHistos.h
                       data/BeamDetMWPCDigi.h
                       data/RawMessage.h
                       )
@@ -57,11 +58,12 @@ ROOT_GENERATE_DICTIONARY(G__UserAnalysis ${ROOTCLING_HEADERS} LINKDEF UserAnalys
 
 set(SOURCE_LIB G__UserAnalysis.cxx
                UserAnalysis.cxx
-               UserEvent.cxx
-               UserProc.cxx
+               UserEventUnpacking.cxx
+               UserProcUnpacking.cxx
+               UserAnalysisHistos.cxx
+               UserProcMonitoring.cxx
                UserEventStep2.cxx
                UserProcStep2.cxx
-               UserAnalysisHistos.cxx
                data/BeamDetMWPCDigi.cxx
                data/RawMessage.cxx
                Support.cxx

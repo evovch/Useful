@@ -2,6 +2,7 @@
 
 rm -fv libUserAnalysis.so libUserAnalysis_rdict.pcm libUserAnalysis.rootmap
 rm -fv out.txt err.txt
+rm -fv summary.txt
 rm -fv output.root output2.root
 rm -fv Go4AnalysisASF.root
 

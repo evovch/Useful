@@ -1,4 +1,4 @@
-#include "UserProc.h"
+#include "UserProcUnpacking.h"
 
 //TODO test //TODO why not iostream?
 #include <Riostream.h>
@@ -15,13 +15,19 @@ using std::endl;
 
 // Project
 #include "Support.h"
-#include "UserEvent.h"
+#include "UserEventUnpacking.h"
 #include "UserAnalysisHistos.h"
-#include "data/RawMessage.h"
 
-/*static*/ bool UserProc::mInsidePackage = false;
+/*static*/
+RawMessage UserProc::mCurMessage;
+
+/*static*/
+bool UserProc::mInsidePackage = false;
 
 //#define PRINTDEBUGINFO
+
+//TODO test
+//#define DORESET
 
 UserProc::UserProc(const char* name) :
 	TGo4EventProcessor(name),
@@ -67,10 +73,7 @@ Bool_t UserProc::BuildEvent(TGo4EventElement* p_dest)
 
 	mCurrentOutputEvent = v_outputEvent;
 
-	//this->DumpEventHeader(v_input);
-
-	//TODO I did not actually find the corrent event header length
-	mHeadersWords += 4;
+	this->ProcessEventHeader(v_input);
 
 	// Set the internal iterator of the subevent array to the beginning of the array.
 	// I have no idea why do we have to do this...
@@ -94,52 +97,111 @@ Bool_t UserProc::BuildEvent(TGo4EventElement* p_dest)
 
 	cerr << "[DEBUG ] " << "End of event " << mEventCounter << ".\t"
 	     << "Headers' words: " << mHeadersWords << ",\t"
-	     << "Known words: " << mNknownWords << ",\t"
+	     << "known words: " << mNknownWords << ",\t"
 	     << "unknown words: " << mNunknownWords << ",\t"
 	     << "total: " << (mHeadersWords+mNknownWords+mNunknownWords)*sizeof(Int_t) << " bytes."
 	     << endl;
 
 	if (mFileSummary != NULL) {
-		fprintf(mFileSummary, "End of event %ld.\tKnown words: %ld,\tunknown words: %ld,\ttotal: %ld bytes.\n",
-		        mEventCounter, mNknownWords, mNunknownWords, (mNknownWords+mNunknownWords)*sizeof(Int_t));
+		fprintf(mFileSummary,
+		        "End of event %ld.\tHeaders' words: %ld,\tknown words: %ld,\tunknown words: %ld,\ttotal: %ld bytes.\n",
+		        mEventCounter, mHeadersWords, mNknownWords, mNunknownWords,
+		        (mHeadersWords+mNknownWords+mNunknownWords)*sizeof(Int_t));
 	}
+
+	this->FinishEvent();
 
 	mEventCounter++;
 
 	return v_isValid;
 }
 
-void UserProc::ProcessSubevent(TGo4MbsSubEvent* p_subevent)
+void UserProc::ProcessEventHeader(TGo4MbsEvent* p_event)
 {
-	//Int_t v_dLen = p_subevent->GetDlen();
-	//Short_t v_type = p_subevent->GetType();
-	Char_t v_subcrate = p_subevent->GetSubcrate();
-	Char_t v_control = p_subevent->GetControl();
-	Short_t v_procID = p_subevent->GetProcid();
-	//Int_t v_byteLen = p_subevent->GetByteLen();
+	mCurMessage.mEventType = p_event->GetType();
+	mCurMessage.mEventSubtype = p_event->GetSubtype();
+	mCurMessage.mEventDummy = p_event->GetDummy();
+	mCurMessage.mEventTrigger = p_event->GetTrigger();
+	mCurMessage.mEventCount = p_event->GetCount();
 
-	Int_t v_intLen = p_subevent->GetIntLen(); // Get the size of the current subevent
-	Int_t* v_dataField = p_subevent->GetDataField(); // Get the pointer to the data of the subevent
+	#ifdef PRINTDEBUGINFO
+	cerr << "[DEBUG ] Event header:" << "\t"
+	     << "type="    << (Int_t)mCurMessage.mEventType << "\t"
+	     << "subtype=" << (Int_t)mCurMessage.mEventSubtype << "\t"
+	     << "dummy="   << (Int_t)mCurMessage.mEventDummy << "\t"
+	     << "trigger=" << (Int_t)mCurMessage.mEventTrigger << "\t"
+	     << "count="   << (Int_t)mCurMessage.mEventCount
+	     << endl;
+	////UserProc::DumpEventHeader(p_event);
+	#endif
 
-	//this->DumpSubeventHeader(p_subevent);
+	//TODO I did not actually find the corrent event header length
+	mHeadersWords += 4;
+}
+
+void UserProc::FinishEvent()
+{
+	#ifdef DORESET
+	mCurMessage.mEventType = -1;
+	mCurMessage.mEventSubtype = -1;
+	mCurMessage.mEventDummy = -1;
+	mCurMessage.mEventTrigger = -1;
+	mCurMessage.mEventCount = -1;
+	#endif // DORESET
+}
+
+void UserProc::ProcessSubeventHeader(TGo4MbsSubEvent* p_subevent)
+{
+	mCurMessage.mSubeventDlen = p_subevent->GetDlen();
+	mCurMessage.mSubeventType = p_subevent->GetType();
+	mCurMessage.mSubeventSubcrate = p_subevent->GetSubcrate();
+	mCurMessage.mSubeventControl = p_subevent->GetControl();
+	mCurMessage.mSubeventFullID = p_subevent->GetFullId();
+	mCurMessage.mSubeventProcID = p_subevent->GetProcid();
+
+	#ifdef PRINTDEBUGINFO
+	cerr << "[DEBUG ] Subevent header:" << "\t"
+	     << "dlen="     << (Int_t)mCurMessage.mSubeventDlen << "\t"
+	     << "type="     << (Int_t)mCurMessage.mSubeventType << "\t"
+	     << "subcrate=" << (Int_t)mCurMessage.mSubeventSubcrate << "\t"
+	     << "control="  << (Int_t)mCurMessage.mSubeventControl << "\t"
+	     << "fullid="   << (Int_t)mCurMessage.mSubeventFullID << "\t"
+	     << "procid="   << (Int_t)mCurMessage.mSubeventProcID
+	     << endl;
+	////UserProc::DumpSubeventHeader(p_subevent);
+	#endif
 
 	//TODO I did not actually find the corrent subevent header length
 	mHeadersWords += 3;
+}
+
+void UserProc::FinishSubevent()
+{
+	#ifdef DORESET
+	mCurMessage.mSubeventDlen = -1;
+	mCurMessage.mSubeventType = -1;
+	mCurMessage.mSubeventSubcrate = -1;
+	mCurMessage.mSubeventControl = -1;
+	mCurMessage.mSubeventFullID = -1;
+	mCurMessage.mSubeventProcID = -1;
+	#endif // DORESET
+}
+
+void UserProc::ProcessSubevent(TGo4MbsSubEvent* p_subevent)
+{
+	this->ProcessSubeventHeader(p_subevent);
+
+	//// Extract only what is needed to go deeper
+
+	Short_t v_procID = p_subevent->GetProcid();
+	//// Get the size of the current subevent data payload in words as integer
+	Int_t v_intLen = p_subevent->GetIntLen();
+	//// Get the pointer to the data of the subevent
+	Int_t* v_dataField = p_subevent->GetDataField();
 
 	#ifdef PRINTDEBUGINFO
-	this->DumpSubeventData2(v_intLen, v_dataField);
+	UserProc::DumpSubeventData2(v_intLen, v_dataField);
 	#endif
-	////this->ProcessSubeventRaw(v_intLen, v_dataField);
-
-	/**
-		Сейчас это пока что неверно и оставлено здесь просто для примера.
-		В событиии несколько subevent'ов, и для каждого subevent'а нужно писать
-		выходной объект. Сейчас эти значения пишутся для каждого события по
-		значениям из последнего subevent'а.
-	**/
-	/*mCurrentOutputEvent->mSubcrate = (Int_t)v_subcrate;
-	mCurrentOutputEvent->mControl = (Int_t)v_control;
-	mCurrentOutputEvent->mProcID = v_procID;*/
 
 	switch (v_procID) {
 	case 100:
@@ -167,6 +229,8 @@ void UserProc::ProcessSubevent(TGo4MbsSubEvent* p_subevent)
 		mNunknownWords += v_intLen;
 		break;
 	}
+
+	this->FinishSubevent();
 }
 
 void UserProc::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAddress)
@@ -175,6 +239,7 @@ void UserProc::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAddress)
 	{
 		Int_t v_leftSize = p_size - v_cursor;
 		Int_t v_footerPosition = 0; //TODO or better init with -1 ?
+		Int_t v_footerCounter = -1;
 
 		switch (UserProc::CheckNextHeader(&p_startAddress[v_cursor])) {
 		case MESYTEC:
@@ -184,7 +249,13 @@ void UserProc::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAddress)
 			cerr << "[" << v_cursor << "]\t" << "MESYTEC header" << endl;
 			#endif
 
-			v_footerPosition = UserProc::FindMESYTECfooter(v_leftSize, &p_startAddress[v_cursor]);
+			//// Here we look forward and search for the footer.
+			//// Not only we count the number of words in the subsubevent block but also
+			//// we extract the counter from the footer and use it for all the data words
+			//// of this subsubevent
+			v_footerPosition = UserProc::FindMESYTECfooter(v_leftSize, &p_startAddress[v_cursor], &v_footerCounter);
+			mCurMessage.mSubsubeventFooterCounter = v_footerCounter;
+
 			if (v_footerPosition > -1) {
 
 				#ifdef PRINTDEBUGINFO
@@ -211,7 +282,13 @@ void UserProc::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAddress)
 			cerr << "[" << v_cursor << "]\t" << "CAEN header" << endl;
 			#endif
 
-			v_footerPosition = UserProc::FindCAENfooter(v_leftSize, &p_startAddress[v_cursor]);
+			//// Here we look forward and search for the footer.
+			//// Not only we count the number of words in the subsubevent block but also
+			//// we extract the counter from the footer and use it for all the data words
+			//// of this subsubevent
+			v_footerPosition = UserProc::FindCAENfooter(v_leftSize, &p_startAddress[v_cursor], &v_footerCounter);
+			mCurMessage.mSubsubeventFooterCounter = v_footerCounter;
+
 			if (v_footerPosition > -1) {
 
 				#ifdef PRINTDEBUGINFO
@@ -359,6 +436,8 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
 
+	mCurMessage.mSubsubeventVendor = MESYTEC; // MESYTEC=1 //TODO explicit cast?
+
 	for (Int_t v_cursor=0; v_cursor<p_size; v_cursor++) {
 
 		Int_t tmp = p_startAddress[v_cursor];
@@ -367,12 +446,12 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 		// Common for all types of messages
 		Int_t v_type = (v_curWord >> 30) & 0x3; // 2 bits
 
-		Int_t v_module_id;
-		Int_t v_subsubeventSize;
-		Int_t v_eventCounter; // event counter or time stamp
-		Int_t v_channel;
-		Int_t v_valueQA; // QDC and ADC
-		Int_t v_valueT; // TDC
+		Int_t v_module_id = -1;
+		Int_t v_subsubeventSize = -1;
+		Int_t v_eventCounter = -1; // event counter or time stamp
+		Int_t v_channel = -1;
+		Int_t v_valueQA = -1; // QDC and ADC
+		Int_t v_valueT = -1; // TDC
 
 		switch (v_type) {
 		case 1: // MESYTEC header
@@ -389,10 +468,13 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 			     << "\tsize=" << v_subsubeventSize
 			     << endl;
 			#endif
+
+			mCurMessage.mSubsubeventModule = v_module_id;
+
 			break;
 		case 3: // MESYTEC footer
 			mInsidePackage = false;
-			v_eventCounter = v_curWord & 0x3fffffff; // 30 bits
+			v_eventCounter = UserProc::ExtractCounterFromMESYTECfooter(v_curWord);
 			mNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -402,6 +484,18 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 			     << "\teventCounter=" << v_eventCounter
 			     << endl;
 			#endif
+
+			//// IN PRINCIPLE, WE COULD WRITE THIS OUT
+			mCurMessage.mSubsubeventFooterCounter = v_eventCounter;
+
+			//// WRITE OUT HERE?
+
+			//// Also this value should be reset somewhere.
+			//// In principle one could reset it immediately right after writeout
+			#ifdef DORESET
+			mCurMessage.mSubsubeventFooterCounter = -1;
+			#endif // DORESET
+
 			break;
 		case 0: // MESYTEC data
 			//TODO check
@@ -421,7 +515,17 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 			#endif
 
 			// HERE WE WRITE OUT
+			mCurMessage.mChannel = v_channel;
+			mCurMessage.mValueQA = v_valueQA;
+			mCurMessage.mValueT = v_valueT;
 
+			this->PushOutputRawMessage();
+
+			#ifdef DORESET
+			mCurMessage.mChannel = -1;
+			mCurMessage.mValueQA = -1;
+			mCurMessage.mValueT = -1;
+			#endif // DORESET
 
 			if (!mInsidePackage) {
 				cerr << "[ERROR ] MESYTEC data word found not between the header and the footer." << endl;
@@ -439,6 +543,12 @@ void UserProc::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddr
 		} // end of switch
 	} // end of for
 
+	//// Don't forget to reset the values defined in the subsubevent header
+	#ifdef DORESET
+	mCurMessage.mSubsubeventModule = -1;
+	mCurMessage.mSubsubeventVendor = -1;
+	#endif // DORESET
+
 	#ifdef PRINTDEBUGINFO
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
@@ -451,6 +561,8 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
 
+	mCurMessage.mSubsubeventVendor = CAEN; // CAEN=2 //TODO explicit cast?
+
 	for (Int_t v_cursor=0; v_cursor<p_size; v_cursor++) {
 
 		Int_t tmp = p_startAddress[v_cursor];
@@ -460,9 +572,11 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 		Int_t v_type = (v_curWord >> 24) & 0x7; // 3 bits
 		Int_t v_geo = (v_curWord >> 27) & 0x1f; // 5 bits
 
-		Int_t v_eventCounter;
-		Int_t v_channel;
-		Int_t v_value;
+		mCurMessage.mSubsubeventGeo = v_geo;
+
+		Int_t v_eventCounter = -1;
+		Int_t v_channel = -1;
+		Int_t v_value = -1;
 
 		switch (v_type) {
 		case 2: // CAEN header
@@ -479,7 +593,7 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 			break;
 		case 4: // CAEN footer
 			mInsidePackage = false;
-			v_eventCounter = v_curWord & 0xffffff; // 24 bits
+			v_eventCounter = UserProc::ExtractCounterFromCAENfooter(v_curWord);
 			mNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -490,6 +604,18 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 			     << "\teventCounter=" << v_eventCounter
 			     << endl;
 			#endif
+
+			//// IN PRINCIPLE, WE COULD WRITE THIS OUT
+			mCurMessage.mSubsubeventFooterCounter = v_eventCounter;
+
+			//// WRITE OUT HERE?
+
+			//// Also this value should be reset somewhere.
+			//// In principle one could reset it immediately right after writeout
+			#ifdef DORESET
+			mCurMessage.mSubsubeventFooterCounter = -1;
+			#endif // DORESET
+
 			break;
 		case 6: // CAEN no valid data
 			mNknownWords++;
@@ -517,8 +643,18 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 			     << endl;
 			#endif
 
-			// HERE WE WRITE OUT
-			this->AddOutputRawMessage(v_geo, v_channel, v_value);
+			//// HERE WE WRITE OUT
+			mCurMessage.mChannel = v_channel;
+			mCurMessage.mValueQA = v_value;
+			mCurMessage.mValueT = v_value;
+
+			this->PushOutputRawMessage();
+
+			#ifdef DORESET
+			mCurMessage.mChannel = -1;
+			mCurMessage.mValueQA = -1;
+			mCurMessage.mValueT = -1;
+			#endif // DORESET
 
 			if (!mInsidePackage) {
 				cerr << "[ERROR ] CAEN data word found not between the header and the footer." << endl;
@@ -538,18 +674,24 @@ void UserProc::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_startAddress
 		} // end of switch
 	} // end of for
 
+	//// Don't forget to reset the values defined in the subsubevent header
+	//// For this particular case, this geo is read from all types of words
+	#ifdef DORESET
+	mCurMessage.mSubsubeventGeo = -1;
+	mCurMessage.mSubsubeventVendor = -1;
+	#endif // DORESET
+
 	#ifdef PRINTDEBUGINFO
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
 }
 
-void UserProc::AddOutputRawMessage(Int_t p_geo,
-                                   Int_t p_ch,
-                                   Int_t p_val)
+void UserProc::PushOutputRawMessage(void)
 {
 	TClonesArray& v_coll = *(mCurrentOutputEvent->mRawMessages);
 	Int_t v_size = v_coll.GetEntriesFast();
-	/*return*/ new(v_coll[v_size])RawMessage(p_geo, p_ch, p_val);
+	//// The RawMessage class copy constructor is invoked here (I've checked, it is!)
+	new(v_coll[v_size])RawMessage(mCurMessage);
 }
 
 // static methods =================================================================================
@@ -561,8 +703,8 @@ enu_VENDOR UserProc::CheckNextHeader(const Int_t* p_startAddress)
 	Int_t v_curWord = tmp;
 	////cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t";
 
-	int v_mesytec_flag = (v_curWord >> 24) & 0xff; // 8 bits // = 0x40
-	int v_caen_header = (v_curWord >> 24) & 0x7; // 3 bits // = 0x2
+	Int_t v_mesytec_flag = (v_curWord >> 24) & 0xff; // 8 bits // = 0x40
+	Int_t v_caen_header = (v_curWord >> 24) & 0x7; // 3 bits // = 0x2
 
 	if (v_mesytec_flag == 0x40) {
 		#ifdef PRINTDEBUGINFO
@@ -600,11 +742,8 @@ enu_VENDOR UserProc::CheckNextHeader(const Int_t* p_startAddress)
 	}
 }
 
-/**
- * Return -1 if not found!
-*/
 /*static*/
-Int_t UserProc::FindMESYTECfooter(Int_t p_maxSize, const Int_t* p_startAddress)
+Int_t UserProc::FindMESYTECfooter(Int_t p_maxSize, const Int_t* p_startAddress, Int_t* o_counter)
 {
 	for (Int_t v_cursor=0; v_cursor<p_maxSize; v_cursor++) {
 		Int_t tmp = p_startAddress[v_cursor];
@@ -613,17 +752,15 @@ Int_t UserProc::FindMESYTECfooter(Int_t p_maxSize, const Int_t* p_startAddress)
 		////fprintf(stderr, "%08x type=%d\n", v_curWord, v_type);
 		if (v_type == 3) {
 			// type==3 - MESYTEC footer
+			*o_counter = UserProc::ExtractCounterFromMESYTECfooter(v_curWord);
 			return v_cursor;
 		}
 	}
 	return -1;
 }
 
-/**
- * Return -1 if not found!
-*/
 /*static*/
-Int_t UserProc::FindCAENfooter(Int_t p_maxSize, const Int_t* p_startAddress)
+Int_t UserProc::FindCAENfooter(Int_t p_maxSize, const Int_t* p_startAddress, Int_t* o_counter)
 {
 	for (Int_t v_cursor=0; v_cursor<p_maxSize; v_cursor++) {
 		Int_t tmp = p_startAddress[v_cursor];
@@ -632,6 +769,7 @@ Int_t UserProc::FindCAENfooter(Int_t p_maxSize, const Int_t* p_startAddress)
 		////fprintf(stderr, "%08x type=%d\n", v_curWord, v_type);
 		if (v_type == 4) {
 			// type==4 - CAEN footer
+			*o_counter = UserProc::ExtractCounterFromCAENfooter(v_curWord);
 			return v_cursor;
 		}
 	}
@@ -641,6 +779,7 @@ Int_t UserProc::FindCAENfooter(Int_t p_maxSize, const Int_t* p_startAddress)
 /*static*/
 void UserProc::DumpEventHeader(/*const*/ TGo4MbsEvent* p_event)
 {
+	//TODO chagne to 'normal' interface methods
 	s_filhe* head = p_event->GetMbsSourceHeader();
 	if (head != NULL)
 	{
