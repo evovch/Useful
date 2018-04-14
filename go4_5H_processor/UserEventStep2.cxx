@@ -1,9 +1,9 @@
 #include "UserEventStep2.h"
 
 // STD
-/*#include <iostream>
+#include <iostream>
 using std::cerr;
-using std::endl;*/
+using std::endl;
 
 // ROOT
 #include <TClonesArray.h>
@@ -16,6 +16,9 @@ UserEventStep2::UserEventStep2(const char* name) :
 {
 	//cerr << "UserEventStep2::UserEventStep2" << endl;
 	mMWPCdigi = new TClonesArray("BeamDetMWPCDigi");
+
+	cerr << "UserEventStep2::UserEventStep2() -> ";
+	this->Clear();
 }
 
 UserEventStep2::~UserEventStep2()
@@ -25,6 +28,7 @@ UserEventStep2::~UserEventStep2()
 void UserEventStep2::Clear(Option_t* t)
 {
 	//TODO zero all data members!
+	cerr << "UserEventStep2::Clear()" << endl;
 
 	mMWPCdigi->Clear();
 }

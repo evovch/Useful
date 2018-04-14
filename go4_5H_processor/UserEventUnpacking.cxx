@@ -1,9 +1,9 @@
 #include "UserEventUnpacking.h"
 
 // STD
-/*#include <iostream>
+#include <iostream>
 using std::cerr;
-using std::endl;*/
+using std::endl;
 
 // ROOT
 #include <TClonesArray.h>
@@ -16,9 +16,8 @@ UserEventUnpacking::UserEventUnpacking(const char* name) :
 {
 	mRawMessages = new TClonesArray("RawMessage");
 
-	for (UInt_t i=0; i<8; i++) {
-		mCAMAC[i] = 0;
-	}
+	cerr << "UserEventUnpacking::UserEventUnpacking() -> ";
+	this->Clear();
 }
 
 UserEventUnpacking::~UserEventUnpacking()
@@ -29,6 +28,7 @@ UserEventUnpacking::~UserEventUnpacking()
 void UserEventUnpacking::Clear(Option_t* t)
 {
 	//TODO zero all data members!
+	cerr << "UserEventUnpacking::Clear()" << endl;
 
 	mRawMessages->Clear();
 

@@ -13,17 +13,19 @@ class TGo4EventElement;
 
 class UserEventMonitoring;
 class UserHistosMonitoring;
+class UserEventUnpacking;
 class RawMessage;
 
 class UserProcMonitoring : public TGo4EventProcessor
 {
-public:
+public: // methods
+
 	UserProcMonitoring(const char* name = "UserProcMonitoring");
 	virtual ~UserProcMonitoring();
 
 	virtual Bool_t BuildEvent(TGo4EventElement* p_dest);
 
-private:
+private: // methods
 	/**
 	 *
 	 */
@@ -53,7 +55,12 @@ private:
 	 */
 	void ProcessCAENmessageVME1(const RawMessage* p_message);
 
-private:
+	/**
+	 *
+	 */
+	void ProcessCAMACmwpcWords(const UserEventUnpacking* p_inputEvent);
+
+private: // data members
 	/**
 	 *
 	 */

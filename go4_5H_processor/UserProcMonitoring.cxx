@@ -58,8 +58,10 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 
 	mCurrentOutputEvent = v_outputEvent;
 
-	// Clear the output event!!! //TODO check that this is not done by the framework
-	mCurrentOutputEvent->Clear();
+	// Clear the output event!!!
+	//TODO check that this is not done by the framework
+	// Seems that indeed this is done by the framework
+	//mCurrentOutputEvent->Clear();
 
 	//TODO do the processing here
 
@@ -92,6 +94,8 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 	} // end of while
 
 	//TODO process CAMAC MWPC words here
+
+	this->ProcessCAMACmwpcWords(v_input);
 
 	// --------------------------
 
@@ -452,6 +456,60 @@ void UserProcMonitoring::ProcessCAENmessageVME1(const RawMessage* p_message)
 		#endif
 		break;
 	};
+}
+
+void UserProcMonitoring::ProcessCAMACmwpcWords(const UserEventUnpacking* p_inputEvent)
+{
+	const Short_t* v_inputCAMAC = p_inputEvent->mCAMAC;
+
+	// Just print - shorts
+	#ifdef PRINTDEBUGINFO
+	cerr << "--------------------------------" << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[1]);
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[0]) << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[3]);
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[2]) << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[5]);
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[4]) << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[7]);
+	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[6]) << endl;
+	cerr << "--------------------------------" << endl;
+	#endif
+/*
+	// Transform pairs of shorts into normal ints
+	Int_t v_line[4];
+	v_line[0] = ((v_inputCAMAC[1] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[0] << 0)  & 0x0000ffff);
+	v_line[1] = ((v_inputCAMAC[3] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[2] << 0)  & 0x0000ffff);
+	v_line[2] = ((v_inputCAMAC[5] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[4] << 0)  & 0x0000ffff);
+	v_line[3] = ((v_inputCAMAC[7] << 16) & 0xffff0000) |
+	            ((v_inputCAMAC[6] << 0)  & 0x0000ffff);
+
+	// Just print - ints
+	#ifdef PRINTDEBUGINFO
+	cerr << "--------------------------------" << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[0]) << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[1]) << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[2]) << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[3]) << endl;
+	cerr << "--------------------------------" << endl;
+	#endif
+
+	// Just print - bits
+	#ifdef PRINTDEBUGINFO
+	cerr << "--------------------------------" << endl;
+	for (unsigned int i=0; i<4; i++) {
+		for (unsigned char v_wire=0; v_wire<32; v_wire++) {
+			unsigned char v_bitValue = (v_line[i] >> (32-v_wire-1)) & 0x1;
+			cerr << (int)v_bitValue;
+		}
+		cerr << endl;
+	}
+	cerr << "--------------------------------" << endl;
+	#endif
+*/
 }
 
 ClassImp(UserProcMonitoring)

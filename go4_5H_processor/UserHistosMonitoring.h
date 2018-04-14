@@ -28,7 +28,7 @@ public:
 	TH1* d1tF6[4];
 	TH1* d1tMWPC[4];
 
-	ClassDef(TObject, 1);
+	ClassDef(UserHistosMonitoring, 1);
 };
 
 #endif // USERHISTOSMONITORING_H

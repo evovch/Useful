@@ -79,8 +79,12 @@ Bool_t UserProcUnpacking::BuildEvent(TGo4EventElement* p_dest)
 
 	mCurrentOutputEvent = v_outputEvent;
 
-	// Clear the output event!!! //TODO check that this is not done by the framework
-	mCurrentOutputEvent->Clear();
+	// Clear the output event!!!
+	//TODO check that this is not done by the framework
+	// Seems that indeed this is done by the framework
+	//mCurrentOutputEvent->Clear();
+
+	//TODO do the processing here
 
 	this->ProcessEventHeader(v_input);
 
@@ -333,6 +337,7 @@ void UserProcUnpacking::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAdd
 			mNunknownWords++;
 			v_cursor++;
 			break;
+		//// default section has no meaning here because OTHER already counts that
 		}
 	}
 }
