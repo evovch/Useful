@@ -1,8 +1,7 @@
 #include "UserEventStep2.h"
 
-//TODO test //TODO why not iostream?
-/*#include <Riostream.h>
-using std::cout;
+// STD
+/*#include <iostream>
 using std::cerr;
 using std::endl;*/
 
@@ -25,6 +24,8 @@ UserEventStep2::~UserEventStep2()
 
 void UserEventStep2::Clear(Option_t* t)
 {
+	//TODO zero all data members!
+
 	mMWPCdigi->Clear();
 }
 

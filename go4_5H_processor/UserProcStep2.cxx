@@ -1,17 +1,19 @@
 #include "UserProcStep2.h"
 
-//TODO test //TODO why not iostream?
-#include <Riostream.h>
-using std::cout;
+// STD
+#include <iostream>
 using std::cerr;
 using std::endl;
 
+// ROOT
 #include <TClonesArray.h>
 
 // Project
 #include "UserEventUnpacking.h"
 #include "UserEventStep2.h"
 #include "data/BeamDetMWPCDigi.h"
+
+//#define PRINTDEBUGINFO
 
 UserProcStep2::UserProcStep2(const char* name) :
 	TGo4EventProcessor(name),
@@ -28,7 +30,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	Bool_t v_isValid = kFALSE;
 	UserEventStep2* v_outputEvent = (UserEventStep2*)p_dest;
 
-	UserEvent* v_input = (UserEvent*)GetInputEvent();
+	UserEventUnpacking* v_input = (UserEventUnpacking*)GetInputEvent();
 	if (v_input == NULL)
 	{
 		cerr << "UserProcStep2::BuildEvent(): no input event!" << endl;
@@ -43,7 +45,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 
 	mCurrentOutputEvent = v_outputEvent;
 
-	// Clear the output event!!!
+	// Clear the output event!!! //TODO check that this is not done by the framework
 	mCurrentOutputEvent->Clear();
 
 	//TODO do the processing here
@@ -62,6 +64,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	            ((v_inputCAMAC[6] << 0)  & 0x0000ffff);
 
 	// Just print - shorts
+	#ifdef PRINTDEBUGINFO
 	fprintf(stderr, "--------------------------------\n");
 	PrintBits(sizeof(UShort_t), &v_inputCAMAC[1]);
 	PrintBits(sizeof(UShort_t), &v_inputCAMAC[0]);
@@ -76,16 +79,20 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	PrintBits(sizeof(UShort_t), &v_inputCAMAC[6]);
 	fprintf(stderr, "\n");
 	fprintf(stderr, "--------------------------------\n");
+	#endif
 
 	// Just print - ints
+	#ifdef PRINTDEBUGINFO
 	fprintf(stderr, "--------------------------------\n");
 	PrintBits(sizeof(UInt_t), &v_line[0]);	fprintf(stderr, "\n");
 	PrintBits(sizeof(UInt_t), &v_line[1]);	fprintf(stderr, "\n");
 	PrintBits(sizeof(UInt_t), &v_line[2]);	fprintf(stderr, "\n");
 	PrintBits(sizeof(UInt_t), &v_line[3]);	fprintf(stderr, "\n");
 	fprintf(stderr, "--------------------------------\n");
+	#endif
 
 	// Just print - bits
+	#ifdef PRINTDEBUGINFO
 	fprintf(stderr, "--------------------------------\n");
 	for (unsigned int i=0; i<4; i++) {
 		for (unsigned char v_wire=0; v_wire<32; v_wire++) {
@@ -95,6 +102,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 		fprintf(stderr, "\n");
 	}
 	fprintf(stderr, "--------------------------------\n");
+	#endif
 
 	unsigned int v_globalId = 0;
 
@@ -106,8 +114,10 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 		for (unsigned char v_wire=0; v_wire<32; v_wire++) {
 			unsigned char v_bitValue = (v_line[i] >> (32-v_wire)) & 0x1;
 			if (v_bitValue == 1) {
+				#ifdef PRINTDEBUGINFO
 				fprintf(stderr, "planeNb=%d mwpcNb=%d ID=%d wire=%d\n",
 				    v_plane, v_mwpc, v_id, v_wire);
+				#endif
 				// HERE WE HAVE IT
 
 				//BeamDetMWPCDigi* v_curDigi = new BeamDetMWPCDigi(v_id, v_mwpc, v_plane, v_wire, 0., 0.f);

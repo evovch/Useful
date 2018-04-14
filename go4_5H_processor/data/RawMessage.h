@@ -16,6 +16,16 @@ public:
 	RawMessage(const RawMessage &obj);
 	virtual ~RawMessage();
 
+	/**
+	 * Short dump
+	 */
+	void Dump(bool p_printEndl = true) const;
+
+	/**
+	 * Extended dump
+	 */
+	void ExtDump(bool p_printEndl = true) const;
+
 public:
 	/**
 	 * From the event header
@@ -38,7 +48,7 @@ public:
 
 	/**
 	 * From the subsubevent header
-	 * See UserProc.h header
+	 * See Support.h header
 	 * {OTHER=0, MESYTEC=1, CAEN=2, AFFEAFFE=3}
 	 */
 	Char_t mSubsubeventVendor;

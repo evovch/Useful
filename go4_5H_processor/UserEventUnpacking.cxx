@@ -1,8 +1,8 @@
 #include "UserEventUnpacking.h"
 
-//TODO test //TODO why not iostream?
-/*#include <Riostream.h>
-using std::cout;
+// STD
+/*#include <iostream>
+using std::cerr;
 using std::endl;*/
 
 // ROOT
@@ -11,20 +11,26 @@ using std::endl;*/
 // Project
 #include "data/RawMessage.h"
 
-UserEvent::UserEvent(const char* name) :
+UserEventUnpacking::UserEventUnpacking(const char* name) :
 	TGo4EventElement(name)
 {
 	mRawMessages = new TClonesArray("RawMessage");
 }
 
-UserEvent::~UserEvent()
+UserEventUnpacking::~UserEventUnpacking()
 {
 	//TODO delete mRawMessages?
 }
 
-void UserEvent::Clear(Option_t* t)
+void UserEventUnpacking::Clear(Option_t* t)
 {
+	//TODO zero all data members!
+
 	mRawMessages->Clear();
+
+	for (UInt_t i=0; i<8; i++) {
+		mCAMAC[i] = 0;
+	}
 }
 
-ClassImp(UserEvent)
+ClassImp(UserEventUnpacking)

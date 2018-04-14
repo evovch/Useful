@@ -44,8 +44,10 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(ROOTCLING_HEADERS UserAnalysis.h
                       UserEventUnpacking.h
                       UserProcUnpacking.h
-                      UserAnalysisHistos.h
+                      UserHistosUnpacking.h
+                      UserEventMonitoring.h
                       UserProcMonitoring.h
+                      UserHistosMonitoring.h
                       UserEventStep2.h
                       UserProcStep2.h
                       data/BeamDetMWPCDigi.h
@@ -60,8 +62,10 @@ set(SOURCE_LIB G__UserAnalysis.cxx
                UserAnalysis.cxx
                UserEventUnpacking.cxx
                UserProcUnpacking.cxx
-               UserAnalysisHistos.cxx
+               UserHistosUnpacking.cxx
+               UserEventMonitoring.cxx
                UserProcMonitoring.cxx
+               UserHistosMonitoring.cxx
                UserEventStep2.cxx
                UserProcStep2.cxx
                data/BeamDetMWPCDigi.cxx

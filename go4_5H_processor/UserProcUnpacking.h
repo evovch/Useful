@@ -1,32 +1,31 @@
 /**
 
-	@class UserProc
+	@class UserProcUnpacking
 
 */
 
-#ifndef USERPROC_H
-#define USERPROC_H
+#ifndef USERPROCUNPACKING_H
+#define USERPROCUNPACKING_H
 
 #include <TGo4EventProcessor.h> // mother class
 
 // Project
+#include "Support.h"
 #include "data/RawMessage.h"
 
 class TGo4EventElement;
 class TGo4MbsEvent;
 class TGo4MbsSubEvent;
 
-class UserAnalysisHistos;
-class UserEvent;
+class UserHistosUnpacking;
+class UserEventUnpacking;
 
-enum enu_VENDOR {OTHER=0, MESYTEC=1, CAEN=2, AFFEAFFE=3};
-
-class UserProc : public TGo4EventProcessor
+class UserProcUnpacking : public TGo4EventProcessor
 {
 public: // methods
 
-	UserProc(const char* name = "UserProc");
-	virtual ~UserProc();
+	UserProcUnpacking(const char* name = "UserProcUnpacking");
+	virtual ~UserProcUnpacking();
 
 	virtual Bool_t BuildEvent(TGo4EventElement* p_dest);
 
@@ -60,7 +59,7 @@ private:
 	 * which are called by BuildEvent() and then this object
 	 * is written out by the framework after BuildEvent()
 	 */
-	UserEvent* mCurrentOutputEvent;
+	UserEventUnpacking* mCurrentOutputEvent;
 
 	/**
 	 * Basically - start event
@@ -100,7 +99,7 @@ private: // static methods
 	/**
 	 *
 	 */
-	static enu_VENDOR CheckNextHeader(const Int_t* p_startAddress);
+	static support::enu_VENDOR CheckNextHeader(const Int_t* p_startAddress);
 
 	/**
 	 * Return the position of the footer.
@@ -158,9 +157,9 @@ private: // data members
 
 	/**
 	 * Put all your output histograms inside this object.
-	 * See UserAnalysisHistos class.
+	 * See UserHistosUnpacking class.
 	 */
-	UserAnalysisHistos* mHistoMan;
+	UserHistosUnpacking* mHistoMan;
 
 	/**
 	 * This flag is set true when a header is found and false when a footer is found.
@@ -174,7 +173,7 @@ private: // data members
 	 */
 	FILE* mFileSummary;
 
-	ClassDef(UserProc, 1);
+	ClassDef(UserProcUnpacking, 1);
 };
 
-#endif // USERPROC_H
+#endif // USERPROCUNPACKING_H

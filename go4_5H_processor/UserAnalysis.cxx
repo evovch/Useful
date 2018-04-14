@@ -1,7 +1,7 @@
 #include "UserAnalysis.h"
 
-//TODO test //TODO why not iostream?
-#include <Riostream.h>
+// STD
+#include <iostream>
 using std::cout;
 using std::endl;
 
@@ -40,27 +40,48 @@ void UserAnalysis::Construct(void)
 		exit(-1);
 	}
 
+	//TODO
+	SetStepChecking(kFALSE); // necessary for non-subsequent mesh analysis
+
 	// STEP1 - source - unpacker ==================================================================
 
-	TGo4StepFactory* factory1 = new TGo4StepFactory("Factory1");
-	factory1->DefEventProcessor("UserProc1", "UserProc"); // object name, class name
-	factory1->DefOutputEvent("UserEvent1", "UserEvent"); // object name, class name
+	TGo4StepFactory* FactoryUnpacking = new TGo4StepFactory("FactoryUnpacking");
+	FactoryUnpacking->DefEventProcessor("UserProcUnpacking1", "UserProcUnpacking"); // object name, class name
+	FactoryUnpacking->DefOutputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
 
-	TGo4AnalysisStep* step1 = new TGo4AnalysisStep("UserAnalysisStep1", factory1);
+	TGo4AnalysisStep* stepUnpacking = new TGo4AnalysisStep("UserAnalysisStepUnpacking", FactoryUnpacking);
 
-	step1->SetSourceEnabled(kTRUE);
-	step1->SetStoreEnabled(kFALSE);
-	step1->SetProcessEnabled(kTRUE);
-	step1->SetErrorStopEnabled(kTRUE);
+	stepUnpacking->SetSourceEnabled(kTRUE);
+	stepUnpacking->SetStoreEnabled(kFALSE);
+	stepUnpacking->SetProcessEnabled(kTRUE);
+	stepUnpacking->SetErrorStopEnabled(kTRUE);
 
 	TGo4FileStoreParameter* store = new TGo4FileStoreParameter("output.root");
-	step1->SetEventStore(store);
-	step1->SetStoreEnabled(kTRUE);
+	stepUnpacking->SetEventStore(store);
+	stepUnpacking->SetStoreEnabled(kTRUE);
+
+	// STEP2 - processor - monitoring =============================================================
+
+	TGo4StepFactory* factoryMonitoring = new TGo4StepFactory("FactoryMonitoring");
+	factoryMonitoring->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
+	factoryMonitoring->DefEventProcessor("UserProcMonitoring1", "UserProcMonitoring"); // object name, class name
+	factoryMonitoring->DefOutputEvent("UserEventMonitoring1", "UserEventMonitoring"); // object name, class name
+
+	TGo4AnalysisStep* stepMonitoring = new TGo4AnalysisStep("UserAnalysisStepMonitoring", factoryMonitoring);
+
+	stepMonitoring->SetSourceEnabled(kFALSE);
+	stepMonitoring->SetStoreEnabled(kFALSE);
+	stepMonitoring->SetProcessEnabled(kTRUE);
+	stepMonitoring->SetErrorStopEnabled(kTRUE); //TODO probably for monitoring this should be false
+
+	TGo4FileStoreParameter* store3 = new TGo4FileStoreParameter("output3.root");
+	stepMonitoring->SetEventStore(store3);
+	stepMonitoring->SetStoreEnabled(kTRUE);
 
 	// STEP2 - processor - analysis ===============================================================
 
 	TGo4StepFactory* factory2 = new TGo4StepFactory("Factory2");
-	factory2->DefInputEvent("UserEvent1", "UserEvent"); // object name, class name
+	factory2->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
 	factory2->DefEventProcessor("UserProc2", "UserProcStep2"); // object name, class name
 	factory2->DefOutputEvent("UserEvent2", "UserEventStep2"); // object name, class name
 
@@ -78,14 +99,14 @@ void UserAnalysis::Construct(void)
 	// ============================================================================================
 
 	// Add STEPs to the analysis
-	AddAnalysisStep(step1);
-	//AddAnalysisStep(step2); //TODO
+	AddAnalysisStep(stepUnpacking);
+	AddAnalysisStep(stepMonitoring);
+	AddAnalysisStep(step2); //TODO
 }
 
 Int_t UserAnalysis::UserPreLoop(void)
 {
 	cout << "UserAnalysis::UserPreLoop()." << endl;
-
 	return 0;
 }
 
@@ -93,14 +114,12 @@ Int_t UserAnalysis::UserPreLoop(void)
 Int_t UserAnalysis::UserEventFunc(void)
 {
 	//cout << "UserAnalysis::UserEventFunc()." << endl;
-
 	return 0;
 }
 
 Int_t UserAnalysis::UserPostLoop(void)
 {
 	cout << "UserAnalysis::UserPostLoop()." << endl;
-
 	return 0;
 }
 

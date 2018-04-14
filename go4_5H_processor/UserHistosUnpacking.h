@@ -1,11 +1,11 @@
 /**
 
-	@class UserAnalysisHistos
+	@class UserHistosUnpacking
 
 */
 
-#ifndef USERANALYSISHISTOS_H
-#define USERANALYSISHISTOS_H
+#ifndef USERHISTOSUNPACKING_H
+#define USERHISTOSUNPACKING_H
 
 #include <TObject.h> // mother class
 
@@ -13,11 +13,11 @@ class TH1;
 class TH2;
 //class TGraph; // Does not work by now
 
-class UserAnalysisHistos : public TObject
+class UserHistosUnpacking : public TObject
 {
 public:
-	UserAnalysisHistos();
-	~UserAnalysisHistos();
+	UserHistosUnpacking();
+	~UserHistosUnpacking();
 
 public:
 	TH1* mHisto1;
@@ -27,4 +27,4 @@ public:
 	ClassDef(TObject, 1);
 };
 
-#endif // USERANALYSISHISTOS_H
+#endif // USERHISTOSUNPACKING_H

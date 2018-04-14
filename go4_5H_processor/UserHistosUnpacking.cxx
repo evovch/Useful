@@ -1,12 +1,14 @@
-#include "UserAnalysisHistos.h"
+#include "UserHistosUnpacking.h"
 
+// ROOT
 #include <TH1D.h>
 #include <TH2D.h>
 //#include <TGraph.h> // Does not work by now
 
+// Go4
 #include <TGo4Analysis.h>
 
-UserAnalysisHistos::UserAnalysisHistos()
+UserHistosUnpacking::UserHistosUnpacking()
 {
 	TGo4Analysis* a = TGo4Analysis::Instance();
 
@@ -15,7 +17,7 @@ UserAnalysisHistos::UserAnalysisHistos()
 	//mGraph = new TGraph(); // Does not work by now
 }
 
-UserAnalysisHistos::~UserAnalysisHistos()
+UserHistosUnpacking::~UserHistosUnpacking()
 {
 	/**
 	 * Not 100% sure, but it looks as if you do not need to delete your histograms yourself.
@@ -23,4 +25,4 @@ UserAnalysisHistos::~UserAnalysisHistos()
 	 */
 }
 
-ClassImp(UserAnalysisHistos)
+ClassImp(UserHistosUnpacking)

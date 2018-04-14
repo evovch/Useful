@@ -41,3 +41,23 @@ std::string support::GetHexRepresentation(size_t const size, void const * const 
 
 	return outString;
 }
+
+std::string support::VendorAsString(enu_VENDOR p_val)
+{
+	std::string outString;
+
+	switch (p_val) {
+	case enu_VENDOR::OTHER:    outString = "OTHER"; break;
+	case enu_VENDOR::MESYTEC:  outString = "MESYTEC"; break;
+	case enu_VENDOR::CAEN:     outString = "CAEN"; break;
+	case enu_VENDOR::AFFEAFFE: outString = "AFFEAFFE"; break;
+	default: outString = "WTF"; break;
+	};
+
+	return outString;
+}
+
+support::enu_VENDOR support::VendorFromChar(char p_val)
+{
+	return (enu_VENDOR)p_val;
+}
