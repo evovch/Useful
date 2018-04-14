@@ -15,6 +15,10 @@ UserEventUnpacking::UserEventUnpacking(const char* name) :
 	TGo4EventElement(name)
 {
 	mRawMessages = new TClonesArray("RawMessage");
+
+	for (UInt_t i=0; i<8; i++) {
+		mCAMAC[i] = 0;
+	}
 }
 
 UserEventUnpacking::~UserEventUnpacking()

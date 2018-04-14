@@ -34,7 +34,7 @@ public: // methods
 	void ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAddress);
 	void ProcessSubeventRawVME0(Int_t p_size, const Int_t* p_startAddress);
 	void ProcessSubeventRawVME1(Int_t p_size, const Int_t* p_startAddress);
-	void ProcessSubeventRawCAMAC(Int_t p_size, const Int_t* p_startAddress);
+	/*void ProcessSubeventRawCAMAC(Int_t p_size, const Int_t* p_startAddress);*/
 	void ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p_startAddress);
 
 	void ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddress);
@@ -151,6 +151,7 @@ private: // data members
 	 * Unpacking statistics
 	 */
 	unsigned long int mEventCounter;
+	unsigned long int mSubEventCounter;
 	unsigned long int mHeadersWords;
 	unsigned long int mNknownWords;
 	unsigned long int mNunknownWords;

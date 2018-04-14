@@ -16,6 +16,12 @@ using std::endl;
 #include "Support.h"
 #include "data/RawMessage.h"
 
+/**
+  Uncomment this if you want to see all the debug information.
+  This allows you to analyze the raw bytes and bits by your eyes.
+  This option produces A LOT OF DATA - run your analysis with a
+  small number of events (~10-100)
+*/
 #define PRINTDEBUGINFO
 
 UserProcMonitoring::UserProcMonitoring(const char* name) :
@@ -44,9 +50,11 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 	}
 	v_isValid = kTRUE;
 
-	cerr << "UserProcMonitoring: Event " << mEventCounter
+	#ifdef PRINTDEBUGINFO
+	cerr << "[DEBUG ] " << "UserProcMonitoring: Event " << mEventCounter
 	     << " ======================================================================================================"
 	     << endl;
+	#endif
 
 	mCurrentOutputEvent = v_outputEvent;
 
@@ -198,19 +206,19 @@ void UserProcMonitoring::ProcessMESYTECmessageVME0(const RawMessage* p_message)
 			cerr << "F3[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 			mCurrentOutputEvent->F3[v_ch] = p_message->mValueQA;
-			if (p_message->mValueQA > 0) { mHistoMan->d1F3[v_ch]->Fill(p_message->mValueQA); } //TODO which value to use?
+			//if (p_message->mValueQA > 0) { mHistoMan->d1F3[v_ch]->Fill(p_message->mValueQA); } //TODO which value to use?
 		} else if (v_ch<8) {
 			#ifdef PRINTDEBUGINFO
 			cerr << "F5[" << v_ch-4 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 			mCurrentOutputEvent->F5[v_ch-4] = p_message->mValueQA;
-			if (p_message->mValueQA > 0) { mHistoMan->d1F5[v_ch-4]->Fill(p_message->mValueQA); } //TODO which value to use?
+			//if (p_message->mValueQA > 0) { mHistoMan->d1F5[v_ch-4]->Fill(p_message->mValueQA); } //TODO which value to use?
 		} else if (v_ch<12) {
 			#ifdef PRINTDEBUGINFO
 			cerr << "F6[" << v_ch-8 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 			mCurrentOutputEvent->F6[v_ch-8] = p_message->mValueQA;
-			if (p_message->mValueQA > 0) { mHistoMan->d1F6[v_ch-8]->Fill(p_message->mValueQA); } //TODO which value to use?
+			//if (p_message->mValueQA > 0) { mHistoMan->d1F6[v_ch-8]->Fill(p_message->mValueQA); } //TODO which value to use?
 		} else if (v_ch<16) {
 			//// Unexpected channel value
 			#ifdef PRINTDEBUGINFO
@@ -230,25 +238,25 @@ void UserProcMonitoring::ProcessMESYTECmessageVME0(const RawMessage* p_message)
 			cerr << "tF3[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 			mCurrentOutputEvent->tF3[v_ch] = p_message->mValueT;
-			if (p_message->mValueT > 0) { mHistoMan->d1tF3[v_ch]->Fill(p_message->mValueT); } //TODO which value to use?
+			//if (p_message->mValueT > 0) { mHistoMan->d1tF3[v_ch]->Fill(p_message->mValueT); } //TODO which value to use?
 		} else if (v_ch<8) {
 			#ifdef PRINTDEBUGINFO
 			cerr << "tF5[" << v_ch-4 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 			mCurrentOutputEvent->tF5[v_ch-4] = p_message->mValueT;
-			if (p_message->mValueT > 0) { mHistoMan->d1tF5[v_ch-4]->Fill(p_message->mValueT); } //TODO which value to use?
+			//if (p_message->mValueT > 0) { mHistoMan->d1tF5[v_ch-4]->Fill(p_message->mValueT); } //TODO which value to use?
 		} else if (v_ch<12) {
 			#ifdef PRINTDEBUGINFO
 			cerr << "tF6[" << v_ch-8 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 			mCurrentOutputEvent->tF6[v_ch-8] = p_message->mValueT;
-			if (p_message->mValueT > 0) { mHistoMan->d1tF6[v_ch-8]->Fill(p_message->mValueT); } //TODO which value to use?
+			//if (p_message->mValueT > 0) { mHistoMan->d1tF6[v_ch-8]->Fill(p_message->mValueT); } //TODO which value to use?
 		} else if (v_ch<16) {
 			#ifdef PRINTDEBUGINFO
 			cerr << "tMWPC[" << v_ch-12 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 			mCurrentOutputEvent->tMWPC[v_ch-12] = p_message->mValueT;
-			if (p_message->mValueT > 0) { mHistoMan->d1tMWPC[v_ch-12]->Fill(p_message->mValueT); } //TODO which value to use?
+			//if (p_message->mValueT > 0) { mHistoMan->d1tMWPC[v_ch-12]->Fill(p_message->mValueT); } //TODO which value to use?
 		} else {
 			//// Unexpected channel value
 			#ifdef PRINTDEBUGINFO

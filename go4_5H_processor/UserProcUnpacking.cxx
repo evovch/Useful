@@ -23,6 +23,12 @@ RawMessage UserProcUnpacking::mCurMessage;
 /*static*/
 bool UserProcUnpacking::mInsidePackage = false;
 
+/**
+  Uncomment this if you want to see all the debug information.
+  This allows you to analyze the raw bytes and bits by your eyes.
+  This option produces A LOT OF DATA - run your analysis with a
+  small number of events (~10-100)
+*/
 #define PRINTDEBUGINFO
 
 //TODO test
@@ -31,6 +37,7 @@ bool UserProcUnpacking::mInsidePackage = false;
 UserProcUnpacking::UserProcUnpacking(const char* name) :
 	TGo4EventProcessor(name),
 	mEventCounter(0),
+	mSubEventCounter(0),
 	mHeadersWords(0),
 	mNknownWords(0),
 	mNunknownWords(0)
@@ -65,7 +72,7 @@ Bool_t UserProcUnpacking::BuildEvent(TGo4EventElement* p_dest)
 	v_isValid = kTRUE;
 
 	#ifdef PRINTDEBUGINFO
-	cerr << "UserProcUnpacking: Event " << mEventCounter
+	cerr << "[DEBUG ] " << "UserProcUnpacking: Event " << mEventCounter
 	     << " ==========================================================================================================="
 	     << endl;
 	#endif
@@ -86,18 +93,20 @@ Bool_t UserProcUnpacking::BuildEvent(TGo4EventElement* p_dest)
 	while ((v_pSubevent = v_input->NextSubEvent()) != NULL)
 	{
 		#ifdef PRINTDEBUGINFO
-		cerr << "SubEvent " << v_subEventCounter
+		cerr << "[DEBUG ] " << "UserProcUnpacking: SubEvent " << v_subEventCounter << " (global subevent counter = " << mSubEventCounter << ")"
 		     << " -----------------------------------------------------------------" << endl;
 		#endif
 
 		this->ProcessSubevent(v_pSubevent);
 
-		v_subEventCounter++;
+		v_subEventCounter++; // local subevent counter - within current event
+		mSubEventCounter++; // global subevent counter - total
 	}
 
 	v_outputEvent->SetValid(v_isValid);
 
 	cerr << "[DEBUG ] " << "End of event " << mEventCounter << ".\t"
+	     << "Total subevents: " << mSubEventCounter << ".\t"
 	     << "Headers' words: " << mHeadersWords << ",\t"
 	     << "known words: " << mNknownWords << ",\t"
 	     << "unknown words: " << mNunknownWords << ",\t"
@@ -106,8 +115,8 @@ Bool_t UserProcUnpacking::BuildEvent(TGo4EventElement* p_dest)
 
 	if (mFileSummary != NULL) {
 		fprintf(mFileSummary,
-		        "End of event %ld.\tHeaders' words: %ld,\tknown words: %ld,\tunknown words: %ld,\ttotal: %ld bytes.\n",
-		        mEventCounter, mHeadersWords, mNknownWords, mNunknownWords,
+		        "End of event %ld.\tTotal subevents: %ld.\tHeaders' words: %ld,\tknown words: %ld,\tunknown words: %ld,\ttotal: %ld bytes.\n",
+		        mEventCounter, mSubEventCounter, mHeadersWords, mNknownWords, mNunknownWords,
 		        (mHeadersWords+mNknownWords+mNunknownWords)*sizeof(Int_t));
 	}
 
@@ -344,7 +353,7 @@ void UserProcUnpacking::ProcessSubeventRawVME1(Int_t p_size, const Int_t* p_star
 	this->ProcessSubeventRaw(p_size, p_startAddress);
 }
 
-void UserProcUnpacking::ProcessSubeventRawCAMAC(Int_t p_size, const Int_t* p_startAddress)
+/*void UserProcUnpacking::ProcessSubeventRawCAMAC(Int_t p_size, const Int_t* p_startAddress)
 {
 	#ifdef PRINTDEBUGINFO
 	cerr << "[DEBUG ] Processing raw subevent from CAMAC with size=" << p_size << endl;
@@ -356,12 +365,12 @@ void UserProcUnpacking::ProcessSubeventRawCAMAC(Int_t p_size, const Int_t* p_sta
 		Int_t v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 		fprintf(stderr, "%d: %08x\tgeo=%u\n", v_cursor, p_startAddress[v_cursor], v_geo);
 	}
-}
+}*/
 
 void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p_startAddress)
 {
 	#ifdef PRINTDEBUGINFO
-	cerr << "[DEBUG ] Processing raw subevent from CAMAC with size=" << p_size << endl;
+	cerr << "[DEBUG ] Processing raw subevent from CAMAC with size=" << p_size << " as from MWPC." << endl;
 	#endif
 
 	// Currently we rely on the fact that p_size=16
@@ -429,6 +438,42 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	// FOOTER
 	v_curWord = p_startAddress[8+7];
 	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+
+	#ifdef PRINTDEBUGINFO
+	Short_t v_subword;
+	cerr << "         -----------------------------------------------------------" << endl;
+	for (UInt_t v_cursor=0; v_cursor<p_size; v_cursor+=4)
+	{
+		v_curWord = p_startAddress[v_cursor+0];
+		cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  "
+		     << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
+		cerr << "[" << v_cursor+0 << "]\t" << "CAMAC MWPC header geo=" << ((v_curWord >> 27) & 0x1f);
+		cerr << endl;
+
+		v_curWord = p_startAddress[v_cursor+1];
+		v_subword = v_curWord & 0xFFFF;
+		cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  "
+		     << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
+		cerr << "[" << v_cursor+1 << "]\t" << "CAMAC MWPC data "
+		     << support::GetBinaryRepresentation(sizeof(Short_t), &v_subword)
+		     << endl;
+
+		v_curWord = p_startAddress[v_cursor+2];
+		v_subword = v_curWord & 0xFFFF;
+		cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  "
+		     << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
+		cerr << "[" << v_cursor+2 << "]\t" << "CAMAC MWPC data "
+		     << support::GetBinaryRepresentation(sizeof(Short_t), &v_subword)
+		     << endl;
+
+		v_curWord = p_startAddress[v_cursor+3];
+		cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  "
+		     << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
+		cerr << "[" << v_cursor+3 << "]\t" << "CAMAC MWPC footer geo=" << ((v_curWord >> 27) & 0x1f);
+		cerr << endl;
+	}
+	cerr << "         -----------------------------------------------------------" << endl;
+	#endif // PRINTDEBUGINFO
 }
 
 void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_startAddress)

@@ -13,7 +13,13 @@ using std::endl;
 #include "UserEventStep2.h"
 #include "data/BeamDetMWPCDigi.h"
 
-//#define PRINTDEBUGINFO
+/**
+  Uncomment this if you want to see all the debug information.
+  This allows you to analyze the raw bytes and bits by your eyes.
+  This option produces A LOT OF DATA - run your analysis with a
+  small number of events (~10-100)
+*/
+#define PRINTDEBUGINFO
 
 UserProcStep2::UserProcStep2(const char* name) :
 	TGo4EventProcessor(name),
@@ -39,9 +45,11 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	}
 	v_isValid = kTRUE;
 
-	cerr << "UserProcStep2: Event " << mEventCounter
+	#ifdef PRINTDEBUGINFO
+	cerr << "[DEBUG ] " << "UserProcStep2: Event " << mEventCounter
 	     << " ==========================================================================================================="
 	     << endl;
+	#endif
 
 	mCurrentOutputEvent = v_outputEvent;
 
@@ -50,10 +58,10 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 
 	//TODO do the processing here
 
-	UShort_t* v_inputCAMAC = v_input->mCAMAC;
+	Short_t* v_inputCAMAC = v_input->mCAMAC;
 
 	// Transform pairs of shorts into normal ints
-	UInt_t v_line[4];
+	Int_t v_line[4];
 	v_line[0] = ((v_inputCAMAC[1] << 16) & 0xffff0000) |
 	            ((v_inputCAMAC[0] << 0)  & 0x0000ffff);
 	v_line[1] = ((v_inputCAMAC[3] << 16) & 0xffff0000) |
@@ -66,17 +74,17 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	// Just print - shorts
 	#ifdef PRINTDEBUGINFO
 	fprintf(stderr, "--------------------------------\n");
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[1]);
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[0]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[1]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[0]);
 	fprintf(stderr, "\n");
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[3]);
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[2]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[3]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[2]);
 	fprintf(stderr, "\n");
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[5]);
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[4]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[5]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[4]);
 	fprintf(stderr, "\n");
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[7]);
-	PrintBits(sizeof(UShort_t), &v_inputCAMAC[6]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[7]);
+	PrintBits(sizeof(Short_t), &v_inputCAMAC[6]);
 	fprintf(stderr, "\n");
 	fprintf(stderr, "--------------------------------\n");
 	#endif
@@ -84,10 +92,10 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	// Just print - ints
 	#ifdef PRINTDEBUGINFO
 	fprintf(stderr, "--------------------------------\n");
-	PrintBits(sizeof(UInt_t), &v_line[0]);	fprintf(stderr, "\n");
-	PrintBits(sizeof(UInt_t), &v_line[1]);	fprintf(stderr, "\n");
-	PrintBits(sizeof(UInt_t), &v_line[2]);	fprintf(stderr, "\n");
-	PrintBits(sizeof(UInt_t), &v_line[3]);	fprintf(stderr, "\n");
+	PrintBits(sizeof(Int_t), &v_line[0]);	fprintf(stderr, "\n");
+	PrintBits(sizeof(Int_t), &v_line[1]);	fprintf(stderr, "\n");
+	PrintBits(sizeof(Int_t), &v_line[2]);	fprintf(stderr, "\n");
+	PrintBits(sizeof(Int_t), &v_line[3]);	fprintf(stderr, "\n");
 	fprintf(stderr, "--------------------------------\n");
 	#endif
 

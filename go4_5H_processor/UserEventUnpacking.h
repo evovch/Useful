@@ -55,7 +55,7 @@ private:
 	 * 0000XXXX - mCAMAC[7]
 	 * FFFFFFFF
 	 */
-	UShort_t mCAMAC[8];
+	Short_t mCAMAC[8];
 
 	ClassDef(UserEventUnpacking, 1);
 };
