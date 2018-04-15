@@ -37,4 +37,10 @@ void UserEventUnpacking::Clear(Option_t* t)
 	}
 }
 
+void UserEventUnpacking::Dump(void) const
+{
+	cerr << "UserEventUnpacking contains " << mRawMessages->GetEntries() << " raw messages." << endl;
+	//TODO implement
+}
+
 ClassImp(UserEventUnpacking)
