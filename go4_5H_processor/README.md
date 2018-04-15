@@ -118,10 +118,71 @@ in case you want to specify explicitly:
 
    - starting with 'o_' are the output parameters (usually byref);
 
-+ variables starting with v_ are the local variables.
++ variables starting with v_ are the local variables;
 
 + variables without any identifiable prefix are usually the local ones -
 this is usually the case for simple one-letter names: i, j, k, x, y, z, n, etc...
+
+
+Short GCC reminder
+==================
+
+For more information refer to:
+
+> man gcc
+
+In a normal situation building a project is done in several steps which include per-se compilation and, after that, linkage using **ld**.
+
+File types
+----------
+
+**.h** - header, does not neet to be compiled directly;
+
+**.c, .cpp, cxx** - source, to be compiled directly;
+    good practice is to first compile each source into a separate object file and then
+    build the desired target (exe or so) from the objects files;
+
+**.o** - object file;
+
+**.exe** or no suffix - executable;
+
+**.so** - dynamic library (basically, same as executable but with no entry point - no main());
+
+**.a** - static library.
+
+Most used flags
+---------------
+
+**-o [output_file_name]** - specify explicitly the output file name;
+
+**-c** - only compile up to the object file (do not run the linker **ld**);
+
+**-I[path]** - (capital I) specify additional include directory where the compiler searches for the files (usually headers) included in your sources;
+
+**-L[path]** - (capital L) specify additional directory where the **linker** searches for the libraries;
+
+**-l[lib_name]** - (small l) library name atached during linkage. The 'lib' prefix and the '.so' suffix of the lib_name should be both omitted;
+
+**-shared** - create a dynamic library, not executable;
+
+**-fPIC** - the 'position-independent-code' flag; when creating dynamic libraries the sources have to be compiled with this flag;
+
+**-std=c++11** - enable C++11 support;
+
+**-Wall** - enables all the warnings about constructions that some users consider questionable, and that are easy to avoid;
+
+**-Wextra** - enables some extra warning flags that are not enabled by **-Wall**;
+
+**-Wpedantic** - issue all the warnings demanded by strict ISO C and ISO C++;
+
+A command wirtten inside the ` quotes is executed and its result is put in the place.
+
+
+rootcint/rootcling
+==================
+
+For rootcling (or older rootcint) see official site, there's not so much to read:
+https://root.cern.ch/cling
 
 
 Short Makefile structure reminder
@@ -143,52 +204,3 @@ Automatic variables:
 
 See also:
 https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
-
-
-Short GCC reminder
-==================
-
-Default compilation consists of a few steps which include per-se compilation and, after that, linkage using ld.
-
-File types
-----------
-
-**.h** - header, does not neet to be compiled directly;
-
-**.c, .cpp, cxx** - source, to be compiled directly;
-    good practice is to first compile each source into a separate object file and then
-    build the desired target (exe or so) from the objects files;
-
-**.o** - object file;
-
-**.exe** or no suffix - executable;
-
-**.so** - dynamic library (basically, same as executable but with no entry point);
-
-**.a** - static library.
-
-Most used flags
----------------
-
-**-o output_file_name** - specify explicitly the output file name;
-
-**-c** - only compile up to the object file (do not run the linker);
-
-**-I[path]** - (capital I) specify additional include directory where the compiler searches for the files (usually headers) included in your sources;
-
-**-L[path]** - (capital L) specify additional directory where the _linker_ searches for the libraries;
-
-**-l[lib_name]** - (small l) library name atached during linkage. The 'lib' prefix and the '.so' suffix should be both omitted;
-
-**-shared** - create a dynamic library, not executable;
-
-**-fPIC** - When creating dynamic libraries the sources have to be compiled with the 'position-independent-code' flag;
-
-A command wirtten inside the ` quotes is executed and the result is put in the place.
-
-
-rootcint/rootcling
-==================
-
-For rootcling (or older rootcint) see official site, there's not so much to read:
-https://root.cern.ch/cling
