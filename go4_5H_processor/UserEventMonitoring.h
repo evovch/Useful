@@ -21,7 +21,9 @@ public:
 
 	void Clear(Option_t* t = "");
 
-private:
+	void Dump(void) const;
+
+public: //TODO should be private. Made public for ER
 
 	UShort_t  CsI_L[16];
 	UShort_t tCsI_L[16];
