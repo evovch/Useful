@@ -14,6 +14,11 @@ You can tune the env.sh script to your system and use it instead:
 
 > . ./env.sh
 
+You can check the values of all involved environment variables by:
+
+> ./showEnv.sh
+
+Unfortunately there is no 'easy' way to reset the current terminal (no, 'reset' command does not do that!), so in case something goes wrong, just close the terminal or your ssh connection and start a new one.
 
 Building
 ========
@@ -40,6 +45,13 @@ You can remove all generated files by:
 
 Note that doclean.sh removes both build result and analysis results.
 
+
+Analysis of output root files
+=============================
+
+A ROOT macro 'analyse.C' is provided as a template to start your simple analysis by means of native ROOT. Please, follow the instructions written at the beginning of the file.
+
+> root -l "analyse.C(\"outputMonitoring.root\")" > out.txt 2> err.txt
 
 Input data structure
 ====================
