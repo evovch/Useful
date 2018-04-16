@@ -330,6 +330,13 @@ void UserProcUnpacking::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAdd
 			mNknownWords++;
 			v_cursor++;
 			break;
+		case support::enu_VENDOR::CAENNOTVALID:
+			#ifdef PRINTDEBUGINFO
+			cerr << "[DEBUG ] CAENNOTVALID. Skipping one 32-bit word." << endl;
+			#endif
+			mNknownWords++;
+			v_cursor++;
+			break;
 		case support::enu_VENDOR::OTHER:
 			#ifdef PRINTDEBUGINFO
 			cerr << "[WARN  ] OTHER VENDOR. Skipping one 32-bit word." << endl;
@@ -567,6 +574,7 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			#endif
 
 			// HERE WE WRITE OUT
+			mCurMessage.mRawWord = v_curWord;
 			mCurMessage.mChannel = v_channel;
 			mCurMessage.mValueQA = v_valueQA;
 			mCurMessage.mValueT = v_valueT;
@@ -574,6 +582,7 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			this->PushOutputRawMessage();
 
 			#ifdef DORESET
+			mCurMessage.mRawWord = 0; // Yes zero here, because we want to clear the raw word with all zeros
 			mCurMessage.mChannel = -1;
 			mCurMessage.mValueQA = -1;
 			mCurMessage.mValueT = -1;
@@ -629,9 +638,13 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 		Int_t v_eventCounter = -1;
 		Int_t v_channel = -1;
 		Int_t v_value = -1;
+		Int_t v_subsubeventSize = -1;
+		Int_t v_crate = -1;
 
 		switch (v_type) {
 		case 2: // CAEN header
+			v_subsubeventSize = (v_curWord >> 8) & 0x3f; // 6 bits
+			v_crate = (v_curWord >> 16) & 0xff; // 8 bits
 			mInsidePackage = true;
 			mNknownWords++;
 			#ifdef PRINTDEBUGINFO
@@ -640,6 +653,8 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 			cerr << "[" << v_cursor << "]\t" << "CAEN header"
 			     << "\ttype=" << v_type
 			     << "\tgeo=" << v_geo
+			     << "\tcrate=" << v_crate
+			     << "\tsize=" << v_subsubeventSize
 			     << endl;
 			#endif
 			break;
@@ -696,13 +711,23 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 			#endif
 
 			//// HERE WE WRITE OUT
+			mCurMessage.mRawWord = v_curWord;
 			mCurMessage.mChannel = v_channel;
 			mCurMessage.mValueQA = v_value;
 			mCurMessage.mValueT = v_value;
 
+			//FIXME костыль для machine time
+			/*if (v_geo == 30) {
+				mCurMessage.mChannel = -1;
+				mCurMessage.mValueQA = -1;
+				mCurMessage.mValueT = -1;
+				mCurMessage.mSubsubeventFooterCounter = v_curWord & 0x3ffffff; // 30 bits
+			}*/
+
 			this->PushOutputRawMessage();
 
 			#ifdef DORESET
+			mCurMessage.mRawWord = 0; // Yes zero here, because we want to clear the raw word with all zeros
 			mCurMessage.mChannel = -1;
 			mCurMessage.mValueQA = -1;
 			mCurMessage.mValueT = -1;
@@ -765,32 +790,40 @@ support::enu_VENDOR UserProcUnpacking::CheckNextHeader(const Int_t* p_startAddre
 		cerr << "Identified as MESYTEC block" << endl;
 		#endif
 		return support::enu_VENDOR::MESYTEC;
+	} else if (v_caen_header == 2) { // 010 (binary)
+		#ifdef PRINTDEBUGINFO
+		cerr << "[DEBUG ] Checking "
+		     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t";
+		cerr << "Identified as CAEN block" << endl;
+		#endif
+		return support::enu_VENDOR::CAEN;
+	} else if (v_curWord == 0xaffeaffe) {
+		//TODO this not a very nice hack
+		//// This is related to what is done in f_user.C
+		#ifdef PRINTDEBUGINFO
+		cerr << "[DEBUG ] Checking "
+		     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t";
+		cerr << "Identified as AFFEAFFE block" << endl;
+		#endif
+		return support::enu_VENDOR::AFFEAFFE;
+	} else if (v_curWord == 0x06000000) {
+		//TODO this not a very nice hack
+		//// For some reason CAEN not-valid-datum words are coming outside of the
+		//// subsubevent block - not between the header and the footer
+		#ifdef PRINTDEBUGINFO
+		cerr << "[DEBUG ] Checking "
+		     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t";
+		cerr << "Identified as CAENNOTVALID block" << endl;
+		#endif
+		return support::enu_VENDOR::CAENNOTVALID;
 	} else {
-		if (v_caen_header == 2) { // 010 (binary)
-			#ifdef PRINTDEBUGINFO
-			cerr << "[DEBUG ] Checking "
-			     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t";
-			cerr << "Identified as CAEN block" << endl;
-			#endif
-			return support::enu_VENDOR::CAEN;
-		} else {
-			if (v_curWord == 0xaffeaffe) {
-				#ifdef PRINTDEBUGINFO
-				cerr << "[DEBUG ] Checking "
-				     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t";
-				cerr << "Identified as AFFEAFFE block" << endl;
-				#endif
-				return support::enu_VENDOR::AFFEAFFE;
-			} else {
-				#ifdef PRINTDEBUGINFO
-				cerr << "[DEBUG ] Checking "
-				     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t"
-				     << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "\t";
-				cerr << "Identified as UNKNOWN block" << endl;
-				#endif
-				return support::enu_VENDOR::OTHER;
-			}
-		}
+		#ifdef PRINTDEBUGINFO
+		cerr << "[DEBUG ] Checking "
+		     << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "\t"
+		     << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "\t";
+		cerr << "Identified as UNKNOWN block" << endl;
+		#endif
+		return support::enu_VENDOR::OTHER;
 	}
 }
 

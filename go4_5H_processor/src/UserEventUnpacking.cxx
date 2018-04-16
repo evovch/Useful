@@ -16,7 +16,7 @@ UserEventUnpacking::UserEventUnpacking(const char* name) :
 {
 	mRawMessages = new TClonesArray("RawMessage");
 
-	cerr << "UserEventUnpacking::UserEventUnpacking() -> ";
+	//cerr << "UserEventUnpacking::UserEventUnpacking() -> ";
 	this->Clear();
 }
 
@@ -28,7 +28,7 @@ UserEventUnpacking::~UserEventUnpacking()
 void UserEventUnpacking::Clear(Option_t* t)
 {
 	//TODO zero all data members!
-	cerr << "UserEventUnpacking::Clear()" << endl;
+	//cerr << "UserEventUnpacking::Clear()" << endl;
 
 	mRawMessages->Clear();
 

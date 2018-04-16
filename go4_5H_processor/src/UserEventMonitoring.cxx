@@ -8,7 +8,7 @@ using std::endl;
 UserEventMonitoring::UserEventMonitoring(const char* name) :
 	TGo4EventElement(name)
 {
-	cerr << "UserEventMonitoring::UserEventMonitoring() -> ";
+	//cerr << "UserEventMonitoring::UserEventMonitoring() -> ";
 	this->Clear();
 }
 
@@ -19,7 +19,7 @@ UserEventMonitoring::~UserEventMonitoring()
 void UserEventMonitoring::Clear(Option_t* t)
 {
 	//TODO zero all data members!
-	cerr << "UserEventMonitoring::Clear()" << endl;
+	//cerr << "UserEventMonitoring::Clear()" << endl;
 
 	for (UInt_t i=0; i<16; i++) {
 		 CsI_L[i] = 0;

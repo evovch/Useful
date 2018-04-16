@@ -28,6 +28,15 @@ public:
 
 public:
 	/**
+	 * Raw 32-bit word as it comes.
+	 * Note that headers are footers are saved and raw messages.
+	 * Also note that a raw word itself does not represent full information
+	 * because some values which are common for a group of raw messages
+	 * should be taken from the [sub][sub]event headers
+	 */
+	Int_t mRawWord;
+
+	/**
 	 * From the event header
 	 */
 	Short_t mEventType;

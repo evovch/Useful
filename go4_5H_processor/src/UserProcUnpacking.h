@@ -48,7 +48,13 @@ private:
 	static RawMessage mCurMessage;
 
 	/**
-	 *
+	 * Actually take the current word with its fields filled during
+	 * different Process*** methods and write it into the output
+	 * TClonesArray of the current event.
+	 * In principle, this method should be called only in two
+	 * places - when pushing a CAEN raw message ot a MESYTEC raw message.
+	 * Indeed, if more 'vendors' will be implemented, appropriate number
+	 * of calls should appear.
 	 */
 	void PushOutputRawMessage(void);
 

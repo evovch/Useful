@@ -17,7 +17,7 @@ namespace support
 	 */
 	std::string GetHexRepresentation(size_t const size, void const * const ptr);
 
-	enum class enu_VENDOR {OTHER=0, MESYTEC=1, CAEN=2, AFFEAFFE=3};
+	enum class enu_VENDOR {OTHER=0, MESYTEC=1, CAEN=2, AFFEAFFE=3, CAENNOTVALID=4};
 
 	std::string VendorAsString(enu_VENDOR p_val);
 

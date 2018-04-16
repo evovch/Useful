@@ -47,10 +47,11 @@ std::string support::VendorAsString(enu_VENDOR p_val)
 	std::string outString;
 
 	switch (p_val) {
-	case enu_VENDOR::OTHER:    outString = "OTHER"; break;
-	case enu_VENDOR::MESYTEC:  outString = "MESYTEC"; break;
-	case enu_VENDOR::CAEN:     outString = "CAEN"; break;
-	case enu_VENDOR::AFFEAFFE: outString = "AFFEAFFE"; break;
+	case enu_VENDOR::OTHER:        outString = "OTHER"; break;
+	case enu_VENDOR::MESYTEC:      outString = "MESYTEC"; break;
+	case enu_VENDOR::CAEN:         outString = "CAEN"; break;
+	case enu_VENDOR::AFFEAFFE:     outString = "AFFEAFFE"; break;
+	case enu_VENDOR::CAENNOTVALID: outString = "CAENNOTVALID"; break;
 	default: outString = "WTF"; break;
 	};
 

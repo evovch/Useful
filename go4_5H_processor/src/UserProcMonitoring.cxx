@@ -333,6 +333,14 @@ void UserProcMonitoring::ProcessCAENmessageVME0(const RawMessage* p_message)
 	Int_t v_ch = p_message->mChannel;
 
 	switch (p_message->mSubsubeventGeo) {
+	case 0:  // CAEN V560 scaler
+		#ifdef PRINTDEBUGINFO
+		cerr << "CAEN V560 scaler: "
+		     << support::GetHexRepresentation(sizeof(Int_t), &(p_message->mRawWord)) << "  "
+		     << support::GetBinaryRepresentation(sizeof(Int_t), &(p_message->mRawWord))
+		     << endl;
+		#endif
+		break;
 	case 1:  // CAEN TDC: tSQX left - time
 		if (v_ch<32) {
 			#ifdef PRINTDEBUGINFO
@@ -394,6 +402,14 @@ void UserProcMonitoring::ProcessCAENmessageVME0(const RawMessage* p_message)
 			cerr << "Unexpected channel value (ch>=32) tCsI_(L/R)[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 			#endif
 		}
+		break;
+	case 30:  // RIO machine time, not really CAEN
+		#ifdef PRINTDEBUGINFO
+		cerr << "RIO machine time: "
+		     << support::GetHexRepresentation(sizeof(Int_t), &(p_message->mRawWord)) << "  "
+		     << support::GetBinaryRepresentation(sizeof(Int_t), &(p_message->mRawWord))
+		     << endl;
+		#endif
 		break;
 	default:
 		#ifdef PRINTDEBUGINFO
