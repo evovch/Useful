@@ -23,9 +23,9 @@ public:
 	cls_scene();
 	~cls_scene();
 
-	void SendToGPU(cls_renderer* p_rend, bool p_uniqueColor = false);
+	void SendToGPU(cls_renderer* p_rend/*, bool p_uniqueColor = false*/);
 
-	void SendToGPUvAndC(cls_renderer* p_rend, bool p_uniqueColor = false);
+	void SendToGPUvAndC(cls_renderer* p_rend/*, bool p_uniqueColor = false*/);
 
 	void HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_VBO) const;
 

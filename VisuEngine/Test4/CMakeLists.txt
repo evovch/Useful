@@ -67,10 +67,15 @@ add_subdirectory(graphics)
 add_subdirectory(stl_interface)
 
 # ===============================================
+# ANEU interface library
+
+add_subdirectory(aneu_interface)
+
+# ===============================================
 # BREP library
 
 add_subdirectory(brep)
 
 # ===============================================
 
-target_link_libraries(prog base graphics stl_interface brep)
+target_link_libraries(prog base graphics stl_interface aneu_interface brep)

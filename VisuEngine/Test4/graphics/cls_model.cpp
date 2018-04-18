@@ -18,7 +18,7 @@ cls_model::cls_model() :
 	mPointsIndices(nullptr),
 	mConstructed(false),
 	//mMatrix
-	mVandCdataUniqueColors(nullptr),
+	//mVandCdataUniqueColors(nullptr),
 	mUniqueColorPrepared(false),
 	mScene(nullptr),
 	mIndexInScene(0)
@@ -36,6 +36,8 @@ cls_model::cls_model() :
 
 cls_model::~cls_model()
 {
+	LOG(DEBUG) << "Destructing the cls_model object." << cls_logger::endl;
+
 	this->Reset();
 }
 
@@ -51,7 +53,7 @@ void cls_model::Reset(void)
 	mNumOfPoints = 0;
 	mConstructed = false;
 	mMatrix = glm::mat4();
-	if (mVandCdataUniqueColors != nullptr) { delete [] mVandCdataUniqueColors; mVandCdataUniqueColors = nullptr; }
+	/*if (mVandCdataUniqueColors != nullptr) { delete [] mVandCdataUniqueColors; mVandCdataUniqueColors = nullptr; }*/
 	mUniqueColorPrepared = false;
 }
 
@@ -315,10 +317,10 @@ void cls_model::PrepareUniqueColors(unsigned int p_vertOffset) const
 {
 	/*LOG(DEBUG) << "cls_model::PrepareUniqueColors: p_vertOffset=" << p_vertOffset << cls_logger::endl;*/
 
-	if (mVandCdataUniqueColors) delete [] mVandCdataUniqueColors;
+	/*if (mVandCdataUniqueColors) delete [] mVandCdataUniqueColors;
 
 	mVandCdataUniqueColors = new stc_VandC[mNumOfVertices];
-	std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, mVandCdataUniqueColors); // not in bytes?
+	std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, mVandCdataUniqueColors); // not in bytes?*/
 
 	for (unsigned int i=0; i<mNumOfTriangles; i++) {
 
@@ -331,9 +333,9 @@ void cls_model::PrepareUniqueColors(unsigned int p_vertOffset) const
 		            << "full index=" << v_fullIndex
 		            << cls_logger::endl;
 
-		IntToColor(v_fullIndex, &mVandCdataUniqueColors[v_vertexIndex+0]);
-		IntToColor(v_fullIndex, &mVandCdataUniqueColors[v_vertexIndex+1]); // This is redundant, only the first vertex is enough
-		IntToColor(v_fullIndex, &mVandCdataUniqueColors[v_vertexIndex+2]); // This is redundant, only the first vertex is enough
+		IntToColorUnique(v_fullIndex, &mVertexAndColorData[v_vertexIndex+0]);
+		IntToColorUnique(v_fullIndex, &mVertexAndColorData[v_vertexIndex+1]); // This is redundant, only the first vertex is enough
+		IntToColorUnique(v_fullIndex, &mVertexAndColorData[v_vertexIndex+2]); // This is redundant, only the first vertex is enough
 	}
 
 	mUniqueColorPrepared = true;
@@ -367,6 +369,9 @@ void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 	v_newVertexAndColorData[0].c[0] = 0.0;
 	v_newVertexAndColorData[0].c[1] = 1.0;
 	v_newVertexAndColorData[0].c[2] = 0.0;
+	v_newVertexAndColorData[0].c_unique[0] = mVertexAndColorData[v_vertexIndex0].c_unique[0];
+	v_newVertexAndColorData[0].c_unique[1] = mVertexAndColorData[v_vertexIndex0].c_unique[1];
+	v_newVertexAndColorData[0].c_unique[2] = mVertexAndColorData[v_vertexIndex0].c_unique[2];
 /*	v_newVertexAndColorData[1].v[0] = transformedVertex1[0];
 	v_newVertexAndColorData[1].v[1] = transformedVertex1[1];
 	v_newVertexAndColorData[1].v[2] = transformedVertex1[2];
@@ -463,7 +468,7 @@ void cls_model::Dump(void) const
 	if (mUniqueColorPrepared) {
 		LOG(INFO) << "mUniqueColorPrepared = true" << cls_logger::endl;
 
-		for (unsigned int i=0; i<mNumOfVertices; i++) {
+/*		for (unsigned int i=0; i<mNumOfVertices; i++) {
 			unsigned int v_reconstrIndex = ColorToInt(&mVandCdataUniqueColors[i]);
 			LOG(INFO) << "i=" << i << ":\t"
 		              << "x=" << mVandCdataUniqueColors[i].v[0] << "\t"
@@ -474,7 +479,7 @@ void cls_model::Dump(void) const
 			          << "b=" << mVandCdataUniqueColors[i].c[2] << "\t"
 			          << "tr=" << v_reconstrIndex
 			          << cls_logger::endl;
-		}
+		}*/
 	} else {
 		LOG(INFO) << "Unique colors are not prepared (mUniqueColorPrepared = false)" << cls_logger::endl;
 	}
@@ -484,7 +489,7 @@ void cls_model::Dump(void) const
 	LOG(INFO) << "----------------------------------------------------------------------" << cls_logger::endl;
 }
 
-void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overrideNvertices, bool p_uniqueColor) const
+void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overrideNvertices/*, bool p_uniqueColor*/) const
 {
 	if (!mConstructed) {
 		LOG(ERROR) << "cls_model::SendToGPUvAndC(): model is not yet constructed." << cls_logger::endl;
@@ -495,10 +500,11 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 	           << " mIndexInScene=" << mIndexInScene << cls_logger::endl;
 
 	stc_VandC* v_VandCdataPointer;
-	if (p_uniqueColor) {
+	//if (p_uniqueColor)
+	{
 		if (!mUniqueColorPrepared) { this->PrepareUniqueColors(0); }
-		v_VandCdataPointer = mVandCdataUniqueColors;
-	} else {
+		/*v_VandCdataPointer = mVandCdataUniqueColors;
+	} else {*/
 		v_VandCdataPointer = mVertexAndColorData;
 	}
 
@@ -544,8 +550,10 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 		}
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, v));
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, c));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(stc_VandC), (void*)offsetof(stc_VandC, c_unique));
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 	}
 	glBindVertexArray(0);
 
@@ -636,7 +644,7 @@ void cls_model::SendToGPUFull(GLuint p_VAO, GLuint p_VBO, GLuint p_IBOtr, GLuint
 }
 
 // Offset in bytes
-void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset, bool p_uniqueColor) const
+void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset/*, bool p_uniqueColor*/) const
 {
 	if (!mConstructed) {
 		LOG(ERROR) << "cls_model::AppendToGPUvAndC(): model is not yet constructed." << cls_logger::endl;
@@ -647,13 +655,14 @@ void cls_model::AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset, 
 	           << " mIndexInScene=" << mIndexInScene << cls_logger::endl;
 
 	stc_VandC* v_VandCdataPointer;
-	if (p_uniqueColor) {
+	//if (p_uniqueColor)
+	{
 		if (!mUniqueColorPrepared) {
 			unsigned int v_off = mScene->GetOffset(mIndexInScene);
 			this->PrepareUniqueColors(v_off);
 		}
-		v_VandCdataPointer = mVandCdataUniqueColors;
-	} else {
+		/*v_VandCdataPointer = mVandCdataUniqueColors;
+	} else {*/
 		v_VandCdataPointer = mVertexAndColorData;
 	}
 

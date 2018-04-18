@@ -16,9 +16,10 @@ cls_scene::cls_scene() :
 
 cls_scene::~cls_scene()
 {
+	LOG(DEBUG) << "Destructing the cls_scene object." << cls_logger::endl;
 }
 
-void cls_scene::SendToGPU(cls_renderer* p_rend, bool p_uniqueColor)
+void cls_scene::SendToGPU(cls_renderer* p_rend/*, bool p_uniqueColor*/)
 {
 	std::vector<cls_model*>::const_iterator iter;
 
@@ -40,13 +41,17 @@ void cls_scene::SendToGPU(cls_renderer* p_rend, bool p_uniqueColor)
 
 	iter = mModels.begin();
 
-	LOG(DEBUG) << "Sum:     " << mTotalNvertices << " vertices,\t"
-	                          << mTotalNtriangles << " triangles,\t"
-	                          << mTotalNwires << " wires,\t"
-	                          << mTotalNpoints << " points."
-	                          << cls_logger::endl;
+	LOG(INFO) << "Sum:     " << mTotalNvertices << " vertices,\t"
+	                         << mTotalNtriangles << " triangles,\t"
+	                         << mTotalNwires << " wires,\t"
+	                         << mTotalNpoints << " points."
+	                         << cls_logger::endl;
 
-	(*iter)->SendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, mTotalNvertices, p_uniqueColor);
+	unsigned int v_dataSize =
+	    mTotalNvertices*sizeof(stc_VandC) + mTotalNtriangles*3*sizeof(unsigned int) +
+	    mTotalNwires*2*sizeof(unsigned int) + mTotalNpoints*sizeof(unsigned int);
+
+	(*iter)->SendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, mTotalNvertices/*, p_uniqueColor*/);
 	(*iter)->SendToGPUtriangles(p_rend->mIBOshading, mTotalNtriangles);
 	(*iter)->SendToGPUwires(p_rend->mIBOwire, mTotalNwires);
 	(*iter)->SendToGPUpoints(p_rend->mIBOpoints, mTotalNpoints);
@@ -67,7 +72,7 @@ void cls_scene::SendToGPU(cls_renderer* p_rend, bool p_uniqueColor)
 		                          << v_Npoints << " points."
 		                          << cls_logger::endl;
 
-		(*iter)->AppendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, v_Nvertices*sizeof(stc_VandC), p_uniqueColor);
+		(*iter)->AppendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, v_Nvertices*sizeof(stc_VandC)/*, p_uniqueColor*/);
 		(*iter)->AppendToGPUtriangles(p_rend->mIBOshading, v_Ntriangles*3*sizeof(unsigned int), v_Nvertices);
 		(*iter)->AppendToGPUwires(p_rend->mIBOwire, v_Nwires*2*sizeof(unsigned int), v_Nvertices);
 		(*iter)->AppendToGPUpoints(p_rend->mIBOpoints, v_Npoints*sizeof(unsigned int), v_Nvertices);
@@ -83,9 +88,14 @@ void cls_scene::SendToGPU(cls_renderer* p_rend, bool p_uniqueColor)
 	                          << v_Nwires << " wires,\t"
 	                          << v_Npoints << " points."
 	                          << cls_logger::endl;
+
+	LOG(INFO) << v_dataSize << " bytes sent to the GPU ("
+	          << v_dataSize/1024 << " KiB, "
+	          << (v_dataSize/1024)/1024 << " MiB)"
+	          << cls_logger::endl;
 }
 
-void cls_scene::SendToGPUvAndC(cls_renderer* p_rend, bool p_uniqueColor)
+void cls_scene::SendToGPUvAndC(cls_renderer* p_rend/*, bool p_uniqueColor*/)
 {
 
 	std::vector<cls_model*>::const_iterator iter;
@@ -105,7 +115,7 @@ void cls_scene::SendToGPUvAndC(cls_renderer* p_rend, bool p_uniqueColor)
 	LOG(DEBUG) << "Sum:     " << mTotalNvertices << " vertices."
 	                          << cls_logger::endl;
 
-	(*iter)->SendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, mTotalNvertices, p_uniqueColor);
+	(*iter)->SendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, mTotalNvertices/*, p_uniqueColor*/);
 
 	unsigned int v_Nvertices = (*iter)->GetNumOfVertices();
 
@@ -117,7 +127,7 @@ void cls_scene::SendToGPUvAndC(cls_renderer* p_rend, bool p_uniqueColor)
 		LOG(DEBUG) << "Current: " << v_Nvertices << " vertices."
 		                          << cls_logger::endl;
 
-		(*iter)->AppendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, v_Nvertices*sizeof(stc_VandC), p_uniqueColor);
+		(*iter)->AppendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, v_Nvertices*sizeof(stc_VandC)/*, p_uniqueColor*/);
 
 		v_Nvertices += (*iter)->GetNumOfVertices();
 	}

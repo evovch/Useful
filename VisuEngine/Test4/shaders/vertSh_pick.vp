@@ -3,12 +3,13 @@
 // input
 layout (location = 0) in vec3 in_Position;
 layout (location = 1) in vec3 in_Color;
+layout (location = 2) in vec3 in_Color_unique;
 
 // output
 out vec4 vertex_Color;
 
 void main()
 {
-    gl_Position = vec4(in_Position, 1.0);
-    vertex_Color = vec4(in_Color, 1.0);
+	gl_Position = vec4(in_Position, 1.0);
+	vertex_Color = vec4(in_Color_unique, 1.0);
 }

@@ -53,6 +53,19 @@ void IntToColor(unsigned int p_inVal, stc_VandC* o_destination)
 	o_destination->c[2] = (float)v_B / 255.0f;
 }
 
+void IntToColorUnique(unsigned int p_inVal, stc_VandC* o_destination)
+{
+	unsigned int v_R, v_G, v_B;
+
+	v_R = (p_inVal & 0x000000FF) >> 0;
+	v_G = (p_inVal & 0x0000FF00) >> 8;
+	v_B = (p_inVal & 0x00FF0000) >> 16;
+
+	o_destination->c_unique[0] = (float)v_R / 255.0f;
+	o_destination->c_unique[1] = (float)v_G / 255.0f;
+	o_destination->c_unique[2] = (float)v_B / 255.0f;
+}
+
 unsigned int ColorToInt(stc_VandC* p_source)
 {
 	unsigned int v_R, v_G, v_B;
@@ -60,6 +73,17 @@ unsigned int ColorToInt(stc_VandC* p_source)
 	v_R = (unsigned int)(p_source->c[0] * 255.0f);
 	v_G = (unsigned int)(p_source->c[1] * 255.0f);
 	v_B = (unsigned int)(p_source->c[2] * 255.0f);
+
+	return v_R + v_G*256 + v_B*256*256;
+}
+
+unsigned int ColorUniqueToInt(stc_VandC* p_source)
+{
+	unsigned int v_R, v_G, v_B;
+
+	v_R = (unsigned int)(p_source->c_unique[0] * 255.0f);
+	v_G = (unsigned int)(p_source->c_unique[1] * 255.0f);
+	v_B = (unsigned int)(p_source->c_unique[2] * 255.0f);
 
 	return v_R + v_G*256 + v_B*256*256;
 }

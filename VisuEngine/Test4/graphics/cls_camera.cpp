@@ -22,6 +22,7 @@ cls_camera::cls_camera(glm::vec3 p_center, float p_radius) :
 
 cls_camera::~cls_camera()
 {
+    fprintf(stderr, "Destructing the cls_camera object.\n");
 }
 
 // Nice pure vector/matrix operations, no OpenGL stuff, except the call to the SendCamToGPU()

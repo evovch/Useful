@@ -38,7 +38,7 @@ public:
 	void Dump(void) const;
 
 	// Send the display-model to the GPU using given OpenGL object
-	void SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overrideNvertices = 0, bool p_uniqueColor = false) const;
+	void SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overrideNvertices = 0/*, bool p_uniqueColor = false*/) const;
 	void SendToGPUtriangles(GLuint p_IBO, unsigned int p_overrideNtriangles = 0) const;
 	void SendToGPUwires(GLuint p_IBO, unsigned int p_overrideNwires = 0) const;
 	void SendToGPUpoints(GLuint p_IBO, unsigned int p_overrideNpoints = 0) const;
@@ -47,7 +47,7 @@ public:
 	void SendToGPUFull(GLuint p_VAO, GLuint p_VBO, GLuint p_IBOtr, GLuint p_IBOwire, GLuint p_IBOpoints) const;
 
 	// Offset in bytes
-	void AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset, bool p_uniqueColor = false) const;
+	void AppendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, GLintptr p_offset/*, bool p_uniqueColor = false*/) const;
 	void AppendToGPUtriangles(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const;
 	void AppendToGPUwires(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const;
 	void AppendToGPUpoints(GLuint p_IBO, GLintptr p_offset, unsigned int p_vertOffset) const;
@@ -104,7 +104,7 @@ private:
 	 * Why am I using this?
 	 * Because I can!
 	 */
-	mutable stc_VandC* mVandCdataUniqueColors;	// [mNumOfVertices]
+	/*mutable stc_VandC* mVandCdataUniqueColors;	// [mNumOfVertices]*/
 	mutable bool mUniqueColorPrepared;
 
 	/**

@@ -7,6 +7,7 @@
 struct stc_VandC {
 	float v[3];
 	float c[3];
+    float c_unique[3];
 };
 
 enum action_type {
@@ -37,10 +38,24 @@ void ValueToColor(float p_inVal, float p_inValMin, float p_inValMax, stc_VandC* 
 void IntToColor(unsigned int p_inVal, stc_VandC* o_destination);
 
 /**
+    Transform unique number of the triangle into unique color
+    Color is coded by 3 floats, each [0.0; 1.0]
+    Write into the c_unique fields
+*/
+void IntToColorUnique(unsigned int p_inVal, stc_VandC* o_destination);
+
+/**
     Transform unique color into unique number of the triangle
     Color is coded by 3 floats, each [0.0; 1.0]
 */
 unsigned int ColorToInt(stc_VandC* p_source);
+
+/**
+    Transform unique color into unique number of the triangle
+    Color is coded by 3 floats, each [0.0; 1.0]
+    Read from the c_unique fields
+*/
+unsigned int ColorUniqueToInt(stc_VandC* p_source);
 
 /**
     Transform unique color into unique number of the triangle

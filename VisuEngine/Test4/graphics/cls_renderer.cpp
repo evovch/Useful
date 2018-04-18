@@ -16,6 +16,8 @@ cls_renderer::cls_renderer(void) :
 
 cls_renderer::~cls_renderer(void)
 {
+	LOG(DEBUG) << "Destructing the cls_renderer object." << cls_logger::endl;
+
 	glDeleteProgram(mShadingDrawProgram);
 	glDeleteProgram(mWireDrawProgram);
 	glDeleteProgram(mPointsDrawProgram);

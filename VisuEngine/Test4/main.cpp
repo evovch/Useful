@@ -14,6 +14,9 @@
 #include "stl_interface/cls_stl_file.h"
 #include "stl_interface/cls_stl_interface.h"
 
+#include "aneu_interface/cls_aneu_interface.h"
+#include "aneu_interface/cls_aneu_file.h"
+
 #include "brep/cls_circle.h"
 
 cls_renderer* gRenderer;
@@ -55,6 +58,7 @@ static void KeyFunc(unsigned char key, int /*x*/, int /*y*/)
 {
 	switch (key) {
 	case 27: // ESC key
+		LOG(INFO) << "Caught ESC key press." << cls_logger::endl;
 		exit(0);
 	case 'a':
 		//TODO testing
@@ -67,7 +71,7 @@ static void KeyFunc(unsigned char key, int /*x*/, int /*y*/)
 		glutPostRedisplay();
 		break;
 	case 'w':
-		gScene->SendToGPU(gRenderer, true);
+		gScene->SendToGPU(gRenderer);
 		glutPostRedisplay();
 		break;
 	default:
@@ -299,7 +303,7 @@ int main(int argc, char** argv)
 
 	gRenderer = new cls_renderer();
 	gScene = new cls_scene();
-	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 20.);
+	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 2.);
 /*
 	cls_model* v_modelDatum = new cls_model();
 	cls_stl_file* v_stlfileDatum = cls_stl_interface::Import("input/datum.stl");
@@ -314,9 +318,9 @@ int main(int argc, char** argv)
 	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/humanoid.stl");
 	if (v_stlfile2 != nullptr) {
 		v_stlfile2->BuildModel(v_model2);
-		v_model2->Shift(0., 0., -10.);
+		v_model2->Shift(5., 0., 5.);
 		//v_model2->RotateZ(90.);
-		//v_model2->RotateY(90.);
+		v_model2->RotateY(90.);
 		gScene->AddModel(v_model2);
 	}
 
@@ -325,6 +329,7 @@ int main(int argc, char** argv)
 	if (v_stlfile5 != nullptr) {
 		v_stlfile5->BuildModel(v_model5);
 		v_model5->Shift(5., 0., -5.);
+		v_model5->RotateY(90.);
 		gScene->AddModel(v_model5);
 	}
 */
@@ -335,7 +340,7 @@ int main(int argc, char** argv)
 	v_model3->Shift(0., 0., 0.);
 	gScene->AddModel(v_model3);
 */
-/*
+
 	cls_model* v_model4 = new cls_model();
 	cls_stl_file* v_stlfile4 = cls_stl_interface::Import("input/liver.stl");
 	if (v_stlfile4 != nullptr) {
@@ -345,8 +350,8 @@ int main(int argc, char** argv)
 		v_model4->Shift(-200., -200., -100.); // liver
 		gScene->AddModel(v_model4);
 	}
-*/
 
+/*
 	cls_model* v_model6 = new cls_model();
 	cls_stl_file* v_stlfile6 = cls_stl_interface::Import("input/Lobster.stl");
 	if (v_stlfile6 != nullptr) {
@@ -354,6 +359,26 @@ int main(int argc, char** argv)
 		//v_model6->Shift(200., 200., 0.);
 		gScene->AddModel(v_model6);
 	}
+*/
+/*
+	cls_model* v_model7 = new cls_model();
+	cls_stl_file* v_stlfile7 = cls_stl_interface::Import("input/Lobster.stl");
+	if (v_stlfile7 != nullptr) {
+		v_stlfile7->BuildModel(v_model7);
+		v_model7->Shift(200., 200., 0.);
+		gScene->AddModel(v_model7);
+	}
+*/
+/*
+	cls_model* v_modelANEU = new cls_model();
+	cls_aneu_file* v_aneufile = cls_aneu_interface::Import("input/3DCM(46-)_117k.aneu");
+	if (v_aneufile != nullptr) {
+		v_aneufile->BuildModel(v_modelANEU);
+		v_modelANEU->Shift(0., 0., 0.);
+		gScene->AddModel(v_modelANEU);
+	}
+*/
+
 
 	gScene->SendToGPU(gRenderer);
 

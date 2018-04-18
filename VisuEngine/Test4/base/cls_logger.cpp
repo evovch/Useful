@@ -13,4 +13,5 @@ cls_logger::cls_logger() :
 
 cls_logger::~cls_logger()
 {
+	LOG(DEBUG) << "Destructing the cls_logger object." << cls_logger::endl;
 }

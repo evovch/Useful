@@ -34,6 +34,8 @@ cls_offscreen_renderer::cls_offscreen_renderer(cls_renderer* p_renderer, GLsizei
 
 cls_offscreen_renderer::~cls_offscreen_renderer(void)
 {
+	LOG(DEBUG) << "Destructing the cls_offscreen_renderer object." << cls_logger::endl;
+
 	this->Destruct();
 
 	//// mRenderer should not be touched! It is a pointer to an external object.
@@ -109,9 +111,9 @@ void cls_offscreen_renderer::RenderSceneToBuffer(cls_scene* p_scene)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//TODO this approach is terribly slow!!!
-	p_scene->SendToGPUvAndC(mRenderer, true);
+	////p_scene->SendToGPUvAndC(mRenderer, true);
 	p_scene->Draw(this);
-	p_scene->SendToGPUvAndC(mRenderer, false);
+	////p_scene->SendToGPUvAndC(mRenderer, false);
 
 	// Read data from the offscreen buffer
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
