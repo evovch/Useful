@@ -19,7 +19,7 @@ using std::endl;
   This option produces A LOT OF DATA - run your analysis with a
   small number of events (~10-100)
 */
-#define PRINTDEBUGINFO
+//#define PRINTDEBUGINFO
 
 UserProcStep2::UserProcStep2(const char* name) :
 	TGo4EventProcessor(name),

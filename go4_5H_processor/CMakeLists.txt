@@ -31,11 +31,13 @@ endif()
 
 # =============================================================================
 
-#if (CMAKE_COMPILER_IS_GNUCXX)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wpedantic")
-#    # -std=c++11
-#endif()
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
+    # -std=c++11 -Wextra -Wpedantic
+endif()
 
 # =============================================================================
 
 add_subdirectory(src)
+
+add_subdirectory(setupconfig)

@@ -454,7 +454,7 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	#ifdef PRINTDEBUGINFO
 	Short_t v_subword;
 	cerr << "         -----------------------------------------------------------" << endl;
-	for (UInt_t v_cursor=0; v_cursor<p_size; v_cursor+=4)
+	for (Int_t v_cursor=0; v_cursor<p_size; v_cursor+=4)
 	{
 		v_curWord = p_startAddress[v_cursor+0];
 		cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  "

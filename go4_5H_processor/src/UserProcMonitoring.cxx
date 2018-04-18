@@ -300,6 +300,8 @@ void UserProcMonitoring::ProcessMESYTECmessageVME1(const RawMessage* p_message)
 		#ifdef PRINTDEBUGINFO
 		cerr << "neutTDC[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 		#endif
+		//TODO implement channel number check
+		// should be 32
 		break;
 	default:
 		#ifdef PRINTDEBUGINFO
