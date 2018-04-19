@@ -31,20 +31,14 @@ cmake ../
 make -j
 cd -
 
-#cp -v build/src/libUserAnalysis.so .
-#cp -v build/src/libUserAnalysis_rdict.pcm .
-#cp -v build/src/libUserAnalysis.rootmap .
-#cp -v build/setupconfig/libSetupConfig.so .
-#cp -v build/setupconfig/libSetupConfig_rdict.pcm .
-#cp -v build/setupconfig/libSetupConfig.rootmap .
+ln -s build/setupconfig/libSetupConfig.so
+#ln -s build/setupconfig/libSetupConfig_rdict.pcm
+#ln -s build/setupconfig/libSetupConfig.rootmap
+ln -s build/setupconfig/setup_config_test
+
 ln -s build/src/libUserAnalysis.so
 ln -s build/src/libUserAnalysis_rdict.pcm
 ln -s build/src/libUserAnalysis.rootmap
-ln -s build/setupconfig/libSetupConfig.so
-ln -s build/setupconfig/libSetupConfig_rdict.pcm
-ln -s build/setupconfig/libSetupConfig.rootmap
-
-ln -s build/setupconfig/setupconfigtest
 
 # TODO get rid of the test programs in the end
 #g++ setupconfig_test.cpp -o test.exe -I`root-config --incdir` -std=c++11 -L. -lSetupConfig `root-config --libs`

@@ -10,6 +10,8 @@ using std::endl;
 
 #include <TGo4StepFactory.h>
 
+#include "setupconfig/pureC/functions.h"
+
 UserAnalysis::UserAnalysis(const char* name) :
 	TGo4Analysis(name),
 	mEventCounter(0),
@@ -54,6 +56,11 @@ void UserAnalysis::Construct(void)
 		cout << "Go4 version mismatch! Aborting." << endl;
 		exit(-1);
 	}
+
+	// Import XML setup config file
+	stc_setup_config obj1;
+	InitStcSetupConfig(&obj1);
+	ImportXML(&obj1, "usr/setup.xml");
 
 	//TODO
 	//SetStepChecking(kFALSE); // necessary for non-subsequent mesh analysis

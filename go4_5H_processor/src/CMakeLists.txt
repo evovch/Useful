@@ -23,6 +23,8 @@ ROOT_GENERATE_DICTIONARY(G__UserAnalysis ${ROOTCLING_HEADERS} LINKDEF UserAnalys
 
 # =============================================================================
 
+include_directories(${CMAKE_SOURCE_DIR})
+
 set(SOURCE_LIB G__UserAnalysis.cxx
                UserAnalysis.cxx
                UserEventUnpacking.cxx
@@ -41,3 +43,5 @@ set(SOURCE_LIB G__UserAnalysis.cxx
 add_library(UserAnalysis SHARED ${SOURCE_LIB})
 
 target_link_libraries(UserAnalysis Go4Analysis)
+
+target_link_libraries(UserAnalysis SetupConfig)
