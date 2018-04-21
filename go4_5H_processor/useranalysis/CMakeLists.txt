@@ -2,7 +2,7 @@
 # ROOT dictionary
 
 # Normally this is not needed, but rootcling cannot see these files
-# if the current source directory (which is 'PROJECTBASEDIR/src' in our case)
+# if the current source directory (which is 'PROJECTBASEDIR/useranalysis' in our case)
 # is not added to the include_directories list.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR})

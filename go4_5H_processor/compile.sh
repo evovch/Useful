@@ -36,9 +36,9 @@ ln -s build/setupconfig/libSetupConfig.so
 #ln -s build/setupconfig/libSetupConfig.rootmap
 ln -s build/setupconfig/setup_config_test
 
-ln -s build/src/libUserAnalysis.so
-ln -s build/src/libUserAnalysis_rdict.pcm
-ln -s build/src/libUserAnalysis.rootmap
+ln -s build/useranalysis/libUserAnalysis.so
+ln -s build/useranalysis/libUserAnalysis_rdict.pcm
+ln -s build/useranalysis/libUserAnalysis.rootmap
 
 ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper.so
 ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper_rdict.pcm

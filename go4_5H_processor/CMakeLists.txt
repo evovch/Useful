@@ -38,6 +38,6 @@ endif()
 
 # =============================================================================
 
-add_subdirectory(src)
+add_subdirectory(useranalysis)
 add_subdirectory(setupconfig)
 add_subdirectory(setupconfigcppwrapper)
