@@ -9,6 +9,8 @@
 
 #include <TGo4EventProcessor.h> // mother class
 
+#include "setupconfigcppwrapper/SetupConfiguration.h"
+
 class TGo4EventElement;
 
 class UserEventMonitoring;
@@ -27,47 +29,24 @@ public: // methods
 
 private: // methods
 	/**
-	 *
+	 * Process raw messages from MESYTEC and CAEN electronics blocks
 	 */
-	void ProcessMESYTECmessage(const RawMessage* p_message);
+	void ProcessMessageUniversal(const RawMessage* p_message);
 
 	/**
-	 *
-	 */
-	void ProcessMESYTECmessageVME0(const RawMessage* p_message);
-	/**
-	 *
-	 */
-	void ProcessMESYTECmessageVME1(const RawMessage* p_message);
-
-	/**
-	 *
-	 */
-	void ProcessCAENmessage(const RawMessage* p_message);
-
-	/**
-	 *
-	 */
-	void ProcessCAENmessageVME0(const RawMessage* p_message);
-
-	/**
-	 *
-	 */
-	void ProcessCAENmessageVME1(const RawMessage* p_message);
-
-	/**
-	 *
+	 * Process raw CAMAC words assuming they have been produced by MWPCs
 	 */
 	void ProcessCAMACmwpcWords(const UserEventUnpacking* p_inputEvent);
 
 private: // data members
 	/**
-	 *
+	 * Counter or processed events
 	 */
 	unsigned long int mEventCounter;
 
 	/**
-	 *
+	 * Current output event object. This object is filled during BuildEvent
+	 * and then pushed into the output tree by the framework.
 	 */
 	UserEventMonitoring* mCurrentOutputEvent;
 
@@ -76,6 +55,11 @@ private: // data members
 	 * See UserHistosMonitoring class.
 	 */
 	UserHistosMonitoring* mHistoMan;
+
+	/**
+	 * Setup configuration object.
+	 */
+	SetupConfiguration* mSetupConfiguration;
 
 	ClassDef(UserProcMonitoring, 1);
 };

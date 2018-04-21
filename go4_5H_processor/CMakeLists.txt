@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.5)
 project(go4_5H_processor)
 
 # Switch in on for more verbose make output
-set(CMAKE_VERBOSE_MAKEFILE ON)
+# set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # =============================================================================
 # External packages
@@ -39,5 +39,5 @@ endif()
 # =============================================================================
 
 add_subdirectory(src)
-
 add_subdirectory(setupconfig)
+add_subdirectory(setupconfigcppwrapper)

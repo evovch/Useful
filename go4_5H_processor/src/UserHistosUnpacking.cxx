@@ -9,7 +9,7 @@
 
 UserHistosUnpacking::UserHistosUnpacking()
 {
-	TGo4Analysis* a = TGo4Analysis::Instance();
+	//TGo4Analysis* a = TGo4Analysis::Instance();
 
 }
 

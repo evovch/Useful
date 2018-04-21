@@ -40,6 +40,10 @@ ln -s build/src/libUserAnalysis.so
 ln -s build/src/libUserAnalysis_rdict.pcm
 ln -s build/src/libUserAnalysis.rootmap
 
+ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper.so
+ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper_rdict.pcm
+ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper.rootmap
+
 # TODO get rid of the test programs in the end
 #g++ setupconfig_test.cpp -o test.exe -I`root-config --incdir` -std=c++11 -L. -lSetupConfig `root-config --libs`
 

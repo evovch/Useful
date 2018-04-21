@@ -15,6 +15,23 @@ void InitStcMapping(stc_mapping* ptr)
 {
 	strncpy(ptr->fCrateName, "", 64);
 	ptr->fCrateProcid = 0;
+
+	/*ptr->fAddr = 0;
+	strncpy(ptr->fElblock, "", 64);
+	ptr->fStartelectrch = 0;
+	ptr->fNelectrch = 0;
+	ptr->fStepelecrtch = 1;
+	strncpy(ptr->fDetector, "", 64);
+	ptr->fStartdetch = 0;
+	strncpy(ptr->fFolder, "", 64);*/
+
+	// I'd better call for reset here:
+	ResetStcMapping(ptr);
+}
+
+//TODO check that only necessary data members are initialized
+void ResetStcMapping(stc_mapping* ptr)
+{
 	ptr->fAddr = 0;
 	strncpy(ptr->fElblock, "", 64);
 	ptr->fStartelectrch = 0;
@@ -114,7 +131,6 @@ void ImportXML(stc_setup_config* ptr, const char* filename)
 	// Parsing state machine variables ------------------------
 	char fBuffer[1024]; // Buffer for input file reading
 	unsigned short fBufferSize=0; // Current size of the buffer
-	//enuTAG fCurTag; // Current tag being processed
 	// --------------------------------------------------------
 
 	FILE* f = fopen(filename, "r");

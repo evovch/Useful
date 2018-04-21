@@ -23,8 +23,11 @@ public:
 
 	void Dump(void) const;
 
+	UShort_t* GetFieldByName(TString p_name);
+
 public: //TODO should be private. Made public for ER
 
+	// Telescopes
 	UShort_t  CsI_L[16];
 	UShort_t tCsI_L[16];
 	UShort_t  CsI_R[16];
@@ -40,16 +43,20 @@ public: //TODO should be private. Made public for ER
 	UShort_t  SQ20[16];
 	UShort_t tSQ20[16];
 
+	// Neutron wall (stilbene)
 	UShort_t neutAmp[32];
 	UShort_t neutTAC[32];
 	UShort_t neutTDC[32];
 
+	// Beam detector - ToF
 	UShort_t  F3[4];
 	UShort_t tF3[4];
 	UShort_t  F5[4];
 	UShort_t tF5[4];
 	UShort_t  F6[4];
 	UShort_t tF6[4];
+
+	// Beam detector - MWPC
 	UShort_t tMWPC[4];
 
 	ClassDef(UserEventMonitoring, 1);

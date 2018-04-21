@@ -11,6 +11,10 @@ unlink libUserAnalysis.so
 unlink libUserAnalysis_rdict.pcm
 unlink libUserAnalysis.rootmap
 
+unlink libSetupConfigCppWrapper.so
+unlink libSetupConfigCppWrapper_rdict.pcm
+unlink libSetupConfigCppWrapper.rootmap
+
 rm -fv compile.out compile.err
 
 if [ -d "build" ]; then

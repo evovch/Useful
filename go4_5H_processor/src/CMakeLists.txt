@@ -5,6 +5,7 @@
 # if the current source directory (which is 'PROJECTBASEDIR/src' in our case)
 # is not added to the include_directories list.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR})
 
 set(ROOTCLING_HEADERS UserAnalysis.h
                       UserEventUnpacking.h
@@ -44,4 +45,4 @@ add_library(UserAnalysis SHARED ${SOURCE_LIB})
 
 target_link_libraries(UserAnalysis Go4Analysis)
 
-target_link_libraries(UserAnalysis SetupConfig)
+target_link_libraries(UserAnalysis SetupConfigCppWrapper)

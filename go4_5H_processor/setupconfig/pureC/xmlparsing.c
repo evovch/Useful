@@ -6,8 +6,16 @@
 #include "structs.h"
 #include "functions.h"
 
+// ================================================================================================
+// Global variables ===============================================================================
+// ================================================================================================
+
 enuTAG gCurTag;
 stc_mapping gCurMappingInfo;
+
+// ================================================================================================
+// ================================================================================================
+// ================================================================================================
 
 unsigned short CheckIfNextIsComment(FILE* f)
 {
@@ -133,6 +141,10 @@ void ProcessTag(stc_setup_config* ptr, char* o_buffer/*, enuTAG* o_CurTag*/)
 {
 	//fprintf(stderr, "Processing:|%s|\n", o_buffer);
 
+	// One could init (i.e.) clear here - before processing the next tag
+	gCurTag = NOTAG; // Current type of the tag being processed
+	ResetStcMapping(&gCurMappingInfo); // Current mapping structure
+
 	char* tok;
 	size_t toklen;
 	const char delims[] = " \t";
@@ -199,8 +211,16 @@ void ProcessTag(stc_setup_config* ptr, char* o_buffer/*, enuTAG* o_CurTag*/)
 			if (strcmp(tok, "</setup") == 0) {
 				gCurTag = NOTAG;
 			} else if (strcmp(tok, "</crate") == 0) {
+				// This, basically, could be omitted.
+				// We clear the full current mapping strcture when we get to the closing
+				// crate tag. This includes clearing of the crate-related fields.
+				gCurTag = NOTAG; // Current type of the tag being processed
+				InitStcMapping(&gCurMappingInfo); // Current mapping structure
+
 				gCurTag = NOTAG;
 			} else if (strcmp(tok, "</mapping") == 0) {
+				// There should be no such closing tag.
+				// The <mapping/> tag is self-closing
 				gCurTag = NOTAG;
 			} else {
 				// ERROR
@@ -351,7 +371,7 @@ void ProcessAttr(stc_setup_config* ptr, char* p_token/*, enuTAG* o_CurTag*/, uns
 
 		if (p_lastAttribute == 1) {
 			// Finish current MAPPING entity writeout
-			DumpStcMapping(&gCurMappingInfo);
+			//DumpStcMapping(&gCurMappingInfo);
 
 			ExtendMappingsListStcSetupConfig(ptr, &gCurMappingInfo);
 

@@ -397,11 +397,11 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	mNknownWords += 16;
 
 	Int_t v_curWord;
-	Int_t v_geo;
+	//Int_t v_geo;
 
 	// HEADER
 	v_curWord = p_startAddress[0];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA0
 	v_curWord = p_startAddress[1];
 	mCurrentOutputEvent->mCAMAC[0] = (v_curWord & 0xFFFF);
@@ -410,11 +410,11 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	mCurrentOutputEvent->mCAMAC[1] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[3];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 
 	// HEADER
 	v_curWord = p_startAddress[4];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA2
 	v_curWord = p_startAddress[5];
 	mCurrentOutputEvent->mCAMAC[2] = (v_curWord & 0xFFFF);
@@ -423,11 +423,11 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	mCurrentOutputEvent->mCAMAC[3] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[7];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 
 	// HEADER
 	v_curWord = p_startAddress[8+0];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA4
 	v_curWord = p_startAddress[8+1];
 	mCurrentOutputEvent->mCAMAC[4] = (v_curWord & 0xFFFF);
@@ -436,11 +436,11 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	mCurrentOutputEvent->mCAMAC[5] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[8+3];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 
 	// HEADER
 	v_curWord = p_startAddress[8+4];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA6
 	v_curWord = p_startAddress[8+5];
 	mCurrentOutputEvent->mCAMAC[6] = (v_curWord & 0xFFFF);
@@ -449,7 +449,7 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	mCurrentOutputEvent->mCAMAC[7] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[8+7];
-	v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
+	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 
 	#ifdef PRINTDEBUGINFO
 	Short_t v_subword;
@@ -891,7 +891,7 @@ void UserProcUnpacking::DumpSubeventHeader(/*const*/ TGo4MbsSubEvent* p_subevent
 	Int_t v_byteLen = p_subevent->GetByteLen();
 
 	Int_t v_intLen = p_subevent->GetIntLen(); // Get the size of the current subevent
-	Int_t* v_dataField = p_subevent->GetDataField(); // Get the pointer to the data of the subevent
+	//Int_t* v_dataField = p_subevent->GetDataField(); // Get the pointer to the data of the subevent
 
 	cerr << "[DEBUG ] Subevent header: "
 	     << "dLen=" << v_dLen << "\t"

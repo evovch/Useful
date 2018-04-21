@@ -15,6 +15,7 @@ using std::endl;
 #include "UserHistosMonitoring.h"
 #include "Support.h"
 #include "data/RawMessage.h"
+#include "setupconfigcppwrapper/SetupConfiguration.h"
 
 /**
   Uncomment this if you want to see all the debug information.
@@ -29,11 +30,13 @@ UserProcMonitoring::UserProcMonitoring(const char* name) :
 	mEventCounter(0)
 {
 	mHistoMan = new UserHistosMonitoring();
+	mSetupConfiguration = new SetupConfiguration("usr/setup.xml");
 }
 
 UserProcMonitoring::~UserProcMonitoring()
 {
 	if (mHistoMan) delete mHistoMan;
+	if (mSetupConfiguration) delete mSetupConfiguration;
 }
 
 Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
@@ -63,8 +66,7 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 	// Seems that indeed this is done by the framework
 	//mCurrentOutputEvent->Clear();
 
-	//TODO do the processing here
-
+	//TODO do the processing of raw messages here
 	UInt_t v_messCounter = 0;
 	TIter next(v_input->mRawMessages);
 	while (RawMessage* v_curMessage = (RawMessage*)next())
@@ -76,25 +78,12 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 		cerr << "\t\t";
 		#endif
 
-		support::enu_VENDOR v_messVendor = support::VendorFromChar(v_curMessage->mSubsubeventVendor);
-
-		switch (v_messVendor) {
-		case support::enu_VENDOR::MESYTEC:
-			this->ProcessMESYTECmessage(v_curMessage);
-			break;
-		case support::enu_VENDOR::CAEN:
-			this->ProcessCAENmessage(v_curMessage);
-			break;
-		default:
-			//// All fine
-			break;
-		}; // end of switch
+		this->ProcessMessageUniversal(v_curMessage);
 
 		v_messCounter++;
 	} // end of while
 
-	//TODO process CAMAC MWPC words here
-
+	//TODO do the processing of CAMAC MWPC words here
 	this->ProcessCAMACmwpcWords(v_input);
 
 	// --------------------------
@@ -106,380 +95,42 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 	return v_isValid;
 }
 
-void UserProcMonitoring::ProcessMESYTECmessage(const RawMessage* p_message)
+void UserProcMonitoring::ProcessMessageUniversal(const RawMessage* p_message)
 {
-	switch (p_message->mSubeventProcID) {
-	case 100: // VME0
-		this->ProcessMESYTECmessageVME0(p_message);
-		break;
-	case 200: // VME1
-		this->ProcessMESYTECmessageVME1(p_message);
-		break;
-	default:
-		#ifdef PRINTDEBUGINFO
-		cerr << "unidentified MESYTEC message: "; // << endl;
-		p_message->ExtDump();
-		#endif
-		break;
-	};
-}
+	unsigned short v_procid = (unsigned short)p_message->mSubeventProcID;
+	unsigned short v_addr;
+	support::enu_VENDOR v_messVendor = support::VendorFromChar(p_message->mSubsubeventVendor);
+	if (v_messVendor == support::enu_VENDOR::MESYTEC) {
+		v_addr = (unsigned short)p_message->mSubsubeventModule;
+	} else if (v_messVendor == support::enu_VENDOR::CAEN) {
+		v_addr = (unsigned short)p_message->mSubsubeventGeo;
+	} else {
+		cerr << "ERROR UserProcMonitoring::ProcessMessageUniversal() Unknown vendor." << endl;
+		return;
+	}
+	unsigned short v_ch = (unsigned short)p_message->mChannel;
 
-void UserProcMonitoring::ProcessMESYTECmessageVME0(const RawMessage* p_message)
-{
-	Int_t v_ch = p_message->mChannel;
+	//TODO check that mSetupConfiguration is not NULL
+	TString v_detector;
+	TString v_folder;
+	unsigned short v_detChannel = mSetupConfiguration->GetOutput(v_procid, v_addr, v_ch, &v_detector, &v_folder);
 
-	switch (p_message->mSubsubeventModule) {
-	case 5:  // MESYTEC mADC: SQX left
-		if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "SQX_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->SQX_L[v_ch] = p_message->mValueQA;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) SQX_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 6:  // MESYTEC mADC: SQX right
-		if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "SQX_R[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->SQX_R[v_ch] = p_message->mValueQA;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) SQX_R[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 7:  // MESYTEC mADC: SQY left and right
-		if (v_ch<16) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "SQY_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->SQY_L[v_ch] = p_message->mValueQA;
-		} else if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "SQY_R[" << v_ch-16 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->SQY_R[v_ch-16] = p_message->mValueQA;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) SQY_(L/R)[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 8:  // MESYTEC mADC: CsI left and right
-		if (v_ch<16) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "CsI_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->CsI_L[v_ch] = p_message->mValueQA;
-		} else if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "CsI_R[" << v_ch-16 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->CsI_R[v_ch-16] = p_message->mValueQA;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) CsI_(L/R)[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 9:  // MESYTEC mADC: SQ20
-		if (v_ch<16) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "SQ20[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->SQ20[v_ch] = p_message->mValueQA;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=16) SQ20[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 10: // MESYTEC mQDC: F3, F5, F6
-		if (v_ch<4) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "F3[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->F3[v_ch] = p_message->mValueQA;
-			//if (p_message->mValueQA > 0) { mHistoMan->d1F3[v_ch]->Fill(p_message->mValueQA); } //TODO which value to use?
-		} else if (v_ch<8) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "F5[" << v_ch-4 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->F5[v_ch-4] = p_message->mValueQA;
-			//if (p_message->mValueQA > 0) { mHistoMan->d1F5[v_ch-4]->Fill(p_message->mValueQA); } //TODO which value to use?
-		} else if (v_ch<12) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "F6[" << v_ch-8 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->F6[v_ch-8] = p_message->mValueQA;
-			//if (p_message->mValueQA > 0) { mHistoMan->d1F6[v_ch-8]->Fill(p_message->mValueQA); } //TODO which value to use?
-		} else if (v_ch<16) {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=12 && ch<16) [" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=16) [" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 11: // MESYTEC mTDC: tF3, tF5, tF6, tMWPC - time
-		//TODO T-bit analysis???
-		if (v_ch<4) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tF3[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tF3[v_ch] = p_message->mValueT;
-			//if (p_message->mValueT > 0) { mHistoMan->d1tF3[v_ch]->Fill(p_message->mValueT); } //TODO which value to use?
-		} else if (v_ch<8) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tF5[" << v_ch-4 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tF5[v_ch-4] = p_message->mValueT;
-			//if (p_message->mValueT > 0) { mHistoMan->d1tF5[v_ch-4]->Fill(p_message->mValueT); } //TODO which value to use?
-		} else if (v_ch<12) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tF6[" << v_ch-8 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tF6[v_ch-8] = p_message->mValueT;
-			//if (p_message->mValueT > 0) { mHistoMan->d1tF6[v_ch-8]->Fill(p_message->mValueT); } //TODO which value to use?
-		} else if (v_ch<16) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tMWPC[" << v_ch-12 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tMWPC[v_ch-12] = p_message->mValueT;
-			//if (p_message->mValueT > 0) { mHistoMan->d1tMWPC[v_ch-12]->Fill(p_message->mValueT); } //TODO which value to use?
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=16) [" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 12: // MESYTEC mTDC: tSQ20 - time
-		//TODO T-bit analysis???
-		if (v_ch<16) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tSQ20[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tSQ20[v_ch] = p_message->mValueT;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=16) tSQ20[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	default:
-		#ifdef PRINTDEBUGINFO
-		cerr << "unidentified MESYTEC message from VME0: "; // << endl;
-		p_message->ExtDump();
-		#endif
-		break;
-	};
-}
+	cerr << v_folder << "/" << v_detector << "[" << v_ch << "]\t"
+	     << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
 
-void UserProcMonitoring::ProcessMESYTECmessageVME1(const RawMessage* p_message)
-{
-	Int_t v_ch = p_message->mChannel;
+	UShort_t* eventDatField = mCurrentOutputEvent->GetFieldByName(v_detector);
 
-	switch (p_message->mSubsubeventModule) {
-	case 2:  // MESYTEC ???? //TODO
-		#ifdef PRINTDEBUGINFO
-		cerr << "neutTDC[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-		#endif
-		//TODO implement channel number check
-		// should be 32
-		break;
-	default:
-		#ifdef PRINTDEBUGINFO
-		cerr << "unidentified MESYTEC message from VME1: "; // << endl;
-		p_message->ExtDump();
-		#endif
-		break;
-	};
-}
-
-void UserProcMonitoring::ProcessCAENmessage(const RawMessage* p_message)
-{
-	switch (p_message->mSubeventProcID) {
-	case 100: // VME0
-		this->ProcessCAENmessageVME0(p_message);
-		break;
-	case 200: // VME1
-		this->ProcessCAENmessageVME1(p_message);
-		break;
-	default:
-		#ifdef PRINTDEBUGINFO
-		cerr << "unidentified CAEN message: "; // << endl;
-		p_message->ExtDump();
-		#endif
-		break;
-	};
-}
-
-void UserProcMonitoring::ProcessCAENmessageVME0(const RawMessage* p_message)
-{
-	Int_t v_ch = p_message->mChannel;
-
-	switch (p_message->mSubsubeventGeo) {
-	case 0:  // CAEN V560 scaler
-		#ifdef PRINTDEBUGINFO
-		cerr << "CAEN V560 scaler: "
-		     << support::GetHexRepresentation(sizeof(Int_t), &(p_message->mRawWord)) << "  "
-		     << support::GetBinaryRepresentation(sizeof(Int_t), &(p_message->mRawWord))
-		     << endl;
-		#endif
-		break;
-	case 1:  // CAEN TDC: tSQX left - time
-		if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tSQX_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tSQX_L[v_ch] = p_message->mValueT;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) tSQX_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 2:  // CAEN TDC: tSQX right - time
-		if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tSQX_R[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tSQX_R[v_ch] = p_message->mValueT;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) tSQX_R[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 3:  // CAEN TDC: tSQY left and right - time
-		if (v_ch<16) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tSQY_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tSQY_L[v_ch] = p_message->mValueT;
-		} else if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tSQY_R[" << v_ch-16 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tSQY_R[v_ch-16] = p_message->mValueT;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) tSQY_(L/R)[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 4:  // CAEN TDC: tCsI left and right - time
-		if (v_ch<16) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tCsI_L[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tCsI_L[v_ch] = p_message->mValueT;
-		} else if (v_ch<32) {
-			#ifdef PRINTDEBUGINFO
-			cerr << "tCsI_R[" << v_ch-16 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-			mCurrentOutputEvent->tCsI_R[v_ch-16] = p_message->mValueT;
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) tCsI_(L/R)[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 30:  // RIO machine time, not really CAEN
-		#ifdef PRINTDEBUGINFO
-		cerr << "RIO machine time: "
-		     << support::GetHexRepresentation(sizeof(Int_t), &(p_message->mRawWord)) << "  "
-		     << support::GetBinaryRepresentation(sizeof(Int_t), &(p_message->mRawWord))
-		     << endl;
-		#endif
-		break;
-	default:
-		#ifdef PRINTDEBUGINFO
-		cerr << "unidentified CAEN message from VME0: "; // << endl;
-		p_message->ExtDump();
-		#endif
-		break;
-	};
-}
-
-void UserProcMonitoring::ProcessCAENmessageVME1(const RawMessage* p_message)
-{
-	Int_t v_ch = p_message->mChannel;
-
-	switch (p_message->mSubsubeventGeo) {
-	case 0:  // CAEN ???? //TODO
-		if (v_ch<32) {
-			if (v_ch%2 == 0) {
-				#ifdef PRINTDEBUGINFO
-				cerr << "neutAmp[" << (v_ch/2) << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-				#endif
-				mCurrentOutputEvent->neutAmp[v_ch/2] = p_message->mValueQA; //TODO which value to use?
-			} else {
-				#ifdef PRINTDEBUGINFO
-				cerr << "neutTAC[" << (v_ch/2) << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-				#endif
-				mCurrentOutputEvent->neutTAC[v_ch/2] = p_message->mValueT; //TODO which value to use?
-			}
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) neut(Amp/TAC)[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	case 1:  // CAEN ???? //TODO
-		if (v_ch<32) {
-			if (v_ch%2 == 0) {
-				#ifdef PRINTDEBUGINFO
-				cerr << "neutAmp[" << (v_ch/2)+16 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-				#endif
-				mCurrentOutputEvent->neutAmp[(v_ch/2)+16] = p_message->mValueQA; //TODO which value to use?
-			} else {
-				#ifdef PRINTDEBUGINFO
-				cerr << "neutTAC[" << (v_ch/2)+16 << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-				#endif
-				mCurrentOutputEvent->neutTAC[(v_ch/2)+16] = p_message->mValueT; //TODO which value to use?
-			}
-		} else {
-			//// Unexpected channel value
-			#ifdef PRINTDEBUGINFO
-			cerr << "Unexpected channel value (ch>=32) neut(Amp/TAC)[" << v_ch << "]=" << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
-			#endif
-		}
-		break;
-	default:
-		#ifdef PRINTDEBUGINFO
-		cerr << "unidentified CAEN message from VME1: "; // << endl;
-		p_message->ExtDump();
-		#endif
-		break;
-	};
+	if (eventDatField != NULL) {
+		//TODO check that the channel has allowed value
+		//FIXME or p_message->mValueT ?
+		eventDatField[v_detChannel] = p_message->mValueQA;
+	}
 }
 
 void UserProcMonitoring::ProcessCAMACmwpcWords(const UserEventUnpacking* p_inputEvent)
 {
 	const Short_t* v_inputCAMAC = p_inputEvent->mCAMAC;
-
+/*
 	// Just print - shorts
 	#ifdef PRINTDEBUGINFO
 	cerr << "--------------------------------" << endl;
@@ -493,9 +144,9 @@ void UserProcMonitoring::ProcessCAMACmwpcWords(const UserEventUnpacking* p_input
 	cerr << support::GetBinaryRepresentation(sizeof(Short_t), &v_inputCAMAC[6]) << endl;
 	cerr << "--------------------------------" << endl;
 	#endif
-/*
+*/
 	// Transform pairs of shorts into normal ints
-	Int_t v_line[4];
+	UInt_t v_line[4];
 	v_line[0] = ((v_inputCAMAC[1] << 16) & 0xffff0000) |
 	            ((v_inputCAMAC[0] << 0)  & 0x0000ffff);
 	v_line[1] = ((v_inputCAMAC[3] << 16) & 0xffff0000) |
@@ -508,13 +159,21 @@ void UserProcMonitoring::ProcessCAMACmwpcWords(const UserEventUnpacking* p_input
 	// Just print - ints
 	#ifdef PRINTDEBUGINFO
 	cerr << "--------------------------------" << endl;
-	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[0]) << endl;
-	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[1]) << endl;
-	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[2]) << endl;
-	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[3]) << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[0]) << "\t0x"
+	     << support::GetHexRepresentation(sizeof(Int_t), &v_line[0]) << "\t"
+	     << v_line[0] << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[1]) << "\t0x"
+	     << support::GetHexRepresentation(sizeof(Int_t), &v_line[1]) << "\t"
+	     << v_line[1] << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[2]) << "\t0x"
+	     << support::GetHexRepresentation(sizeof(Int_t), &v_line[2]) << "\t"
+	     << v_line[2] << endl;
+	cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_line[3]) << "\t0x"
+	     << support::GetHexRepresentation(sizeof(Int_t), &v_line[3]) << "\t"
+	     << v_line[3] << endl;
 	cerr << "--------------------------------" << endl;
 	#endif
-
+/*
 	// Just print - bits
 	#ifdef PRINTDEBUGINFO
 	cerr << "--------------------------------" << endl;

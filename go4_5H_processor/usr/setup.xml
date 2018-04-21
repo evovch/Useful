@@ -60,17 +60,17 @@
 
 </crate>
 
-<crate name="VME1" procid="101">
+<crate name="VME1" procid="200">
 
 	<mapping addr="0"	elblock="V785"	startelectrch="0"	nelectrch="32"	stepelecrtch="2"	detector="neutAmp"	startdetch="0"	folder="Neutron_wall"/>
 	<mapping addr="0"	elblock="V785"	startelectrch="1"	nelectrch="32"	stepelecrtch="2"	detector="neutTAC"	startdetch="0"	folder="Neutron_wall"/>
 	<mapping addr="1"	elblock="V785"	startelectrch="0"	nelectrch="32"	stepelecrtch="2"	detector="neutAmp"	startdetch="16"	folder="Neutron_wall"/>
 	<mapping addr="1"	elblock="V785"	startelectrch="1"	nelectrch="32"	stepelecrtch="2"	detector="neutTAC"	startdetch="16"	folder="Neutron_wall"/>
-	<mapping addr="2"	elblock="mTDC"	startelectrch="0"	nelectrch="32"	detector="neutTDC"	startdetch="0"	folder="Neutron_wall"/>
+	<mapping addr="2"	elblock="mTDC"	startelectrch="0"	nelectrch="32"	stepelecrtch="1"	detector="neutTDC"	startdetch="0"	folder="Neutron_wall"/>
 
 </crate>
 
-<crate name="CAMAC" procid="200">
+<crate name="CAMAC" procid="101">
 <!-- not parsed -->
 </crate>
 
