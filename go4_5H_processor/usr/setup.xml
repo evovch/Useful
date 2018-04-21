@@ -49,13 +49,13 @@
 	<mapping addr="8"	elblock="mADC"	startelectrch="0"	nelectrch="16"	detector="CsI_L"	startdetch="0"	folder="Left_telescope"/>
 	<mapping addr="8"	elblock="mADC"	startelectrch="16"	nelectrch="16"	detector="CsI_R"	startdetch="0"	folder="Right_telescope"/>
 	<mapping addr="9"	elblock="mADC"	startelectrch="0"	nelectrch="16"	detector="SQ20"	startdetch="0"	folder="Left_telescope"/>
-	<mapping addr="10"	elblock="mQDC"	startelectrch="0"	nelectrch="4"	detector="F3"	startdetch="0"	folder="ToF"/>
-	<mapping addr="10"	elblock="mQDC"	startelectrch="4"	nelectrch="4"	detector="F5"	startdetch="0"	folder="ToF"/>
-	<mapping addr="10"	elblock="mQDC"	startelectrch="8"	nelectrch="4"	detector="F6"	startdetch="0"	folder="ToF"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="0"	nelectrch="4"	detector="tF3"	startdetch="0"	folder="ToF"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="4"	nelectrch="4"	detector="tF5"	startdetch="0"	folder="ToF"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="8"	nelectrch="4"	detector="tF6"	startdetch="0"	folder="ToF"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="12"	nelectrch="4"	detector="tMWPC"	startdetch="0"	folder="MWPC"/>
+	<mapping addr="10"	elblock="mQDC"	startelectrch="0"	nelectrch="4"	detector="F3"	startdetch="0"	folder="Beam_detector"/>
+	<mapping addr="10"	elblock="mQDC"	startelectrch="4"	nelectrch="4"	detector="F5"	startdetch="0"	folder="Beam_detector"/>
+	<mapping addr="10"	elblock="mQDC"	startelectrch="8"	nelectrch="4"	detector="F6"	startdetch="0"	folder="Beam_detector"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="0"	nelectrch="4"	detector="tF3"	startdetch="0"	folder="Beam_detector"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="4"	nelectrch="4"	detector="tF5"	startdetch="0"	folder="Beam_detector"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="8"	nelectrch="4"	detector="tF6"	startdetch="0"	folder="Beam_detector"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="12"	nelectrch="4"	detector="tMWPC"	startdetch="0"	folder="Beam_detector"/>
 	<mapping addr="12"	elblock="mTDC"	startelectrch="0"	nelectrch="16"	detector="tSQ20"	startdetch="0"	folder="Left_telescope"/>
 
 </crate>

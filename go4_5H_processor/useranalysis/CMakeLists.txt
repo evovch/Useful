@@ -8,14 +8,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(ROOTCLING_HEADERS UserAnalysis.h
-                      UserEventUnpacking.h
-                      UserProcUnpacking.h
-                      UserHistosUnpacking.h
-                      UserEventMonitoring.h
-                      UserProcMonitoring.h
-                      UserHistosMonitoring.h
-                      UserEventStep2.h
-                      UserProcStep2.h
+                      unpacking/UserEventUnpacking.h
+                      unpacking/UserProcUnpacking.h
+                      unpacking/UserHistosUnpacking.h
+                      monitoring/UserEventMonitoring.h
+                      monitoring/UserProcMonitoring.h
+                      monitoring/UserHistosMonitoring.h
+                      step2/UserEventStep2.h
+                      step2/UserProcStep2.h
                       data/BeamDetMWPCDigi.h
                       data/RawMessage.h
                       )
@@ -28,14 +28,14 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 set(SOURCE_LIB G__UserAnalysis.cxx
                UserAnalysis.cxx
-               UserEventUnpacking.cxx
-               UserProcUnpacking.cxx
-               UserHistosUnpacking.cxx
-               UserEventMonitoring.cxx
-               UserProcMonitoring.cxx
-               UserHistosMonitoring.cxx
-               UserEventStep2.cxx
-               UserProcStep2.cxx
+               unpacking/UserEventUnpacking.cxx
+               unpacking/UserProcUnpacking.cxx
+               unpacking/UserHistosUnpacking.cxx
+               monitoring/UserEventMonitoring.cxx
+               monitoring/UserProcMonitoring.cxx
+               monitoring/UserHistosMonitoring.cxx
+               step2/UserEventStep2.cxx
+               step2/UserProcStep2.cxx
                data/BeamDetMWPCDigi.cxx
                data/RawMessage.cxx
                Support.cxx

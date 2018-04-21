@@ -27,21 +27,29 @@ public:
 
 public: //TODO should be private. Made public for ER
 
-	// Telescopes
+	// Left telescope
 	UShort_t  CsI_L[16];
 	UShort_t tCsI_L[16];
-	UShort_t  CsI_R[16];
-	UShort_t tCsI_R[16];
 	UShort_t  SQX_L[32];
 	UShort_t tSQX_L[32];
 	UShort_t  SQY_L[16];
 	UShort_t tSQY_L[16];
+	UShort_t  SQ300[16];
+	UShort_t tSQ300[16];
+	UShort_t  SQ20[16];
+	UShort_t tSQ20[16];
+
+	// Right telescope
+	UShort_t  CsI_R[16];
+	UShort_t tCsI_R[16];
 	UShort_t  SQX_R[32];
 	UShort_t tSQX_R[32];
 	UShort_t  SQY_R[16];
 	UShort_t tSQY_R[16];
-	UShort_t  SQ20[16];
-	UShort_t tSQ20[16];
+
+	// Annular telescope
+	UShort_t ANR[16];
+	UShort_t ANS[16];
 
 	// Neutron wall (stilbene)
 	UShort_t neutAmp[32];
@@ -57,7 +65,15 @@ public: //TODO should be private. Made public for ER
 	UShort_t tF6[4];
 
 	// Beam detector - MWPC
+	// MWPC[]
 	UShort_t tMWPC[4];
+
+	// Trigger
+	unsigned int trigger;
+
+	// Scalers?
+
+	// Machine time
 
 	ClassDef(UserEventMonitoring, 1);
 };

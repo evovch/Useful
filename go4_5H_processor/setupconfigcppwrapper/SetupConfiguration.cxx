@@ -16,11 +16,22 @@ SetupConfiguration::SetupConfiguration(const char* p_filename) :
 	ImportXML(&mConfiguration, p_filename);
 	DumpStcSetupConfig(&mConfiguration);
 
+	if (!(this->CheckConsistency())) {
+		cerr << "[FATAL ] Imported XML setup configuration is inconsistent. Please check it. Aborting." << endl;
+		exit(1); //TODO
+	}
+
 	this->Link();
 }
 
 SetupConfiguration::~SetupConfiguration()
 {
+}
+
+bool SetupConfiguration::CheckConsistency(void)
+{
+	//TODO any additional checks
+	return true;
 }
 
 void SetupConfiguration::Link(void)
@@ -45,14 +56,30 @@ void SetupConfiguration::Link(void)
 			unsigned int v_curMappingChID = SetupConfiguration::GetChUID(v_curMapping->fCrateProcid,
 			                                                             v_curMapping->fAddr,
 			                                                             (unsigned int)iCh);
-			this->mMappings.insert(std::pair<unsigned int, stc_mapping*>(v_curMappingChID, v_curMapping));
+
+			std::pair<std::map<unsigned int, stc_mapping*>::iterator, bool> ret;
+			ret = this->mMappings.insert(std::pair<unsigned int, stc_mapping*>(v_curMappingChID, v_curMapping));
+			if (ret.second == false) {
+				// Key already exists in the map, this means that the channels' mapping is inconsistent
+				cerr << "[FATAL ] Imported XML setup configuration is inconsistent. Please check it. Aborting." << endl;
+				cerr << "         Channel " << "procid=" << v_curMapping->fCrateProcid << "\t"
+				     << "addr=" << v_curMapping->fAddr << "\t"
+				     << "ch=" << iCh << "\t"
+				     << "from mapping (A) is already assigned in the mapping (B):" << endl;
+				cerr << "         (A) "; DumpStcMapping(v_curMapping);
+				cerr << "         (B) "; DumpStcMapping(ret.first->second);
+				exit(1); //TODO
+				return;
+
+			}
 
 			//cerr << v_curMappingChID << ": " << v_curMapping->fDetector << endl;
 
-			if (++counter >= 100000) {
+			if (++counter >= 10000) {
 				// Something went completely wrong.
 				cerr << "[FATAL ] Stuck in an infinite loop in SetupConfiguration::Link(). Aborting." << endl;
-				exit(1);
+				exit(1); //TODO
+				return;
 			}
 		}
 
@@ -103,7 +130,11 @@ unsigned short SetupConfiguration::GetOutput(unsigned short p_crateProcid,
 		v_detCh = SetupConfiguration::ElChToDetCh(iter->second, p_elch);
 	} else {
 		//ERROR
-		cerr << "[ERROR ] No mapping found for the given channel." << endl;
+		cerr << "[ERROR ] " << "No mapping found for the given channel. "
+		     << "procid=" << p_crateProcid << "\t"
+		     << "addr=" << p_addr << "\t"
+		     << "ch=" << p_elch << "\t"
+		     << endl;
 		//TODO think what to do in such situations
 		v_detCh = 9999;
 	}

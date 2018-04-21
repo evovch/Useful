@@ -9,8 +9,8 @@ using std::endl;
 #include <TClonesArray.h>
 
 // Project
-#include "UserEventUnpacking.h"
 #include "UserEventStep2.h"
+#include "unpacking/UserEventUnpacking.h"
 #include "data/BeamDetMWPCDigi.h"
 
 /**
@@ -156,7 +156,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	return v_isValid;
 }
 
-// Assumes little endian
+// Assumes little endian //TODO not sure
 void UserProcStep2::PrintBits(size_t const size, void const * const ptr)
 {
     unsigned char *b = (unsigned char*) ptr;

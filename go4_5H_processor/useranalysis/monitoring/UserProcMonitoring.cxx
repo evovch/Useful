@@ -7,14 +7,13 @@ using std::endl;
 
 // ROOT
 #include <TClonesArray.h>
-#include <TH1.h>
 
 // Project
-#include "UserEventUnpacking.h"
+#include "Support.h"
 #include "UserEventMonitoring.h"
 #include "UserHistosMonitoring.h"
-#include "Support.h"
 #include "data/RawMessage.h"
+#include "unpacking/UserEventUnpacking.h"
 #include "setupconfigcppwrapper/SetupConfiguration.h"
 
 /**
@@ -47,7 +46,7 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 	UserEventUnpacking* v_input = (UserEventUnpacking*)GetInputEvent();
 	if (v_input == NULL)
 	{
-		cerr << "UserProcMonitoring::BuildEvent(): no input event!" << endl;
+		cerr << "[WARN  ] " << "UserProcMonitoring::BuildEvent(): no input event!" << endl;
 		v_outputEvent->SetValid(v_isValid);
 		return v_isValid;
 	}
@@ -105,7 +104,7 @@ void UserProcMonitoring::ProcessMessageUniversal(const RawMessage* p_message)
 	} else if (v_messVendor == support::enu_VENDOR::CAEN) {
 		v_addr = (unsigned short)p_message->mSubsubeventGeo;
 	} else {
-		cerr << "ERROR UserProcMonitoring::ProcessMessageUniversal() Unknown vendor." << endl;
+		cerr << "[ERROR ]" << " UserProcMonitoring::ProcessMessageUniversal() Unknown vendor." << endl;
 		return;
 	}
 	unsigned short v_ch = (unsigned short)p_message->mChannel;
@@ -115,8 +114,10 @@ void UserProcMonitoring::ProcessMessageUniversal(const RawMessage* p_message)
 	TString v_folder;
 	unsigned short v_detChannel = mSetupConfiguration->GetOutput(v_procid, v_addr, v_ch, &v_detector, &v_folder);
 
-	cerr << v_folder << "/" << v_detector << "[" << v_ch << "]\t"
-	     << p_message->mValueQA << "(" << p_message->mValueT << ")" << endl;
+	#ifdef PRINTDEBUGINFO
+	cerr << "[DEBUG ] " << v_folder << " /\t" << v_detector << "[" << v_ch << "] =\t"
+	     << p_message->mValueQA << "\t(" << p_message->mValueT << ")" << endl;
+	#endif
 
 	UShort_t* eventDatField = mCurrentOutputEvent->GetFieldByName(v_detector);
 

@@ -2,7 +2,7 @@
 
 	@class SetupConfiguration
 
-	C++ wrapper class around C structure stc_setup_config
+	C++ wrapper class around C structure stc_setup_config with some functionality.
 
 */
 
@@ -26,18 +26,6 @@ public:
 	//TODO restrict default constructor SetupConfiguration()
 	SetupConfiguration(const char* p_filename);
 	virtual ~SetupConfiguration();
-
-	/**
-	 * Given crate procid from subevent header, address (module for MESYTEC, geo for CAEN)
-	 * from subsubevent header, and electronics block channel from the data word,
-	 * return the mapped detector channel and write out detector name into o_detector
-	 * and folder name into o_folder.
-	 */
-	unsigned short GetOutput(unsigned short p_crateProcid,
-	                         unsigned short p_addr,
-	                         unsigned short p_elch,
-                             TString* o_detector,
-                             TString* o_folder) const;
 
 	/**
 	 * When looking at the decimal representation of the channel unique ID from left to right:
@@ -69,10 +57,34 @@ public:
 	 */
 	static unsigned short ElChToDetCh(const stc_mapping* p_mapping, unsigned short p_elch);
 
+	/**
+	 * Given crate procid from subevent header, address (module for MESYTEC, geo for CAEN)
+	 * from subsubevent header, and electronics block channel from the data word,
+	 * return the mapped detector channel and write out detector name into o_detector
+	 * and folder name into o_folder.
+	 */
+	unsigned short GetOutput(unsigned short p_crateProcid,
+	                         unsigned short p_addr,
+	                         unsigned short p_elch,
+	                         TString* o_detector,
+	                         TString* o_folder) const;
+
+	/**
+	 * Perform checks of the imported XML configuration.
+	 * Try to identify error os possible mistakes there.
+	 */
+	bool CheckConsistency(void);
+
 private: // methods
+	/**
+	 *
+	 */
 	void Link(void);
 
 private: // data members
+	/**
+	 *
+	 */
 	stc_setup_config mConfiguration;
 
 	/**

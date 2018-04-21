@@ -32,8 +32,8 @@ public: // methods
 	void ProcessSubevent(TGo4MbsSubEvent* p_subevent);
 
 	void ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAddress);
-	void ProcessSubeventRawVME0(Int_t p_size, const Int_t* p_startAddress);
-	void ProcessSubeventRawVME1(Int_t p_size, const Int_t* p_startAddress);
+	//void ProcessSubeventRawVME0(Int_t p_size, const Int_t* p_startAddress);
+	//void ProcessSubeventRawVME1(Int_t p_size, const Int_t* p_startAddress);
 	/*void ProcessSubeventRawCAMAC(Int_t p_size, const Int_t* p_startAddress);*/
 	void ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p_startAddress);
 
