@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [ -z ${GO4SYS+x} ]; then
+	echo "GO4SYS is unset. Aborting.";
+	exit;
+else
+	echo "GO4SYS is set to '$GO4SYS'";
+fi
+
+
 #INPUTFILE=/opt/Shared_folder/he6-no_mult_0001.lmd
 #INPUTFILE=/home/evovch/Documents/exp201805/data/run05_0014.lmd
 #INPUTFILE=/home/evovch/Downloads/FLNR_data/h5_14_0001.lmd

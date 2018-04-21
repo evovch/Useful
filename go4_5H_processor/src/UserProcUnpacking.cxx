@@ -864,7 +864,7 @@ Int_t UserProcUnpacking::FindCAENfooter(Int_t p_maxSize, const Int_t* p_startAdd
 /*static*/
 void UserProcUnpacking::DumpEventHeader(/*const*/ TGo4MbsEvent* p_event)
 {
-	//TODO chagne to 'normal' interface methods
+	//TODO change to 'normal' interface methods
 	s_filhe* head = p_event->GetMbsSourceHeader();
 	if (head != NULL)
 	{
