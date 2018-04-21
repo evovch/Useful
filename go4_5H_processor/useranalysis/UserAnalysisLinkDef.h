@@ -6,6 +6,7 @@
 
 // Manager
 #pragma link C++ class UserAnalysis+;
+#pragma link C++ class UserParameter+;
 
 // Data
 #pragma link C++ class BeamDetMWPCDigi+;
@@ -18,6 +19,9 @@
 
 // Monitoring step
 #pragma link C++ class UserEventMonitoring+;
+#pragma link C++ class UserEventNew+;
+#pragma link C++ class UserEventLeftTele+;
+#pragma link C++ class UserEventRightTele+;
 #pragma link C++ class UserProcMonitoring+;
 #pragma link C++ class UserHistosMonitoring+;
 

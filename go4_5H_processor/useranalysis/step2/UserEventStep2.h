@@ -20,7 +20,7 @@ public:
 	void Clear(Option_t* t = "");
 
 public:
-	TClonesArray* mMWPCdigi;
+	TClonesArray* fMWPCdigi;
 
 	ClassDef(UserEventStep2, 1);
 };

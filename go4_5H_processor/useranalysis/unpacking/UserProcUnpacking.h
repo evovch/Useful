@@ -45,7 +45,7 @@ private:
 	/**
 	 *
 	 */
-	static RawMessage mCurMessage;
+	static RawMessage fCurMessage;
 
 	/**
 	 * Actually take the current word with its fields filled during
@@ -65,7 +65,7 @@ private:
 	 * which are called by BuildEvent() and then this object
 	 * is written out by the framework after BuildEvent()
 	 */
-	UserEventUnpacking* mCurrentOutputEvent;
+	UserEventUnpacking* fCurrentOutputEvent;
 
 	/**
 	 * Basically - start event
@@ -156,29 +156,29 @@ private: // data members
 	/**
 	 * Unpacking statistics
 	 */
-	unsigned long int mEventCounter;
-	unsigned long int mSubEventCounter;
-	unsigned long int mHeadersWords;
-	unsigned long int mNknownWords;
-	unsigned long int mNunknownWords;
+	unsigned long int fEventCounter;
+	unsigned long int fSubEventCounter;
+	unsigned long int fHeadersWords;
+	unsigned long int fNknownWords;
+	unsigned long int fNunknownWords;
 
 	/**
 	 * Put all your output histograms inside this object.
 	 * See UserHistosUnpacking class.
 	 */
-	UserHistosUnpacking* mHistoMan;
+	UserHistosUnpacking* fHistoMan;
 
 	/**
 	 * This flag is set true when a header is found and false when a footer is found.
 	 * It is used to track the messages which come outside of the subsubevent block
 	 * (not between the header and the footer).
 	 */
-	static bool mInsidePackage;
+	static bool fInsidePackage;
 
 	/**
 	 * Summary stream
 	 */
-	FILE* mFileSummary;
+	FILE* fFileSummary;
 
 	ClassDef(UserProcUnpacking, 1);
 };

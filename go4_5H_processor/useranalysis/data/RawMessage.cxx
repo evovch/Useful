@@ -11,25 +11,25 @@ using std::endl;
 //TODO see comment below
 RawMessage::RawMessage() :
 	TObject(),
-	mRawWord(0), // Yes zero here, because we want to clear the raw word with all zeros
-	mEventType(-1),
-	mEventSubtype(-1),
-	mEventDummy(-1),
-	mEventTrigger(-1),
-	mEventCount(-1),
-	mSubeventDlen(-1),
-	mSubeventType(-1),
-	mSubeventSubcrate(-1),
-	mSubeventControl(-1),
-	mSubeventFullID(-1),
-	mSubeventProcID(-1),
-	mSubsubeventVendor(-1),
-	mSubsubeventGeo(-1),
-	mSubsubeventModule(-1),
-	mChannel(-1),
-	mValueQA(-1),
-	mValueT(-1),
-	mSubsubeventFooterCounter(-1)
+	fRawWord(0), // Yes zero here, because we want to clear the raw word with all zeros
+	fEventType(-1),
+	fEventSubtype(-1),
+	fEventDummy(-1),
+	fEventTrigger(-1),
+	fEventCount(-1),
+	fSubeventDlen(-1),
+	fSubeventType(-1),
+	fSubeventSubcrate(-1),
+	fSubeventControl(-1),
+	fSubeventFullID(-1),
+	fSubeventProcID(-1),
+	fSubsubeventVendor(-1),
+	fSubsubeventGeo(-1),
+	fSubsubeventModule(-1),
+	fChannel(-1),
+	fValueQA(-1),
+	fValueT(-1),
+	fSubsubeventFooterCounter(-1)
 {
 }
 
@@ -40,25 +40,25 @@ RawMessage::RawMessage() :
 // Moreover, you will have garbage if you do not zero all the members in the constructor.
 RawMessage::RawMessage(const RawMessage &obj) :
 	TObject(),
-	mRawWord(obj.mRawWord),
-	mEventType(obj.mEventType),
-	mEventSubtype(obj.mEventSubtype),
-	mEventDummy(obj.mEventDummy),
-	mEventTrigger(obj.mEventTrigger),
-	mEventCount(obj.mEventCount),
-	mSubeventDlen(obj.mSubeventDlen),
-	mSubeventType(obj.mSubeventType),
-	mSubeventSubcrate(obj.mSubeventSubcrate),
-	mSubeventControl(obj.mSubeventControl),
-	mSubeventFullID(obj.mSubeventFullID),
-	mSubeventProcID(obj.mSubeventProcID),
-	mSubsubeventVendor(obj.mSubsubeventVendor),
-	mSubsubeventGeo(obj.mSubsubeventGeo),
-	mSubsubeventModule(obj.mSubsubeventModule),
-	mChannel(obj.mChannel),
-	mValueQA(obj.mValueQA),
-	mValueT(obj.mValueT),
-	mSubsubeventFooterCounter(obj.mSubsubeventFooterCounter)
+	fRawWord(obj.fRawWord),
+	fEventType(obj.fEventType),
+	fEventSubtype(obj.fEventSubtype),
+	fEventDummy(obj.fEventDummy),
+	fEventTrigger(obj.fEventTrigger),
+	fEventCount(obj.fEventCount),
+	fSubeventDlen(obj.fSubeventDlen),
+	fSubeventType(obj.fSubeventType),
+	fSubeventSubcrate(obj.fSubeventSubcrate),
+	fSubeventControl(obj.fSubeventControl),
+	fSubeventFullID(obj.fSubeventFullID),
+	fSubeventProcID(obj.fSubeventProcID),
+	fSubsubeventVendor(obj.fSubsubeventVendor),
+	fSubsubeventGeo(obj.fSubsubeventGeo),
+	fSubsubeventModule(obj.fSubsubeventModule),
+	fChannel(obj.fChannel),
+	fValueQA(obj.fValueQA),
+	fValueT(obj.fValueT),
+	fSubsubeventFooterCounter(obj.fSubsubeventFooterCounter)
 {
 }
 
@@ -69,38 +69,38 @@ RawMessage::~RawMessage()
 void RawMessage::Dump(bool p_printEndl) const
 {
 	cerr << "Raw message:" << "\t"
-	     << support::GetHexRepresentation(sizeof(Int_t), &mRawWord) << "\t"
-	     << support::VendorAsString((support::enu_VENDOR)mSubsubeventVendor) << "\t" //TODO hack cast!!!
-	     << "geo=" << mSubsubeventGeo << "\t"
-	     << "module=" << mSubsubeventModule << "\t"
-	     << "ch=" << mChannel << "\t"
-	     << "valQA=" << mValueQA << "\t"
-	     << "valT=" << mValueT;
+	     << support::GetHexRepresentation(sizeof(Int_t), &fRawWord) << "\t"
+	     << support::VendorAsString((support::enu_VENDOR)fSubsubeventVendor) << "\t" //TODO hack cast!!!
+	     << "geo=" << fSubsubeventGeo << "\t"
+	     << "module=" << fSubsubeventModule << "\t"
+	     << "ch=" << fChannel << "\t"
+	     << "valQA=" << fValueQA << "\t"
+	     << "valT=" << fValueT;
 	if (p_printEndl) cerr << endl;
 }
 
 void RawMessage::ExtDump(bool p_printEndl) const
 {
 	cerr << "Raw message:" << endl
-	     << "\traw=" << support::GetHexRepresentation(sizeof(Int_t), &mRawWord) << endl
-	     << "\tev_type=" << mEventType << endl
-	     << "\tev_subtype=" << mEventSubtype << endl
-	     << "\tev_dummy=" << mEventDummy << endl
-	     << "\tev_trigger=" << mEventTrigger << endl
-	     << "\tev_count=" << mEventCount << endl
-	     << "\tsubev_dlen=" << mSubeventDlen << endl
-	     << "\tsubev_type=" << mSubeventType << endl
-	     << "\tsubev_subcrate=" << (Int_t)mSubeventSubcrate << endl
-	     << "\tsubev_control=" << (Int_t)mSubeventControl << endl
-	     << "\tsubev_fullID=" << mSubeventFullID << endl
-	     << "\tsubev_procID=" << mSubeventProcID << endl
-	     << "\tsubev_vendor=" << support::VendorAsString((support::enu_VENDOR)mSubsubeventVendor) << endl
-	     << "\tsubev_geo=" << mSubsubeventGeo << endl
-	     << "\tsubev_module=" << mSubsubeventModule << endl
-	     << "\tchannel=" << mChannel << endl
-	     << "\tvalueQA=" << mValueQA << endl
-	     << "\tvalueT=" << mValueT << endl
-	     << "\tfooter_counter=" << mSubsubeventFooterCounter << endl;
+	     << "\traw=" << support::GetHexRepresentation(sizeof(Int_t), &fRawWord) << endl
+	     << "\tev_type=" << fEventType << endl
+	     << "\tev_subtype=" << fEventSubtype << endl
+	     << "\tev_dummy=" << fEventDummy << endl
+	     << "\tev_trigger=" << fEventTrigger << endl
+	     << "\tev_count=" << fEventCount << endl
+	     << "\tsubev_dlen=" << fSubeventDlen << endl
+	     << "\tsubev_type=" << fSubeventType << endl
+	     << "\tsubev_subcrate=" << (Int_t)fSubeventSubcrate << endl
+	     << "\tsubev_control=" << (Int_t)fSubeventControl << endl
+	     << "\tsubev_fullID=" << fSubeventFullID << endl
+	     << "\tsubev_procID=" << fSubeventProcID << endl
+	     << "\tsubev_vendor=" << support::VendorAsString((support::enu_VENDOR)fSubsubeventVendor) << endl
+	     << "\tsubev_geo=" << fSubsubeventGeo << endl
+	     << "\tsubev_module=" << fSubsubeventModule << endl
+	     << "\tchannel=" << fChannel << endl
+	     << "\tvalueQA=" << fValueQA << endl
+	     << "\tvalueT=" << fValueT << endl
+	     << "\tfooter_counter=" << fSubsubeventFooterCounter << endl;
 	if (p_printEndl) cerr << endl;
 }
 

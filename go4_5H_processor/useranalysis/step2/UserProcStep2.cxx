@@ -23,7 +23,7 @@ using std::endl;
 
 UserProcStep2::UserProcStep2(const char* name) :
 	TGo4EventProcessor(name),
-	mEventCounter(0)
+	fEventCounter(0)
 {
 }
 
@@ -46,12 +46,12 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 	v_isValid = kTRUE;
 
 	#ifdef PRINTDEBUGINFO
-	cerr << "[DEBUG ] " << "UserProcStep2: Event " << mEventCounter
+	cerr << "[DEBUG ] " << "UserProcStep2: Event " << fEventCounter
 	     << " ==========================================================================================================="
 	     << endl;
 	#endif
 
-	mCurrentOutputEvent = v_outputEvent;
+	fCurrentOutputEvent = v_outputEvent;
 
 	// Clear the output event!!!
 	//TODO check that this is not done by the framework
@@ -60,7 +60,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 
 	//TODO do the processing here
 
-	Short_t* v_inputCAMAC = v_input->mCAMAC;
+	Short_t* v_inputCAMAC = v_input->fCAMAC;
 
 	// Transform pairs of shorts into normal ints
 	Int_t v_line[4];
@@ -135,7 +135,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 				//TClonesArray* v_outArray = mCurrentOutputEvent->mMWPCdigi;
 
 				BeamDetMWPCDigi* v_constructedObject =
-				    (BeamDetMWPCDigi*)mCurrentOutputEvent->mMWPCdigi->ConstructedAt(v_globalId);
+				    (BeamDetMWPCDigi*)fCurrentOutputEvent->fMWPCdigi->ConstructedAt(v_globalId);
 				v_constructedObject->SetData(v_id, v_mwpc, v_plane, v_wire, 0., 0.f);
 
 				//new(&v_outArray[v_globalId]) BeamDetMWPCDigi(v_id, v_mwpc, v_plane, v_wire, 0., 0.f);
@@ -151,7 +151,7 @@ Bool_t UserProcStep2::BuildEvent(TGo4EventElement* p_dest)
 
 	v_outputEvent->SetValid(v_isValid);
 
-	mEventCounter++;
+	fEventCounter++;
 
 	return v_isValid;
 }

@@ -10,6 +10,7 @@ using std::endl;
 
 // Project
 #include "Support.h"
+#include "UserParameter.h"
 #include "UserEventMonitoring.h"
 #include "UserHistosMonitoring.h"
 #include "data/RawMessage.h"
@@ -22,20 +23,26 @@ using std::endl;
   This option produces A LOT OF DATA - run your analysis with a
   small number of events (~10-100)
 */
-#define PRINTDEBUGINFO
+//#define PRINTDEBUGINFO
 
 UserProcMonitoring::UserProcMonitoring(const char* name) :
 	TGo4EventProcessor(name),
-	mEventCounter(0)
+	fEventCounter(0)
 {
-	mHistoMan = new UserHistosMonitoring();
-	mSetupConfiguration = new SetupConfiguration("usr/setup.xml");
+	fHistoMan = new UserHistosMonitoring();
+
+	// Get the all-accessible parameter-set object
+	UserParameter* v_params = (UserParameter*)GetParameter("UserParameter");
+	// Extract the setup configuration file name which was set during UserAnalysis initialization
+	TString v_setupconfigfilename = v_params->GetSetupConfigFilename();
+	// Construct SetupConfiguration, which includes the input of the XML file
+	fSetupConfiguration = new SetupConfiguration(v_setupconfigfilename);
 }
 
 UserProcMonitoring::~UserProcMonitoring()
 {
-	if (mHistoMan) delete mHistoMan;
-	if (mSetupConfiguration) delete mSetupConfiguration;
+	if (fHistoMan) delete fHistoMan;
+	if (fSetupConfiguration) delete fSetupConfiguration;
 }
 
 Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
@@ -53,21 +60,21 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 	v_isValid = kTRUE;
 
 	#ifdef PRINTDEBUGINFO
-	cerr << "[DEBUG ] " << "UserProcMonitoring: Event " << mEventCounter
+	cerr << "[DEBUG ] " << "UserProcMonitoring: Event " << fEventCounter
 	     << " ======================================================================================================"
 	     << endl;
 	#endif
 
-	mCurrentOutputEvent = v_outputEvent;
+	fCurrentOutputEvent = v_outputEvent;
 
 	// Clear the output event!!!
 	//TODO check that this is not done by the framework
 	// Seems that indeed this is done by the framework
-	//mCurrentOutputEvent->Clear();
+	//fCurrentOutputEvent->Clear();
 
 	//TODO do the processing of raw messages here
 	UInt_t v_messCounter = 0;
-	TIter next(v_input->mRawMessages);
+	TIter next(v_input->fRawMessages);
 	while (RawMessage* v_curMessage = (RawMessage*)next())
 	{
 
@@ -89,48 +96,48 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 
 	v_outputEvent->SetValid(v_isValid);
 
-	mEventCounter++;
+	fEventCounter++;
 
 	return v_isValid;
 }
 
 void UserProcMonitoring::ProcessMessageUniversal(const RawMessage* p_message)
 {
-	unsigned short v_procid = (unsigned short)p_message->mSubeventProcID;
+	unsigned short v_procid = (unsigned short)p_message->fSubeventProcID;
 	unsigned short v_addr;
-	support::enu_VENDOR v_messVendor = support::VendorFromChar(p_message->mSubsubeventVendor);
+	support::enu_VENDOR v_messVendor = support::VendorFromChar(p_message->fSubsubeventVendor);
 	if (v_messVendor == support::enu_VENDOR::MESYTEC) {
-		v_addr = (unsigned short)p_message->mSubsubeventModule;
+		v_addr = (unsigned short)p_message->fSubsubeventModule;
 	} else if (v_messVendor == support::enu_VENDOR::CAEN) {
-		v_addr = (unsigned short)p_message->mSubsubeventGeo;
+		v_addr = (unsigned short)p_message->fSubsubeventGeo;
 	} else {
 		cerr << "[ERROR ]" << " UserProcMonitoring::ProcessMessageUniversal() Unknown vendor." << endl;
 		return;
 	}
-	unsigned short v_ch = (unsigned short)p_message->mChannel;
+	unsigned short v_ch = (unsigned short)p_message->fChannel;
 
-	//TODO check that mSetupConfiguration is not NULL
+	//TODO check that fSetupConfiguration is not NULL
 	TString v_detector;
 	TString v_folder;
-	unsigned short v_detChannel = mSetupConfiguration->GetOutput(v_procid, v_addr, v_ch, &v_detector, &v_folder);
+	unsigned short v_detChannel = fSetupConfiguration->GetOutput(v_procid, v_addr, v_ch, &v_detector, &v_folder);
 
 	#ifdef PRINTDEBUGINFO
 	cerr << "[DEBUG ] " << v_folder << " /\t" << v_detector << "[" << v_ch << "] =\t"
-	     << p_message->mValueQA << "\t(" << p_message->mValueT << ")" << endl;
+	     << p_message->fValueQA << "\t(" << p_message->fValueT << ")" << endl;
 	#endif
 
-	UShort_t* eventDatField = mCurrentOutputEvent->GetFieldByName(v_detector);
+	UShort_t* eventDatField = fCurrentOutputEvent->GetFieldByName(v_detector);
 
 	if (eventDatField != NULL) {
 		//TODO check that the channel has allowed value
 		//FIXME or p_message->mValueT ?
-		eventDatField[v_detChannel] = p_message->mValueQA;
+		eventDatField[v_detChannel] = p_message->fValueQA;
 	}
 }
 
 void UserProcMonitoring::ProcessCAMACmwpcWords(const UserEventUnpacking* p_inputEvent)
 {
-	const Short_t* v_inputCAMAC = p_inputEvent->mCAMAC;
+	const Short_t* v_inputCAMAC = p_inputEvent->fCAMAC;
 /*
 	// Just print - shorts
 	#ifdef PRINTDEBUGINFO

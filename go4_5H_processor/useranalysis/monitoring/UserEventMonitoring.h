@@ -9,8 +9,6 @@
 
 #include <TGo4EventElement.h> // mother class
 
-class TClonesArray;
-
 class UserEventMonitoring : public TGo4EventElement
 {
 	friend class UserProcMonitoring; // provider

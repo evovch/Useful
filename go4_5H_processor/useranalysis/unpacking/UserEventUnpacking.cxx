@@ -14,7 +14,7 @@ using std::endl;
 UserEventUnpacking::UserEventUnpacking(const char* name) :
 	TGo4EventElement(name)
 {
-	mRawMessages = new TClonesArray("RawMessage");
+	fRawMessages = new TClonesArray("RawMessage");
 
 	//cerr << "UserEventUnpacking::UserEventUnpacking() -> ";
 	this->Clear();
@@ -22,7 +22,7 @@ UserEventUnpacking::UserEventUnpacking(const char* name) :
 
 UserEventUnpacking::~UserEventUnpacking()
 {
-	//TODO delete mRawMessages?
+	//TODO delete fRawMessages?
 }
 
 void UserEventUnpacking::Clear(Option_t* t)
@@ -30,16 +30,16 @@ void UserEventUnpacking::Clear(Option_t* t)
 	//TODO zero all data members!
 	//cerr << "UserEventUnpacking::Clear()" << endl;
 
-	mRawMessages->Clear();
+	fRawMessages->Clear();
 
 	for (UInt_t i=0; i<8; i++) {
-		mCAMAC[i] = 0;
+		fCAMAC[i] = 0;
 	}
 }
 
 void UserEventUnpacking::Dump(void) const
 {
-	cerr << "UserEventUnpacking contains " << mRawMessages->GetEntries() << " raw messages." << endl;
+	cerr << "UserEventUnpacking contains " << fRawMessages->GetEntries() << " raw messages." << endl;
 	//TODO implement
 }
 

@@ -8,10 +8,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(ROOTCLING_HEADERS UserAnalysis.h
+                      UserParameter.h
                       unpacking/UserEventUnpacking.h
                       unpacking/UserProcUnpacking.h
                       unpacking/UserHistosUnpacking.h
                       monitoring/UserEventMonitoring.h
+                      monitoring/UserEventNew.h
+                      monitoring/UserEventLeftTele.h
+                      monitoring/UserEventRightTele.h
                       monitoring/UserProcMonitoring.h
                       monitoring/UserHistosMonitoring.h
                       step2/UserEventStep2.h
@@ -28,10 +32,14 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 set(SOURCE_LIB G__UserAnalysis.cxx
                UserAnalysis.cxx
+               UserParameter.cxx
                unpacking/UserEventUnpacking.cxx
                unpacking/UserProcUnpacking.cxx
                unpacking/UserHistosUnpacking.cxx
                monitoring/UserEventMonitoring.cxx
+               monitoring/UserEventNew.cxx
+               monitoring/UserEventLeftTele.cxx
+               monitoring/UserEventRightTele.cxx
                monitoring/UserProcMonitoring.cxx
                monitoring/UserHistosMonitoring.cxx
                step2/UserEventStep2.cxx

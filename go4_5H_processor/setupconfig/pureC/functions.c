@@ -89,7 +89,8 @@ void DumpStcSetupConfig(const stc_setup_config* ptr)
 	fprintf(stderr, "  comment='%s'\n", ptr->fSetupComment);
 	fprintf(stderr, "================================================================================\n");
 
-	for (unsigned short i=0; i<ptr->fNmappings; i++) {
+	unsigned short i;
+	for (i=0; i<ptr->fNmappings; i++) {
 		DumpStcMapping(&ptr->fMappingsList[i]);
 	}
 

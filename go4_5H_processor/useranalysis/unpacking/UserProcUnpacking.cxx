@@ -18,10 +18,10 @@ using std::endl;
 #include "UserHistosUnpacking.h"
 
 /*static*/
-RawMessage UserProcUnpacking::mCurMessage;
+RawMessage UserProcUnpacking::fCurMessage;
 
 /*static*/
-bool UserProcUnpacking::mInsidePackage = false;
+bool UserProcUnpacking::fInsidePackage = false;
 
 /**
   Uncomment this if you want to see all the debug information.
@@ -36,24 +36,24 @@ bool UserProcUnpacking::mInsidePackage = false;
 
 UserProcUnpacking::UserProcUnpacking(const char* name) :
 	TGo4EventProcessor(name),
-	mEventCounter(0),
-	mSubEventCounter(0),
-	mHeadersWords(0),
-	mNknownWords(0),
-	mNunknownWords(0)
+	fEventCounter(0),
+	fSubEventCounter(0),
+	fHeadersWords(0),
+	fNknownWords(0),
+	fNunknownWords(0)
 {
-	mHistoMan = new UserHistosUnpacking();
-	mFileSummary = fopen("summary.txt", "w");
-	if (mFileSummary == NULL) {
+	fHistoMan = new UserHistosUnpacking();
+	fFileSummary = fopen("summary.txt", "w");
+	if (fFileSummary == NULL) {
 		//TODO error
 	}
 }
 
 UserProcUnpacking::~UserProcUnpacking()
 {
-	if (mHistoMan) delete mHistoMan;
-	if (mFileSummary != NULL) {
-		fclose(mFileSummary);
+	if (fHistoMan) delete fHistoMan;
+	if (fFileSummary != NULL) {
+		fclose(fFileSummary);
 	}
 }
 
@@ -72,12 +72,12 @@ Bool_t UserProcUnpacking::BuildEvent(TGo4EventElement* p_dest)
 	v_isValid = kTRUE;
 
 	#ifdef PRINTDEBUGINFO
-	cerr << "[DEBUG ] " << "UserProcUnpacking: Event " << mEventCounter
+	cerr << "[DEBUG ] " << "UserProcUnpacking: Event " << fEventCounter
 	     << " ==========================================================================================================="
 	     << endl;
 	#endif
 
-	mCurrentOutputEvent = v_outputEvent;
+	fCurrentOutputEvent = v_outputEvent;
 
 	// Clear the output event!!!
 	//TODO check that this is not done by the framework
@@ -97,108 +97,108 @@ Bool_t UserProcUnpacking::BuildEvent(TGo4EventElement* p_dest)
 	while ((v_pSubevent = v_input->NextSubEvent()) != NULL)
 	{
 		#ifdef PRINTDEBUGINFO
-		cerr << "[DEBUG ] " << "UserProcUnpacking: SubEvent " << v_subEventCounter << " (global subevent counter = " << mSubEventCounter << ")"
+		cerr << "[DEBUG ] " << "UserProcUnpacking: SubEvent " << v_subEventCounter << " (global subevent counter = " << fSubEventCounter << ")"
 		     << " -----------------------------------------------------------------" << endl;
 		#endif
 
 		this->ProcessSubevent(v_pSubevent);
 
 		v_subEventCounter++; // local subevent counter - within current event
-		mSubEventCounter++; // global subevent counter - total
+		fSubEventCounter++; // global subevent counter - total
 	}
 
 	v_outputEvent->SetValid(v_isValid);
 
-	cerr << "[INFO  ] " << "End of event " << mEventCounter << ".\t"
-	     << "Total subevents: " << mSubEventCounter << ".\t"
-	     << "Headers' words: " << mHeadersWords << ",\t"
-	     << "known words: " << mNknownWords << ",\t"
-	     << "unknown words: " << mNunknownWords << ",\t"
-	     << "total: " << (mHeadersWords+mNknownWords+mNunknownWords)*sizeof(Int_t) << " bytes."
+	cerr << "[INFO  ] " << "End of event " << fEventCounter << ".\t"
+	     << "Total subevents: " << fSubEventCounter << ".\t"
+	     << "Headers' words: " << fHeadersWords << ",\t"
+	     << "known words: " << fNknownWords << ",\t"
+	     << "unknown words: " << fNunknownWords << ",\t"
+	     << "total: " << (fHeadersWords+fNknownWords+fNunknownWords)*sizeof(Int_t) << " bytes."
 	     << endl;
 
-	if (mFileSummary != NULL) {
-		fprintf(mFileSummary,
+	if (fFileSummary != NULL) {
+		fprintf(fFileSummary,
 		        "End of event %ld.\tTotal subevents: %ld.\tHeaders' words: %ld,\tknown words: %ld,\tunknown words: %ld,\ttotal: %ld bytes.\n",
-		        mEventCounter, mSubEventCounter, mHeadersWords, mNknownWords, mNunknownWords,
-		        (mHeadersWords+mNknownWords+mNunknownWords)*sizeof(Int_t));
+		        fEventCounter, fSubEventCounter, fHeadersWords, fNknownWords, fNunknownWords,
+		        (fHeadersWords+fNknownWords+fNunknownWords)*sizeof(Int_t));
 	}
 
 	this->FinishEvent();
 
-	mEventCounter++;
+	fEventCounter++;
 
 	return v_isValid;
 }
 
 void UserProcUnpacking::ProcessEventHeader(TGo4MbsEvent* p_event)
 {
-	mCurMessage.mEventType = p_event->GetType();
-	mCurMessage.mEventSubtype = p_event->GetSubtype();
-	mCurMessage.mEventDummy = p_event->GetDummy();
-	mCurMessage.mEventTrigger = p_event->GetTrigger();
-	mCurMessage.mEventCount = p_event->GetCount();
+	fCurMessage.fEventType = p_event->GetType();
+	fCurMessage.fEventSubtype = p_event->GetSubtype();
+	fCurMessage.fEventDummy = p_event->GetDummy();
+	fCurMessage.fEventTrigger = p_event->GetTrigger();
+	fCurMessage.fEventCount = p_event->GetCount();
 
 	#ifdef PRINTDEBUGINFO
 	cerr << "[DEBUG ] Event header:" << "\t"
-	     << "type="    << (Int_t)mCurMessage.mEventType << "\t"
-	     << "subtype=" << (Int_t)mCurMessage.mEventSubtype << "\t"
-	     << "dummy="   << (Int_t)mCurMessage.mEventDummy << "\t"
-	     << "trigger=" << (Int_t)mCurMessage.mEventTrigger << "\t"
-	     << "count="   << (Int_t)mCurMessage.mEventCount
+	     << "type="    << (Int_t)fCurMessage.fEventType << "\t"
+	     << "subtype=" << (Int_t)fCurMessage.fEventSubtype << "\t"
+	     << "dummy="   << (Int_t)fCurMessage.fEventDummy << "\t"
+	     << "trigger=" << (Int_t)fCurMessage.fEventTrigger << "\t"
+	     << "count="   << (Int_t)fCurMessage.fEventCount
 	     << endl;
 	////UserProcUnpacking::DumpEventHeader(p_event);
 	#endif
 
 	//TODO I did not actually find the corrent event header length
-	mHeadersWords += 4;
+	fHeadersWords += 4;
 }
 
 void UserProcUnpacking::FinishEvent()
 {
 	#ifdef DORESET
-	mCurMessage.mEventType = -1;
-	mCurMessage.mEventSubtype = -1;
-	mCurMessage.mEventDummy = -1;
-	mCurMessage.mEventTrigger = -1;
-	mCurMessage.mEventCount = -1;
+	fCurMessage.fEventType = -1;
+	fCurMessage.fEventSubtype = -1;
+	fCurMessage.fEventDummy = -1;
+	fCurMessage.fEventTrigger = -1;
+	fCurMessage.fEventCount = -1;
 	#endif // DORESET
 }
 
 void UserProcUnpacking::ProcessSubeventHeader(TGo4MbsSubEvent* p_subevent)
 {
-	mCurMessage.mSubeventDlen = p_subevent->GetDlen();
-	mCurMessage.mSubeventType = p_subevent->GetType();
-	mCurMessage.mSubeventSubcrate = p_subevent->GetSubcrate();
-	mCurMessage.mSubeventControl = p_subevent->GetControl();
-	mCurMessage.mSubeventFullID = p_subevent->GetFullId();
-	mCurMessage.mSubeventProcID = p_subevent->GetProcid();
+	fCurMessage.fSubeventDlen = p_subevent->GetDlen();
+	fCurMessage.fSubeventType = p_subevent->GetType();
+	fCurMessage.fSubeventSubcrate = p_subevent->GetSubcrate();
+	fCurMessage.fSubeventControl = p_subevent->GetControl();
+	fCurMessage.fSubeventFullID = p_subevent->GetFullId();
+	fCurMessage.fSubeventProcID = p_subevent->GetProcid();
 
 	#ifdef PRINTDEBUGINFO
 	cerr << "[DEBUG ] Subevent header:" << "\t"
-	     << "dlen="     << (Int_t)mCurMessage.mSubeventDlen << "\t"
-	     << "type="     << (Int_t)mCurMessage.mSubeventType << "\t"
-	     << "subcrate=" << (Int_t)mCurMessage.mSubeventSubcrate << "\t"
-	     << "control="  << (Int_t)mCurMessage.mSubeventControl << "\t"
-	     << "fullid="   << (Int_t)mCurMessage.mSubeventFullID << "\t"
-	     << "procid="   << (Int_t)mCurMessage.mSubeventProcID
+	     << "dlen="     << (Int_t)fCurMessage.fSubeventDlen << "\t"
+	     << "type="     << (Int_t)fCurMessage.fSubeventType << "\t"
+	     << "subcrate=" << (Int_t)fCurMessage.fSubeventSubcrate << "\t"
+	     << "control="  << (Int_t)fCurMessage.fSubeventControl << "\t"
+	     << "fullid="   << (Int_t)fCurMessage.fSubeventFullID << "\t"
+	     << "procid="   << (Int_t)fCurMessage.fSubeventProcID
 	     << endl;
 	////UserProcUnpacking::DumpSubeventHeader(p_subevent);
 	#endif
 
 	//TODO I did not actually find the corrent subevent header length
-	mHeadersWords += 3;
+	fHeadersWords += 3;
 }
 
 void UserProcUnpacking::FinishSubevent()
 {
 	#ifdef DORESET
-	mCurMessage.mSubeventDlen = -1;
-	mCurMessage.mSubeventType = -1;
-	mCurMessage.mSubeventSubcrate = -1;
-	mCurMessage.mSubeventControl = -1;
-	mCurMessage.mSubeventFullID = -1;
-	mCurMessage.mSubeventProcID = -1;
+	fCurMessage.fSubeventDlen = -1;
+	fCurMessage.fSubeventType = -1;
+	fCurMessage.fSubeventSubcrate = -1;
+	fCurMessage.fSubeventControl = -1;
+	fCurMessage.fSubeventFullID = -1;
+	fCurMessage.fSubeventProcID = -1;
 	#endif // DORESET
 }
 
@@ -241,7 +241,7 @@ void UserProcUnpacking::ProcessSubevent(TGo4MbsSubEvent* p_subevent)
 		#ifdef PRINTDEBUGINFO
 		cerr << "[WARN  ] Found procID " << v_procID << " which is unknown. Skipping subevent." << endl;
 		#endif
-		mNunknownWords += v_intLen;
+		fNunknownWords += v_intLen;
 		break;
 	}
 
@@ -269,7 +269,7 @@ void UserProcUnpacking::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAdd
 			//// we extract the counter from the footer and use it for all the data words
 			//// of this subsubevent
 			v_footerPosition = UserProcUnpacking::FindMESYTECfooter(v_leftSize, &p_startAddress[v_cursor], &v_footerCounter);
-			mCurMessage.mSubsubeventFooterCounter = v_footerCounter;
+			fCurMessage.fSubsubeventFooterCounter = v_footerCounter;
 
 			if (v_footerPosition > -1) {
 
@@ -302,7 +302,7 @@ void UserProcUnpacking::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAdd
 			//// we extract the counter from the footer and use it for all the data words
 			//// of this subsubevent
 			v_footerPosition = UserProcUnpacking::FindCAENfooter(v_leftSize, &p_startAddress[v_cursor], &v_footerCounter);
-			mCurMessage.mSubsubeventFooterCounter = v_footerCounter;
+			fCurMessage.fSubsubeventFooterCounter = v_footerCounter;
 
 			if (v_footerPosition > -1) {
 
@@ -327,14 +327,14 @@ void UserProcUnpacking::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAdd
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] AFFEAFFE. Skipping one 32-bit word." << endl;
 			#endif
-			mNknownWords++;
+			fNknownWords++;
 			v_cursor++;
 			break;
 		case support::enu_VENDOR::CAENNOTVALID:
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] CAENNOTVALID. Skipping one 32-bit word." << endl;
 			#endif
-			mNknownWords++;
+			fNknownWords++;
 			v_cursor++;
 			break;
 		case support::enu_VENDOR::OTHER:
@@ -343,7 +343,7 @@ void UserProcUnpacking::ProcessSubeventRaw(Int_t p_size, const Int_t* p_startAdd
 			cerr << support::GetHexRepresentation(sizeof(Int_t), &p_startAddress[v_cursor]) << "\t";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &p_startAddress[v_cursor]) << endl;
 			//#endif
-			mNunknownWords++;
+			fNunknownWords++;
 			v_cursor++;
 			break;
 		//// default section has no meaning here because OTHER already counts that
@@ -396,7 +396,7 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 		return;
 	}
 
-	mNknownWords += 16;
+	fNknownWords += 16;
 
 	Int_t v_curWord;
 	//Int_t v_geo;
@@ -406,10 +406,10 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA0
 	v_curWord = p_startAddress[1];
-	mCurrentOutputEvent->mCAMAC[0] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[0] = (v_curWord & 0xFFFF);
 	// DATA1
 	v_curWord = p_startAddress[2];
-	mCurrentOutputEvent->mCAMAC[1] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[1] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[3];
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
@@ -419,10 +419,10 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA2
 	v_curWord = p_startAddress[5];
-	mCurrentOutputEvent->mCAMAC[2] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[2] = (v_curWord & 0xFFFF);
 	// DATA3
 	v_curWord = p_startAddress[6];
-	mCurrentOutputEvent->mCAMAC[3] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[3] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[7];
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
@@ -432,10 +432,10 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA4
 	v_curWord = p_startAddress[8+1];
-	mCurrentOutputEvent->mCAMAC[4] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[4] = (v_curWord & 0xFFFF);
 	// DATA5
 	v_curWord = p_startAddress[8+2];
-	mCurrentOutputEvent->mCAMAC[5] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[5] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[8+3];
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
@@ -445,10 +445,10 @@ void UserProcUnpacking::ProcessSubeventRawCAMACmwpc(Int_t p_size, const Int_t* p
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
 	// DATA6
 	v_curWord = p_startAddress[8+5];
-	mCurrentOutputEvent->mCAMAC[6] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[6] = (v_curWord & 0xFFFF);
 	// DATA7
 	v_curWord = p_startAddress[8+6];
-	mCurrentOutputEvent->mCAMAC[7] = (v_curWord & 0xFFFF);
+	fCurrentOutputEvent->fCAMAC[7] = (v_curWord & 0xFFFF);
 	// FOOTER
 	v_curWord = p_startAddress[8+7];
 	//v_geo = (v_curWord >> 27) & 0x1f; //TODO mask is unknown to me // 5 bits?
@@ -497,7 +497,7 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
 
-	mCurMessage.mSubsubeventVendor = (Char_t)support::enu_VENDOR::MESYTEC; // MESYTEC=1 //TODO explicit cast?
+	fCurMessage.fSubsubeventVendor = (Char_t)support::enu_VENDOR::MESYTEC; // MESYTEC=1 //TODO explicit cast?
 
 	for (Int_t v_cursor=0; v_cursor<p_size; v_cursor++) {
 
@@ -516,10 +516,10 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 
 		switch (v_type) {
 		case 1: // MESYTEC header
-			mInsidePackage = true;
+			fInsidePackage = true;
 			v_module_id = (v_curWord >> 16) & 0xff; // 8 bits
 			v_subsubeventSize = v_curWord & 0x3ff; // 10 bits
-			mNknownWords++;
+			fNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -530,13 +530,13 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			     << endl;
 			#endif
 
-			mCurMessage.mSubsubeventModule = v_module_id;
+			fCurMessage.fSubsubeventModule = v_module_id;
 
 			break;
 		case 3: // MESYTEC footer
-			mInsidePackage = false;
+			fInsidePackage = false;
 			v_eventCounter = UserProcUnpacking::ExtractCounterFromMESYTECfooter(v_curWord);
-			mNknownWords++;
+			fNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -547,14 +547,14 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			#endif
 
 			//// IN PRINCIPLE, WE COULD WRITE THIS OUT
-			mCurMessage.mSubsubeventFooterCounter = v_eventCounter;
+			fCurMessage.fSubsubeventFooterCounter = v_eventCounter;
 
 			//// WRITE OUT HERE?
 
 			//// Also this value should be reset somewhere.
 			//// In principle one could reset it immediately right after writeout
 			#ifdef DORESET
-			mCurMessage.mSubsubeventFooterCounter = -1;
+			fCurMessage.fSubsubeventFooterCounter = -1;
 			#endif // DORESET
 
 			break;
@@ -563,7 +563,7 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			v_channel = (v_curWord >> 16) & 0x1f; // 5 bits
 			v_valueQA = v_curWord & 0x1fff; // 13 bits // ADC and QDC
 			v_valueT = v_curWord & 0xffff; // 16 bits // TDC
-			mNknownWords++;
+			fNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -576,26 +576,26 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			#endif
 
 			// HERE WE WRITE OUT
-			mCurMessage.mRawWord = v_curWord;
-			mCurMessage.mChannel = v_channel;
-			mCurMessage.mValueQA = v_valueQA;
-			mCurMessage.mValueT = v_valueT;
+			fCurMessage.fRawWord = v_curWord;
+			fCurMessage.fChannel = v_channel;
+			fCurMessage.fValueQA = v_valueQA;
+			fCurMessage.fValueT = v_valueT;
 
 			this->PushOutputRawMessage();
 
 			#ifdef DORESET
-			mCurMessage.mRawWord = 0; // Yes zero here, because we want to clear the raw word with all zeros
-			mCurMessage.mChannel = -1;
-			mCurMessage.mValueQA = -1;
-			mCurMessage.mValueT = -1;
+			fCurMessage.fRawWord = 0; // Yes zero here, because we want to clear the raw word with all zeros
+			fCurMessage.fChannel = -1;
+			fCurMessage.fValueQA = -1;
+			fCurMessage.fValueT = -1;
 			#endif // DORESET
 
-			if (!mInsidePackage) {
+			if (!fInsidePackage) {
 				cerr << "[ERROR ] MESYTEC data word found not between the header and the footer." << endl;
 			}
 			break;
 		default:
-			mNunknownWords++;
+			fNunknownWords++;
 			//#ifdef PRINTDEBUGINFO
 			cerr << "[ERROR ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -607,9 +607,9 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 	} // end of for
 
 	//// Don't forget to reset the values defined in the subsubevent header
-	mCurMessage.mSubsubeventModule = -1; // Currently we reset module and geo independent of the precompiler variable
+	fCurMessage.fSubsubeventModule = -1; // Currently we reset module and geo independent of the precompiler variable
 	#ifdef DORESET
-	mCurMessage.mSubsubeventVendor = -1;
+	fCurMessage.fSubsubeventVendor = -1;
 	#endif // DORESET
 
 	#ifdef PRINTDEBUGINFO
@@ -624,7 +624,7 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
 
-	mCurMessage.mSubsubeventVendor = (Char_t)support::enu_VENDOR::CAEN; // CAEN=2 //TODO explicit cast?
+	fCurMessage.fSubsubeventVendor = (Char_t)support::enu_VENDOR::CAEN; // CAEN=2 //TODO explicit cast?
 
 	for (Int_t v_cursor=0; v_cursor<p_size; v_cursor++) {
 
@@ -635,7 +635,7 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 		Int_t v_type = (v_curWord >> 24) & 0x7; // 3 bits
 		Int_t v_geo = (v_curWord >> 27) & 0x1f; // 5 bits
 
-		mCurMessage.mSubsubeventGeo = v_geo;
+		fCurMessage.fSubsubeventGeo = v_geo;
 
 		Int_t v_eventCounter = -1;
 		Int_t v_channel = -1;
@@ -647,8 +647,8 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 		case 2: // CAEN header
 			v_subsubeventSize = (v_curWord >> 8) & 0x3f; // 6 bits
 			v_crate = (v_curWord >> 16) & 0xff; // 8 bits
-			mInsidePackage = true;
-			mNknownWords++;
+			fInsidePackage = true;
+			fNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -661,9 +661,9 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 			#endif
 			break;
 		case 4: // CAEN footer
-			mInsidePackage = false;
+			fInsidePackage = false;
 			v_eventCounter = UserProcUnpacking::ExtractCounterFromCAENfooter(v_curWord);
-			mNknownWords++;
+			fNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -675,19 +675,19 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 			#endif
 
 			//// IN PRINCIPLE, WE COULD WRITE THIS OUT
-			mCurMessage.mSubsubeventFooterCounter = v_eventCounter;
+			fCurMessage.fSubsubeventFooterCounter = v_eventCounter;
 
 			//// WRITE OUT HERE?
 
 			//// Also this value should be reset somewhere.
 			//// In principle one could reset it immediately right after writeout
 			#ifdef DORESET
-			mCurMessage.mSubsubeventFooterCounter = -1;
+			fCurMessage.fSubsubeventFooterCounter = -1;
 			#endif // DORESET
 
 			break;
 		case 6: // CAEN no valid data
-			mNknownWords++;
+			fNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -700,7 +700,7 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 		case 0: // CAEN data
 			v_channel = (v_curWord >> 16) & 0x1f; // 5 bits //TODO check
 			v_value = v_curWord & 0xfff; // 12 bits //TODO check
-			mNknownWords++;
+			fNknownWords++;
 			#ifdef PRINTDEBUGINFO
 			cerr << "[DEBUG ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -713,34 +713,34 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 			#endif
 
 			//// HERE WE WRITE OUT
-			mCurMessage.mRawWord = v_curWord;
-			mCurMessage.mChannel = v_channel;
-			mCurMessage.mValueQA = v_value;
-			mCurMessage.mValueT = v_value;
+			fCurMessage.fRawWord = v_curWord;
+			fCurMessage.fChannel = v_channel;
+			fCurMessage.fValueQA = v_value;
+			fCurMessage.fValueT = v_value;
 
 			//FIXME костыль для machine time
 			/*if (v_geo == 30) {
-				mCurMessage.mChannel = -1;
-				mCurMessage.mValueQA = -1;
-				mCurMessage.mValueT = -1;
-				mCurMessage.mSubsubeventFooterCounter = v_curWord & 0x3ffffff; // 30 bits
+				fCurMessage.mChannel = -1;
+				fCurMessage.mValueQA = -1;
+				fCurMessage.mValueT = -1;
+				fCurMessage.mSubsubeventFooterCounter = v_curWord & 0x3ffffff; // 30 bits
 			}*/
 
 			this->PushOutputRawMessage();
 
 			#ifdef DORESET
-			mCurMessage.mRawWord = 0; // Yes zero here, because we want to clear the raw word with all zeros
-			mCurMessage.mChannel = -1;
-			mCurMessage.mValueQA = -1;
-			mCurMessage.mValueT = -1;
+			fCurMessage.fRawWord = 0; // Yes zero here, because we want to clear the raw word with all zeros
+			fCurMessage.fChannel = -1;
+			fCurMessage.fValueQA = -1;
+			fCurMessage.fValueT = -1;
 			#endif // DORESET
 
-			if (!mInsidePackage) {
+			if (!fInsidePackage) {
 				cerr << "[ERROR ] CAEN data word found not between the header and the footer." << endl;
 			}
 			break;
 		default:
-			mNunknownWords++;
+			fNunknownWords++;
 			//#ifdef PRINTDEBUGINFO
 			cerr << "[ERROR ] " << support::GetHexRepresentation(sizeof(Int_t), &v_curWord) << "  ";
 			cerr << support::GetBinaryRepresentation(sizeof(Int_t), &v_curWord) << "  ";
@@ -755,9 +755,9 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 
 	//// Don't forget to reset the values defined in the subsubevent header
 	//// For this particular case, this geo is read from all types of words
-	mCurMessage.mSubsubeventGeo = -1; // Currently we reset module and geo independent of the precompiler variable
+	fCurMessage.fSubsubeventGeo = -1; // Currently we reset module and geo independent of the precompiler variable
 	#ifdef DORESET
-	mCurMessage.mSubsubeventVendor = -1;
+	fCurMessage.fSubsubeventVendor = -1;
 	#endif // DORESET
 
 	#ifdef PRINTDEBUGINFO
@@ -767,10 +767,10 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 
 void UserProcUnpacking::PushOutputRawMessage(void)
 {
-	TClonesArray& v_coll = *(mCurrentOutputEvent->mRawMessages);
+	TClonesArray& v_coll = *(fCurrentOutputEvent->fRawMessages);
 	Int_t v_size = v_coll.GetEntriesFast();
 	//// The RawMessage class copy constructor is invoked here (I've checked, it is!)
-	new(v_coll[v_size])RawMessage(mCurMessage);
+	new(v_coll[v_size])RawMessage(fCurMessage);
 }
 
 // static methods =================================================================================

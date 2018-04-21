@@ -6,9 +6,12 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+// Go4
 #include <TGo4Version.h> // for CheckVersion
-
 #include <TGo4StepFactory.h>
+
+// Project
+#include "UserParameter.h"
 
 UserAnalysis::UserAnalysis(const char* name) :
 	TGo4Analysis(name),
@@ -20,8 +23,19 @@ UserAnalysis::UserAnalysis(const char* name) :
 	mUserEventStep2(nullptr)
 	//------------------------------
 {
-	this->Construct();
-	cout << "UserAnalysis constructed." << endl;
+	if (!TGo4Version::CheckVersion(__GO4BUILDVERSION__)) {
+		cout << "Go4 version mismatch! Aborting." << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	//TODO use default setup.xml file
+	//TODO or better force the user to support the correct setup configuration xml file?
+	//this->Construct("output.root", "usr/setup.xml");
+
+	TGo4Log::Error("Deprecated constructor of UserAnalysis without arguments!\n"
+	               "Please supply the output and the setup configuration files' names.\n"
+	               "go4analysis ... -args output.root setup.xml");
+	exit(EXIT_FAILURE);
 }
 
 UserAnalysis::UserAnalysis(int argc, char** argv) :
@@ -34,8 +48,24 @@ UserAnalysis::UserAnalysis(int argc, char** argv) :
 	mUserEventStep2(nullptr)
 	//------------------------------
 {
-	this->Construct();
-	cout << "UserAnalysis constructed." << endl;
+	if (!TGo4Version::CheckVersion(__GO4BUILDVERSION__)) {
+		cout << "Go4 version mismatch! Aborting." << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (argc != 3) {
+		TGo4Log::Error("Wrong number of arguments for the UserAnalysis constructor!\n"
+		               "Please supply the output and the setup configuration files' names.\n"
+		               "go4analysis ... -args output.root setup.xml");
+		exit(EXIT_FAILURE);
+	}
+
+	/*for (int i=0; i<argc; i++) {
+		cout << "argv[" << i << "]=" << argv[i] << endl;
+	}*/
+
+	this->Construct(argv[1], argv[2]);
+	cout << "UserAnalysis constructed 2." << endl;
 }
 
 UserAnalysis::~UserAnalysis()
@@ -43,17 +73,18 @@ UserAnalysis::~UserAnalysis()
 	cout << "UserAnalysis destructed." << endl;
 }
 
-void UserAnalysis::Construct(void)
+void UserAnalysis::Construct(TString p_outfilename, TString p_setupfilename)
 {
-	cout << "UserAnalysis::Construct()." << endl;
+	//cout << "UserAnalysis::Construct()" << endl;
 
 	//TODO check this method implementation
 
-	//TODO maybe comment this out?
-	if (!TGo4Version::CheckVersion(__GO4BUILDVERSION__)) {
-		cout << "Go4 version mismatch! Aborting." << endl;
-		exit(-1);
-	}
+	// Fill the parameter-set object and attach it to the analysis
+	mParams = new UserParameter();
+	mParams->SetInputFilename(this->GetInputFileName());
+	mParams->SetSetupConfigFilename(p_setupfilename);
+	mParams->SetOutputFilename(p_outfilename);
+	AddParameter(mParams);
 
 	//TODO
 	//SetStepChecking(kFALSE); // necessary for non-subsequent mesh analysis
@@ -72,7 +103,7 @@ void UserAnalysis::Construct(void)
 
 	TGo4FileStoreParameter* storeUnpacking = new TGo4FileStoreParameter("outputUnpacking.root");
 	stepUnpacking->SetEventStore(storeUnpacking);
-	stepUnpacking->SetStoreEnabled(kTRUE);
+	stepUnpacking->SetStoreEnabled(kFALSE); //TODO enable/disable
 
 	AddAnalysisStep(stepUnpacking);
 
@@ -89,7 +120,7 @@ void UserAnalysis::Construct(void)
 	stepMonitoring->SetProcessEnabled(kTRUE);
 	stepMonitoring->SetErrorStopEnabled(kTRUE); //TODO probably for monitoring this should be false
 
-	TGo4FileStoreParameter* storeMonitoring = new TGo4FileStoreParameter("outputMonitoring.root");
+	TGo4FileStoreParameter* storeMonitoring = new TGo4FileStoreParameter(p_outfilename); // "outputMonitoring.root"
 	stepMonitoring->SetEventStore(storeMonitoring);
 	stepMonitoring->SetStoreEnabled(kTRUE);
 
@@ -121,7 +152,7 @@ void UserAnalysis::Construct(void)
 Int_t UserAnalysis::UserPreLoop(void)
 {
 	//cout << "UserAnalysis::UserPreLoop()." << endl;
-	cerr << "Starting UserAnalysis." << endl;
+	//cerr << "Starting UserAnalysis." << endl;
 	mEventCounter = 0;
 	return 0;
 }

@@ -42,24 +42,24 @@ private: // data members
 	/**
 	 * Counter or processed events
 	 */
-	unsigned long int mEventCounter;
+	unsigned long int fEventCounter;
 
 	/**
 	 * Current output event object. This object is filled during BuildEvent
 	 * and then pushed into the output tree by the framework.
 	 */
-	UserEventMonitoring* mCurrentOutputEvent;
+	UserEventMonitoring* fCurrentOutputEvent;
 
 	/**
 	 * Put all your output histograms inside this object.
 	 * See UserHistosMonitoring class.
 	 */
-	UserHistosMonitoring* mHistoMan;
+	UserHistosMonitoring* fHistoMan;
 
 	/**
 	 * Setup configuration object.
 	 */
-	SetupConfiguration* mSetupConfiguration;
+	SetupConfiguration* fSetupConfiguration;
 
 	ClassDef(UserProcMonitoring, 1);
 };

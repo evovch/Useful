@@ -9,8 +9,12 @@
 
 #include <TGo4Analysis.h> // mother class
 
+// ROOT
+#include <TString.h>
+
 //TODO not used by now
 class TGo4MbsEvent;
+class UserParameter;
 class UserEventUnpack;
 class UserEventMonitoring;
 class UserEventStep2;
@@ -22,7 +26,7 @@ public:
 	UserAnalysis(int argc, char** argv);
 	virtual ~UserAnalysis();
 
-	void Construct(void);
+	void Construct(TString p_outfilename, TString p_setupfilename);
 
 	virtual Int_t UserPreLoop();
 	virtual Int_t UserEventFunc();
@@ -30,6 +34,11 @@ public:
 
 private:
 	unsigned long int mEventCounter;
+
+	/**
+	 * Analysis parameters object, accessible by all steps
+	 */
+	UserParameter* mParams;
 
 	//TODO not used by now
 	TGo4MbsEvent* mMbsEvent;

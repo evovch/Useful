@@ -32,12 +32,12 @@ private: // data members
 	/**
 	 *
 	 */
-	unsigned long int mEventCounter;
+	unsigned long int fEventCounter;
 
 	/**
 	 *
 	 */
-	UserEventStep2* mCurrentOutputEvent;
+	UserEventStep2* fCurrentOutputEvent;
 
 	ClassDef(UserProcStep2, 1);
 };

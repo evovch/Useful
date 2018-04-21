@@ -15,7 +15,7 @@ UserEventStep2::UserEventStep2(const char* name) :
 	TGo4EventElement(name)
 {
 	//cerr << "UserEventStep2::UserEventStep2" << endl;
-	mMWPCdigi = new TClonesArray("BeamDetMWPCDigi");
+	fMWPCdigi = new TClonesArray("BeamDetMWPCDigi");
 
 	//cerr << "UserEventStep2::UserEventStep2() -> ";
 	this->Clear();
@@ -30,7 +30,7 @@ void UserEventStep2::Clear(Option_t* t)
 	//TODO zero all data members!
 	//cerr << "UserEventStep2::Clear()" << endl;
 
-	mMWPCdigi->Clear();
+	fMWPCdigi->Clear();
 }
 
 ClassImp(UserEventStep2)

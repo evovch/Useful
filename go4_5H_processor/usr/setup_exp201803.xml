@@ -32,7 +32,7 @@
 
 -->
 
-<setup name="exp201803" period="23" run="1234" comment="2018_April_ACCULINNA2_beamtime">
+<setup name="exp201803" period="2018" run="3" comment="2018_April_ACCULINNA2_beamtime">
 
 <crate name="VME0" procid="100">
 

@@ -7,26 +7,34 @@ else
 	echo "GO4SYS is set to '$GO4SYS'";
 fi
 
+# Please specify these variables to your needs ================================
 
-#INPUTFILE=/opt/Shared_folder/he6-no_mult_0001.lmd
-#INPUTFILE=/home/evovch/Documents/exp201805/data/run05_0014.lmd
-#INPUTFILE=/home/evovch/Downloads/FLNR_data/h5_14_0001.lmd
-INPUTFILE=/home/evovch/Documents/h5_02_0001.lmd
-#INPUTFILE=/home/evovch/Downloads/FLNR_data/he6_0001.lmd
-#INPUTFILE=/home/evovch/Downloads/FLNR_data/he6_w3_d1-205,02_d2-182,55_0001.lmd
-#INPUTFILE=/home/evovch/Downloads/FLNR_data/he6_w3_d1-206,02_d2-182,55_0001.lmd
+INPUTLMDDIR=/home/evovch/Downloads/FLNR_data/exp201803/
+OUTPUTROOTDIR=/home/evovch/Downloads/FLNR_data/exp201803/
+
+SETUPFILE=./usr/setup_exp201803.xml
+INPUTFILENAME=he6-no_mult_0001.lmd
+
+# =============================================================================
+
+INPUTFILE=${INPUTLMDDIR}/${INPUTFILENAME}
+OUTPUTFILE=${OUTPUTROOTDIR}/${INPUTFILENAME}.root
 
 # Cleanup analysis results ====================================================
 
+# Remove output file if it already exists from previous analysis runs
+rm -fv ${OUTPUTFILE}
+# Remove autosave file if it already exists from previous analysis runs
 rm -fv Go4AnalysisASF.root
+# Remove textual output if it already exists from previous analysis runs
 rm -fv out.txt err.txt summary.txt
-rm -fv outputUnpacking.root outputMonitoring.root outputStep2.root
-rm -fv setupCfg.root
+
+# =============================================================================
 
 echo -e "\e[1m\e[32mAnalysis started.\e[0m"
 
-#TODO check that GO4SYS is declared
-${GO4SYS}/bin/go4analysis -v -lib libUserAnalysis.so -number 10 -asf Go4AnalysisASF.root -file ${INPUTFILE} > out.txt 2> err.txt
+${GO4SYS}/bin/go4analysis -v -lib libUserAnalysis.so -number 100000 -asf Go4AnalysisASF.root -file ${INPUTFILE} -args ${OUTPUTFILE} ${SETUPFILE} > out.txt 2> /dev/null
 # -number 1000
+# 2> err.txt
 
 echo -e "\e[1m\e[32mAnalysis finished.\e[0m"

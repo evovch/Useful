@@ -34,33 +34,33 @@ public:
 	 * because some values which are common for a group of raw messages
 	 * should be taken from the [sub][sub]event headers
 	 */
-	Int_t mRawWord;
+	Int_t fRawWord;
 
 	/**
 	 * From the event header
 	 */
-	Short_t mEventType;
-	Short_t mEventSubtype;
-	Short_t mEventDummy;
-	Short_t mEventTrigger;
-	Int_t   mEventCount;
+	Short_t fEventType;
+	Short_t fEventSubtype;
+	Short_t fEventDummy;
+	Short_t fEventTrigger;
+	Int_t   fEventCount;
 
 	/**
 	 * From the subevent header
 	 */
-	Int_t   mSubeventDlen;
-	Short_t mSubeventType;
-	Char_t  mSubeventSubcrate;
-	Char_t  mSubeventControl;
-	Int_t   mSubeventFullID;
-	Short_t mSubeventProcID;
+	Int_t   fSubeventDlen;
+	Short_t fSubeventType;
+	Char_t  fSubeventSubcrate;
+	Char_t  fSubeventControl;
+	Int_t   fSubeventFullID;
+	Short_t fSubeventProcID;
 
 	/**
 	 * From the subsubevent header
 	 * See Support.h header
 	 * {OTHER=0, MESYTEC=1, CAEN=2, AFFEAFFE=3}
 	 */
-	Char_t mSubsubeventVendor;
+	Char_t fSubsubeventVendor;
 
 	/**
 	 * From the subsubevent header
@@ -70,7 +70,7 @@ public:
 	 * (the header, data word, footer, etc.)
 	 * Module is written only in the header of the MESYTEC block
 	 */
-	Int_t mSubsubeventGeo;
+	Int_t fSubsubeventGeo;
 
 	/**
 	 * From the subsubevent header
@@ -80,21 +80,21 @@ public:
 	 * (the header, data word, footer, etc.)
 	 * Module is written only in the header of the MESYTEC block
 	 */
-	Int_t mSubsubeventModule;
+	Int_t fSubsubeventModule;
 
 	/**
 	 * From the message
 	 */
-	Int_t mChannel;
-	Int_t mValueQA;
-	Int_t mValueT;
+	Int_t fChannel;
+	Int_t fValueQA;
+	Int_t fValueT;
 
 	/**
 	 * From the subsubevent footer
 	 * Both CAEN and MESYTEC write some counter in the footer
 	 * though the formats are different
 	 */
-	Int_t mSubsubeventFooterCounter;
+	Int_t fSubsubeventFooterCounter;
 
 	ClassDef(RawMessage, 1);
 };
