@@ -33,8 +33,9 @@ rm -fv out.txt err.txt summary.txt
 
 echo -e "\e[1m\e[32mAnalysis started.\e[0m"
 
-${GO4SYS}/bin/go4analysis -v -lib libUserAnalysis.so -number 100000 -asf Go4AnalysisASF.root -file ${INPUTFILE} -args ${OUTPUTFILE} ${SETUPFILE} > out.txt 2> /dev/null
+${GO4SYS}/bin/go4analysis -v -lib libUserAnalysis.so -number 1000 -asf Go4AnalysisASF.root -file ${INPUTFILE} -args ${OUTPUTFILE} ${SETUPFILE} > out.txt 2> err.txt
 # -number 1000
 # 2> err.txt
+# 2> /dev/null
 
 echo -e "\e[1m\e[32mAnalysis finished.\e[0m"

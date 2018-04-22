@@ -25,7 +25,7 @@ private:
 	unsigned short fStepelecrtch;
 	char fDetector[64]; // Sub-detector: SQX_L, tSQX_L, CsI_L, tCsI_L, F3, F5, F6, tMWPC, neutTDC, ...
 	unsigned short fStartdetch;
-	char fFolder[64]; // Detector: Left_telescope, Right_telescope, ToF, MWPC, Neutron_wall
+	char fFolder[64]; // Detector: Left_telescope, Right_telescope, Beam_detector, Neutron_detector
 
 public:
 	stc_mapping()

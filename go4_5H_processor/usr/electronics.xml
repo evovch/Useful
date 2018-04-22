@@ -31,11 +31,13 @@
 
 	At some point _L should become _1, _R should become _2, and _3 and _4 should appear.
 
+	detector id is user when building the composite-event. Currently it is hardcoded
+
 -->
 
 <detectors>
 
-<detector name="Left_telescope">
+<detector name="Left_telescope" id="1" classname="UserEventLeftTele">
 	<subdetector  name="CsI_L" nchannels=""/>
 	<subdetector name="tCsI_L" nchannels=""/>
 	<subdetector  name="SQX_L" nchannels=""/>
@@ -48,7 +50,7 @@
 	<subdetector name="tSQ20" nchannels=""/>
 </detector>
 
-<detector name="Right_telescope">
+<detector name="Right_telescope" id="2" classname="UserEventRightTele">
 	<subdetector  name="CsI_R" nchannels=""/>
 	<subdetector name="tCsI_R" nchannels=""/>
 	<subdetector  name="SQX_R" nchannels=""/>
@@ -57,24 +59,37 @@
 	<subdetector name="tSQY_R" nchannels=""/>
 </detector>
 
-<detector name="Annular_telescope">
+<!-- Placeholder -->
+<detector name="Telescope3" id="3" classname="UserEventTele3">
+</detector>
+
+<!-- Placeholder -->
+<detector name="Telescope4" id="4" classname="UserEventTele4">
+</detector>
+
+<detector name="Annular_telescope" id="5" classname="UserEventAnnularTele">
 	<subdetector name="ANR" nchannels="16"/>
 	<subdetector name="ANS" nchannels="16"/>
 </detector>
 
-<detector name="Neutron_wall">
+<detector name="Neutron_detector" id="6" classname="UserEventNeutronDet">
 	<subdetector name="neutAmp" nchannels="40"/>
 	<subdetector name="neutTAC" nchannels="40"/>
 	<subdetector name="neutTDC" nchannels="40"/>
 </detector>
 
-<detector name="Beam_detector">
+<!-- Merge ToF and MWPC into single Beam_detector? -->
+
+<detector name="Beam_detector_ToF" id="7" classname="UserEventBeamDetTof">
 	<subdetector  name="F3" nchannels="4"/>
 	<subdetector name="tF3" nchannels="4"/>
 	<subdetector  name="F5" nchannels="4"/>
 	<subdetector name="tF5" nchannels="4"/>
 	<subdetector  name="F6" nchannels="4"/>
 	<subdetector name="tF6" nchannels="4"/>
+</detector>
+
+<detector name="Beam_detector_MWPC" id="8" classname="UserEventBeamDetMwpc">
 	<subdetector  name="MWPC" nchannels=""/>
 	<subdetector name="tMWPC" nchannels=""/>
 </detector>

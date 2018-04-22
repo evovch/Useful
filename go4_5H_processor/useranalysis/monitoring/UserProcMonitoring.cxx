@@ -12,6 +12,7 @@ using std::endl;
 #include "Support.h"
 #include "UserParameter.h"
 #include "UserEventMonitoring.h"
+//#include "data_events/UserEventNew.h"
 #include "UserHistosMonitoring.h"
 #include "data/RawMessage.h"
 #include "unpacking/UserEventUnpacking.h"
@@ -49,6 +50,7 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 {
 	Bool_t v_isValid = kFALSE;
 	UserEventMonitoring* v_outputEvent = (UserEventMonitoring*)p_dest;
+	//UserEventNew* v_outputEvent = (UserEventNew*)p_dest;
 
 	UserEventUnpacking* v_input = (UserEventUnpacking*)GetInputEvent();
 	if (v_input == NULL)

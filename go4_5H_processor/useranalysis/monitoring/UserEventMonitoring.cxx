@@ -55,7 +55,7 @@ void UserEventMonitoring::Clear(Option_t* t)
 		ANS[i] = 0;
 	}
 
-	// Neutron wall (stilbene)
+	// Neutron detector (stilbene)
 	for (UInt_t i=0; i<32; i++) {
 		neutAmp[i] = 0;
 		neutTAC[i] = 0;
@@ -119,7 +119,7 @@ void UserEventMonitoring::Dump(void) const
 	cerr << "   ANR:"; for (UInt_t i=0; i<16; i++) { cerr << "\t" <<    ANR[i]; } cerr << endl;
 	cerr << "   ANS:"; for (UInt_t i=0; i<16; i++) { cerr << "\t" <<    ANS[i]; } cerr << endl;
 
-	// Neutron wall (stilbene)
+	// Neutron detector (stilbene)
 	cerr <<"neutAmp:"; for (UInt_t i=0; i<16; i++) { cerr << "\t" <<neutAmp[i]; } cerr << endl;
 	cerr <<"       :"; for (UInt_t i=0; i<16; i++) { cerr << "\t" <<neutAmp[i+16]; } cerr << endl;
 	cerr <<"neutTAC:"; for (UInt_t i=0; i<16; i++) { cerr << "\t" <<neutTAC[i]; } cerr << endl;
@@ -173,7 +173,7 @@ UShort_t* UserEventMonitoring::GetFieldByName(TString p_name)
 	else if (p_name ==  "ANR")      { return  ANR; }
 	else if (p_name ==  "ANS")      { return  ANS; }
 
-	// Neutron wall (stilbene)
+	// Neutron detector (stilbene)
 	else if (p_name ==  "neutAmp")  { return  neutAmp; }
 	else if (p_name ==  "neutTAC")  { return  neutTAC; }
 	else if (p_name ==  "neutTDC")  { return  neutTDC; }
@@ -190,9 +190,9 @@ UShort_t* UserEventMonitoring::GetFieldByName(TString p_name)
 	//else if (p_name ==  "MWPC")     { return  MWPC; }
 	else if (p_name == "tMWPC")     { return tMWPC; }
 
-	/*else if (p_name == "Unknown") {
+	else if (p_name == "Ignore") {
 		cerr << "[WARN  ] Acquiring en event data field '" << p_name << "' which does not exist." << endl;
-		return NULL; }*/
+		return NULL; }
 	else {
 		cerr << "[ERROR ] Acquiring an event data field '" << p_name << "' which does not exist." << endl;
 		return NULL;

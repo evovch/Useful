@@ -6,7 +6,7 @@ using std::cerr;
 using std::endl;
 
 UserEventLeftTele::UserEventLeftTele(const char* name) :
-	TGo4EventElement(name)
+	TGo4EventElement(name, name, 1)
 {
 	//cerr << "UserEventLeftTele::UserEventLeftTele() -> ";
 	this->Clear();

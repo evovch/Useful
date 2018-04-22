@@ -13,9 +13,15 @@ set(ROOTCLING_HEADERS UserAnalysis.h
                       unpacking/UserProcUnpacking.h
                       unpacking/UserHistosUnpacking.h
                       monitoring/UserEventMonitoring.h
-                      monitoring/UserEventNew.h
-                      monitoring/UserEventLeftTele.h
-                      monitoring/UserEventRightTele.h
+
+                      data_events/UserEventNew.h
+                      data_events/UserEventLeftTele.h
+                      data_events/UserEventRightTele.h
+                      data_events/UserEventAnnularTele.h
+                      data_events/UserEventNeutronDet.h
+                      data_events/UserEventBeamDetTof.h
+                      data_events/UserEventBeamDetMwpc.h
+
                       monitoring/UserProcMonitoring.h
                       monitoring/UserHistosMonitoring.h
                       step2/UserEventStep2.h
@@ -37,9 +43,15 @@ set(SOURCE_LIB G__UserAnalysis.cxx
                unpacking/UserProcUnpacking.cxx
                unpacking/UserHistosUnpacking.cxx
                monitoring/UserEventMonitoring.cxx
-               monitoring/UserEventNew.cxx
-               monitoring/UserEventLeftTele.cxx
-               monitoring/UserEventRightTele.cxx
+
+               data_events/UserEventNew.cxx
+               data_events/UserEventLeftTele.cxx
+               data_events/UserEventRightTele.cxx
+               data_events/UserEventAnnularTele.cxx
+               data_events/UserEventNeutronDet.cxx
+               data_events/UserEventBeamDetTof.cxx
+               data_events/UserEventBeamDetMwpc.cxx
+
                monitoring/UserProcMonitoring.cxx
                monitoring/UserHistosMonitoring.cxx
                step2/UserEventStep2.cxx

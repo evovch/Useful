@@ -49,7 +49,7 @@ public: //TODO should be private. Made public for ER
 	UShort_t ANR[16];
 	UShort_t ANS[16];
 
-	// Neutron wall (stilbene)
+	// Neutron detector (stilbene)
 	UShort_t neutAmp[32];
 	UShort_t neutTAC[32];
 	UShort_t neutTDC[32];

@@ -14,6 +14,7 @@
 class TGo4EventElement;
 
 class UserEventMonitoring;
+//class UserEventNew;
 class UserHistosMonitoring;
 class UserEventUnpacking;
 class RawMessage;
@@ -49,6 +50,7 @@ private: // data members
 	 * and then pushed into the output tree by the framework.
 	 */
 	UserEventMonitoring* fCurrentOutputEvent;
+	//UserEventNew* fCurrentOutputEvent;
 
 	/**
 	 * Put all your output histograms inside this object.

@@ -49,24 +49,24 @@
 	<mapping addr="8"	elblock="mADC"	startelectrch="0"	nelectrch="16"	detector="CsI_L"	startdetch="0"	folder="Left_telescope"/>
 	<mapping addr="8"	elblock="mADC"	startelectrch="16"	nelectrch="16"	detector="CsI_R"	startdetch="0"	folder="Right_telescope"/>
 	<mapping addr="9"	elblock="mADC"	startelectrch="0"	nelectrch="16"	detector="SQ20"	startdetch="0"	folder="Left_telescope"/>
-	<mapping addr="10"	elblock="mQDC"	startelectrch="0"	nelectrch="4"	detector="F3"	startdetch="0"	folder="Beam_detector"/>
-	<mapping addr="10"	elblock="mQDC"	startelectrch="4"	nelectrch="4"	detector="F5"	startdetch="0"	folder="Beam_detector"/>
-	<mapping addr="10"	elblock="mQDC"	startelectrch="8"	nelectrch="4"	detector="F6"	startdetch="0"	folder="Beam_detector"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="0"	nelectrch="4"	detector="tF3"	startdetch="0"	folder="Beam_detector"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="4"	nelectrch="4"	detector="tF5"	startdetch="0"	folder="Beam_detector"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="8"	nelectrch="4"	detector="tF6"	startdetch="0"	folder="Beam_detector"/>
-	<mapping addr="11"	elblock="mTDC"	startelectrch="12"	nelectrch="4"	detector="tMWPC"	startdetch="0"	folder="Beam_detector"/>
+	<mapping addr="10"	elblock="mQDC"	startelectrch="0"	nelectrch="4"	detector="F3"	startdetch="0"	folder="Beam_detector_ToF"/>
+	<mapping addr="10"	elblock="mQDC"	startelectrch="4"	nelectrch="4"	detector="F5"	startdetch="0"	folder="Beam_detector_ToF"/>
+	<mapping addr="10"	elblock="mQDC"	startelectrch="8"	nelectrch="4"	detector="F6"	startdetch="0"	folder="Beam_detector_ToF"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="0"	nelectrch="4"	detector="tF3"	startdetch="0"	folder="Beam_detector_ToF"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="4"	nelectrch="4"	detector="tF5"	startdetch="0"	folder="Beam_detector_ToF"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="8"	nelectrch="4"	detector="tF6"	startdetch="0"	folder="Beam_detector_ToF"/>
+	<mapping addr="11"	elblock="mTDC"	startelectrch="12"	nelectrch="4"	detector="tMWPC"	startdetch="0"	folder="Beam_detector_MWPC"/>
 	<mapping addr="12"	elblock="mTDC"	startelectrch="0"	nelectrch="16"	detector="tSQ20"	startdetch="0"	folder="Left_telescope"/>
 
 </crate>
 
 <crate name="VME1" procid="200">
 
-	<mapping addr="0"	elblock="V785"	startelectrch="0"	nelectrch="32"	stepelecrtch="2"	detector="neutAmp"	startdetch="0"	folder="Neutron_wall"/>
-	<mapping addr="0"	elblock="V785"	startelectrch="1"	nelectrch="32"	stepelecrtch="2"	detector="neutTAC"	startdetch="0"	folder="Neutron_wall"/>
-	<mapping addr="1"	elblock="V785"	startelectrch="0"	nelectrch="32"	stepelecrtch="2"	detector="neutAmp"	startdetch="16"	folder="Neutron_wall"/>
-	<mapping addr="1"	elblock="V785"	startelectrch="1"	nelectrch="32"	stepelecrtch="2"	detector="neutTAC"	startdetch="16"	folder="Neutron_wall"/>
-	<mapping addr="2"	elblock="mTDC"	startelectrch="0"	nelectrch="32"	stepelecrtch="1"	detector="neutTDC"	startdetch="0"	folder="Neutron_wall"/>
+	<mapping addr="0"	elblock="V785"	startelectrch="0"	nelectrch="32"	stepelecrtch="2"	detector="neutAmp"	startdetch="0"	folder="Neutron_detector"/>
+	<mapping addr="0"	elblock="V785"	startelectrch="1"	nelectrch="32"	stepelecrtch="2"	detector="neutTAC"	startdetch="0"	folder="Neutron_detector"/>
+	<mapping addr="1"	elblock="V785"	startelectrch="0"	nelectrch="32"	stepelecrtch="2"	detector="neutAmp"	startdetch="16"	folder="Neutron_detector"/>
+	<mapping addr="1"	elblock="V785"	startelectrch="1"	nelectrch="32"	stepelecrtch="2"	detector="neutTAC"	startdetch="16"	folder="Neutron_detector"/>
+	<mapping addr="2"	elblock="mTDC"	startelectrch="0"	nelectrch="32"	stepelecrtch="1"	detector="neutTDC"	startdetch="0"	folder="Neutron_detector"/>
 
 </crate>
 
@@ -106,8 +106,8 @@
 	comment start: less-exclamation-minus-minus
 	comment end: minus-minus-more
 
-	Neutron wall readout
-	====================
+	Neutron detector readout
+	========================
 
 	PMT 1-4 => MPD4 №1 => MADC №1 ch 1-8
 	PMT 5-8 => MPD4 №2 => MADC №1 ch 9-16
