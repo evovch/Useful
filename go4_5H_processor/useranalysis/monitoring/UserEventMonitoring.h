@@ -73,6 +73,8 @@ public: //TODO should be private. Made public for ER
 
 	// Machine time
 
+	// VULOM? - 96 ch. scaler?
+
 	ClassDef(UserEventMonitoring, 1);
 };
 

@@ -88,6 +88,10 @@ Bool_t UserProcMonitoring::BuildEvent(TGo4EventElement* p_dest)
 
 		this->ProcessMessageUniversal(v_curMessage);
 
+		//TODO check
+		// Ptocess trigger
+		fCurrentOutputEvent->trigger = v_input->fTrigger;
+
 		v_messCounter++;
 	} // end of while
 
