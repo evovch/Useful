@@ -1,9 +1,9 @@
 #ifndef XMLPARSING_H
 #define XMLPARSING_H
 
-#include <stdio.h> // for FILE
+#include <stdio.h> /* for FILE */
 
-#include "structs.h" // for stc_setup_config, enuTAG
+#include "structs.h" /* for stc_setup_config, enuTAG */
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,4 +23,4 @@ void ProcessAttr(stc_setup_config* ptr, char* p_token/*, enuTAG* o_CurTag*/, uns
 }
 #endif
 
-#endif // XMLPARSING_H
+#endif /* XMLPARSING_H */

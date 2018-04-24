@@ -17,10 +17,17 @@
 // ROOT
 #include <TString.h>
 
+class SetupConfiguration;
+
 class UserParameter : public TGo4Parameter {
 public:
 	UserParameter(const char* name = "UserParameter");
 	virtual ~UserParameter();
+
+	/**
+	 * Import setup configuration XML file
+	 */
+	void Init(void);
 
 	/**
 	 * Modifier
@@ -40,17 +47,22 @@ public:
 	/**
 	 * Accessor
 	 */
-	TString GetInputFilename(void) const { return mInputFilename; }
+	//TString GetInputFilename(void) const { return mInputFilename; }
 
 	/**
 	 * Accessor
 	 */
-	TString GetSetupConfigFilename(void) const { return mSetupConfigFilename; }
+	//TString GetSetupConfigFilename(void) const { return mSetupConfigFilename; }
 
 	/**
 	 * Accessor
 	 */
-	TString GetOutputFilename(void) const { return mOutputFilename; }
+	//TString GetOutputFilename(void) const { return mOutputFilename; }
+
+	/**
+	 *
+	 */
+	const SetupConfiguration* GetSetupConfig(void) const { return fSetupConfiguration; }
 
 private:
 	/**
@@ -67,6 +79,11 @@ private:
 	 * Output .root processed data file name
 	 */
 	TString mOutputFilename;
+
+	/**
+	 * Setup configuration object
+	 */
+	SetupConfiguration* fSetupConfiguration;
 
 	ClassDef(UserParameter, 1);
 };

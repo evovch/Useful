@@ -8,6 +8,11 @@ using std::endl;
 // Project
 #include "setupconfig/pureC/functions.h"
 
+SetupConfiguration::SetupConfiguration() :
+	TObject()
+{
+}
+
 SetupConfiguration::SetupConfiguration(const char* p_filename) :
 	TObject()
 {

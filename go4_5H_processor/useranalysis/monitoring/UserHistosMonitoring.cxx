@@ -1,8 +1,8 @@
 #include "UserHistosMonitoring.h"
 
 // ROOT
-#include <TH1D.h>
-#include <TH2D.h>
+//#include <TH1D.h>
+//#include <TH2D.h>
 
 // Go4
 #include <TGo4Analysis.h>
@@ -11,8 +11,7 @@ UserHistosMonitoring::UserHistosMonitoring()
 {
 	TGo4Analysis* a = TGo4Analysis::Instance();
 
-
-	d1F3[0]    = a->MakeTH1('D', "F3/QDC/F3_QDC_L",  "F3 QDC  left", 4096, 0., 4096.);
+	/*d1F3[0]    = a->MakeTH1('D', "F3/QDC/F3_QDC_L",  "F3 QDC  left", 4096, 0., 4096.);
 	d1F3[1]    = a->MakeTH1('D', "F3/QDC/F3_QDC_R",  "F3 QDC right", 4096, 0., 4096.);
 	d1F3[2]    = a->MakeTH1('D', "F3/QDC/F3_QDC_U",  "F3 QDC    up", 4096, 0., 4096.);
 	d1F3[3]    = a->MakeTH1('D', "F3/QDC/F3_QDC_D",  "F3 QDC  down", 4096, 0., 4096.);
@@ -42,7 +41,20 @@ UserHistosMonitoring::UserHistosMonitoring()
 	d1tMWPC[0] = a->MakeTH1('D', "tMWPC/tX1", "MWPC TDC  X1", 6400, 0., 6400.);
 	d1tMWPC[1] = a->MakeTH1('D', "tMWPC/tY1", "MWPC TDC  Y1", 6400, 0., 6400.);
 	d1tMWPC[2] = a->MakeTH1('D', "tMWPC/tX2", "MWPC TDC  X2", 6400, 0., 6400.);
-	d1tMWPC[3] = a->MakeTH1('D', "tMWPC/tY2", "MWPC TDC  Y2", 6400, 0., 6400.);
+	d1tMWPC[3] = a->MakeTH1('D', "tMWPC/tY2", "MWPC TDC  Y2", 6400, 0., 6400.);*/
+
+	histoMWPCnx1 = a->MakeTH1('D', "MWPC/histoMWPCnx1", "histoMWPCnx1;number of fired wires", 33, 0., 33.);
+	histoMWPCny1 = a->MakeTH1('D', "MWPC/histoMWPCny1", "histoMWPCny1;number of fired wires", 33, 0., 33.);
+	histoMWPCnx2 = a->MakeTH1('D', "MWPC/histoMWPCnx2", "histoMWPCnx2;number of fired wires", 33, 0., 33.);
+	histoMWPCny2 = a->MakeTH1('D', "MWPC/histoMWPCny2", "histoMWPCny2;number of fired wires", 33, 0., 33.);
+	histoMWPCx1  = a->MakeTH1('D', "MWPC/histoMWPCx1",  "histoMWPCx1;index of the fired wire",  32, 0., 32.);
+	histoMWPCy1  = a->MakeTH1('D', "MWPC/histoMWPCy1",  "histoMWPCy1;index of the fired wire",  32, 0., 32.);
+	histoMWPCx2  = a->MakeTH1('D', "MWPC/histoMWPCx2",  "histoMWPCx2;index of the fired wire",  32, 0., 32.);
+	histoMWPCy2  = a->MakeTH1('D', "MWPC/histoMWPCy2",  "histoMWPCy2;index of the fired wire",  32, 0., 32.);
+	histoMWPCrx1 = a->MakeTH1('D', "MWPC/histoMWPCrx1", "histoMWPCrx1;index of the fired wire",  32, 0., 32.);
+	histoMWPCry1 = a->MakeTH1('D', "MWPC/histoMWPCry1", "histoMWPCry1;index of the fired wire",  32, 0., 32.);
+	histoMWPCrx2 = a->MakeTH1('D', "MWPC/histoMWPCrx2", "histoMWPCrx2;index of the fired wire",  32, 0., 32.);
+	histoMWPCry2 = a->MakeTH1('D', "MWPC/histoMWPCry2", "histoMWPCry2;index of the fired wire",  32, 0., 32.);
 
 }
 

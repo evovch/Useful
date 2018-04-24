@@ -1,1 +1,0 @@
-/home/evovch/soft/go4-5.3.0_fairsoftroot/bin/go4analysis: symbol lookup error: /home/evovch/Documents/Useful/go4_5H_processor/build/src/libUserAnalysis.so: undefined symbol: _Z18InitStcSetupConfigP17_stc_setup_config

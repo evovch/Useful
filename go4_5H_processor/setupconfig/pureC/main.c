@@ -1,23 +1,22 @@
-#include <stdio.h> // for fprintf
+#include <stdio.h> /* for fprintf */
 
 #include "structs.h"
 #include "functions.h"
 
 int main(int argc, char** argv)
 {
+	stc_setup_config setupConfigObj;
+
 	if (argc != 2) {
 		fprintf(stderr, "Please, specify input setup config XML file.\n");
 		return 1;
 	}
 
-	stc_setup_config obj1;
-	InitStcSetupConfig(&obj1);
+	InitStcSetupConfig(&setupConfigObj);
+	ImportXML(&setupConfigObj, argv[1]);
+	DumpStcSetupConfig(&setupConfigObj);
 
-	ImportXML(&obj1, argv[1]);
-
-	DumpStcSetupConfig(&obj1);
-
-	DestructStcSetupConfig(&obj1);
+	DestructStcSetupConfig(&setupConfigObj);
 
 	return 0;
 }

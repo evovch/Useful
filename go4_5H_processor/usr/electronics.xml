@@ -21,6 +21,7 @@
 <elblock name="V792"	nchannels="32"	type="QDC"	vendor="CAEN"   	uniqueid=""/>
 <elblock name="V792N"	nchannels="16"	type="QDC"	vendor="CAEN"   	uniqueid=""/>
 <elblock name="V862"	nchannels="32"	type="QDC"	vendor="CAEN"   	uniqueid=""/>
+<elblock name="V560"	nchannels="16"	type="scalers"	vendor="CAEN"   	uniqueid=""/>
 
 </electronics>
 
@@ -68,8 +69,10 @@
 </detector>
 
 <detector name="Annular_telescope" id="5" classname="UserEventAnnularTele">
-	<subdetector name="ANR" nchannels="16"/>
-	<subdetector name="ANS" nchannels="16"/>
+	<subdetector  name="ANR" nchannels="16"/>
+	<subdetector name="tANR" nchannels="16"/>
+	<subdetector  name="ANS" nchannels="16"/>
+	<subdetector name="tANS" nchannels="16"/>
 </detector>
 
 <detector name="Neutron_detector" id="6" classname="UserEventNeutronDet">

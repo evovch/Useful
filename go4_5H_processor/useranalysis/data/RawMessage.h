@@ -90,6 +90,14 @@ public:
 	Int_t fValueT;
 
 	/**
+	 * From the message.
+	 * Starting from 0.
+	 * Position of the data word within the subsubevent.
+	 * Used by the CAEN scalers.
+	 */
+	Short_t fMessageIndex;
+
+	/**
 	 * From the subsubevent footer
 	 * Both CAEN and MESYTEC write some counter in the footer
 	 * though the formats are different

@@ -15,17 +15,15 @@ unlink libSetupConfigCppWrapper.so
 unlink libSetupConfigCppWrapper_rdict.pcm
 unlink libSetupConfigCppWrapper.rootmap
 
-rm -fv compile.out compile.err
-
 if [ -d "build" ]; then
 	rm -rf build/*
 fi
 
 # Cleanup analysis results ====================================================
 
-rm -fv Go4AnalysisASF.root
-rm -fv out.txt err.txt summary.txt
-rm -fv outputUnpacking.root outputMonitoring.root outputStep2.root
-rm -fv setupCfg.root
+# Remove textual output if it already exists from previous analysis runs
+if [ -d "textoutput" ]; then
+	rm -fv textoutput/*.txt
+fi
 
 echo -e "\e[1m\e[32mCleanup finished.\e[0m"

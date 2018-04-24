@@ -84,18 +84,19 @@ void UserAnalysis::Construct(TString p_outfilename, TString p_setupfilename)
 	mParams->SetInputFilename(this->GetInputFileName());
 	mParams->SetSetupConfigFilename(p_setupfilename);
 	mParams->SetOutputFilename(p_outfilename);
+	mParams->Init(); //TODO User function to perform XML import. Probably there should be a more nice way to do this.
 	AddParameter(mParams);
 
 	//TODO
-	//SetStepChecking(kFALSE); // necessary for non-subsequent mesh analysis
+	SetStepChecking(kFALSE); // necessary for non-subsequent mesh analysis
 
 	// STEP1 - source - unpacker ==================================================================
 
-	TGo4StepFactory* factoryUnpacking = new TGo4StepFactory("FactoryUnpacking");
+	TGo4StepFactory* factoryUnpacking = new TGo4StepFactory("factoryUnpacking");
 	factoryUnpacking->DefEventProcessor("UserProcUnpacking1", "UserProcUnpacking"); // object name, class name
 	factoryUnpacking->DefOutputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
 
-	TGo4AnalysisStep* stepUnpacking = new TGo4AnalysisStep("UserAnalysisStepUnpacking", factoryUnpacking);
+	TGo4AnalysisStep* stepUnpacking = new TGo4AnalysisStep("stepUnpacking", factoryUnpacking);
 
 	stepUnpacking->SetSourceEnabled(kTRUE);
 	stepUnpacking->SetProcessEnabled(kTRUE);
@@ -107,14 +108,26 @@ void UserAnalysis::Construct(TString p_outfilename, TString p_setupfilename)
 
 	AddAnalysisStep(stepUnpacking);
 
+	// STEP2 - provider - monitoring ===============================================================
+
+	TGo4StepFactory* factoryUnpackedProvider1 = new TGo4StepFactory("factoryUnpackedProvider1");
+	factoryUnpackedProvider1->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // read full raw event without partial io
+	factoryUnpackedProvider1->DefEventProcessor("UserEventUnpacking1_1","MeshProviderProc"); // processorname must match name of input event + "_"
+	factoryUnpackedProvider1->DefOutputEvent("Dummy", "MeshDummyEvent");
+	TGo4AnalysisStep* stepUnpackedProvider1 = new TGo4AnalysisStep("stepUnpackedProvider1", factoryUnpackedProvider1);
+	stepUnpackedProvider1->SetSourceEnabled(kFALSE);
+	stepUnpackedProvider1->SetStoreEnabled(kFALSE);
+	stepUnpackedProvider1->SetProcessEnabled(kTRUE);
+	AddAnalysisStep(stepUnpackedProvider1);
+
 	// STEP2 - processor - monitoring =============================================================
 
-	TGo4StepFactory* factoryMonitoring = new TGo4StepFactory("FactoryMonitoring");
-	factoryMonitoring->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
+	TGo4StepFactory* factoryMonitoring = new TGo4StepFactory("factoryMonitoring");
+	//factoryMonitoring->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
 	factoryMonitoring->DefEventProcessor("UserProcMonitoring1", "UserProcMonitoring"); // object name, class name
 	factoryMonitoring->DefOutputEvent("UserEventMonitoring1", "UserEventMonitoring"); // object name, class name
 
-	TGo4AnalysisStep* stepMonitoring = new TGo4AnalysisStep("UserAnalysisStepMonitoring", factoryMonitoring);
+	TGo4AnalysisStep* stepMonitoring = new TGo4AnalysisStep("stepMonitoring", factoryMonitoring);
 
 	stepMonitoring->SetSourceEnabled(kFALSE);
 	stepMonitoring->SetProcessEnabled(kTRUE);
@@ -126,27 +139,39 @@ void UserAnalysis::Construct(TString p_outfilename, TString p_setupfilename)
 
 	AddAnalysisStep(stepMonitoring);
 
-	// STEP2 - processor - step2 ==================================================================
-/*
-//TODO
-	TGo4StepFactory* factoryStep2 = new TGo4StepFactory("FactoryStep2");
-	factoryStep2->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
-	factoryStep2->DefEventProcessor("UserProcStep2_1", "UserProcStep2"); // object name, class name
-	factoryStep2->DefOutputEvent("UserEventStep2_1", "UserEventStep2"); // object name, class name
+	// STEP2 - provider - learn ===================================================================
 
-	TGo4AnalysisStep* step2 = new TGo4AnalysisStep("UserAnalysisStep2", factoryStep2);
+	TGo4StepFactory* factoryUnpackedProvider2 = new TGo4StepFactory("factoryUnpackedProvider2");
+	factoryUnpackedProvider2->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // read full raw event without partial io
+	factoryUnpackedProvider2->DefEventProcessor("UserEventUnpacking1_2","MeshProviderProc"); // processorname must match name of input event + "_"
+	factoryUnpackedProvider2->DefOutputEvent("Dummy", "MeshDummyEvent");
+	TGo4AnalysisStep* stepUnpackedProvider2 = new TGo4AnalysisStep("stepUnpackedProvider2", factoryUnpackedProvider2);
+	stepUnpackedProvider2->SetSourceEnabled(kFALSE);
+	stepUnpackedProvider2->SetStoreEnabled(kFALSE);
+	stepUnpackedProvider2->SetProcessEnabled(kTRUE);
+	AddAnalysisStep(stepUnpackedProvider2);
 
-	step2->SetSourceEnabled(kFALSE);
-	step2->SetProcessEnabled(kTRUE);
-	step2->SetErrorStopEnabled(kTRUE);
+	// STEP2 - processor - learn ==================================================================
 
-	TGo4FileStoreParameter* storeStep2 = new TGo4FileStoreParameter("outputStep2.root");
-	step2->SetEventStore(storeStep2);
-	step2->SetStoreEnabled(kTRUE);
+	TGo4StepFactory* factoryLearn = new TGo4StepFactory("factoryLearn");
+	//factoryLearn->DefInputEvent("UserEventUnpacking1", "UserEventUnpacking"); // object name, class name
+	factoryLearn->DefEventProcessor("UserProcLearn1", "UserProcLearn"); // object name, class name
+	factoryLearn->DefOutputEvent("UserEventLearn1", "UserEventLearn"); // object name, class name
 
-	AddAnalysisStep(step2);
-*/
+	TGo4AnalysisStep* stepLearn = new TGo4AnalysisStep("stepLearn", factoryLearn);
+
+	stepLearn->SetSourceEnabled(kFALSE);
+	stepLearn->SetProcessEnabled(kTRUE);
+	stepLearn->SetErrorStopEnabled(kTRUE);
+
+	TGo4FileStoreParameter* storeLearn = new TGo4FileStoreParameter("outputLearn.root");
+	stepLearn->SetEventStore(storeLearn);
+	stepLearn->SetStoreEnabled(kFALSE); //TODO enable/disable
+
+	AddAnalysisStep(stepLearn);
+
 	// ============================================================================================
+
 }
 
 Int_t UserAnalysis::UserPreLoop(void)

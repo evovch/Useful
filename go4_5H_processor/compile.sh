@@ -44,7 +44,4 @@ ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper.so
 ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper_rdict.pcm
 ln -s build/setupconfigcppwrapper/libSetupConfigCppWrapper.rootmap
 
-# TODO get rid of the test programs in the end
-#g++ setupconfig_test.cpp -o test.exe -I`root-config --incdir` -std=c++11 -L. -lSetupConfig `root-config --libs`
-
 echo -e "\e[1m\e[32mCompilation finished.\e[0m"

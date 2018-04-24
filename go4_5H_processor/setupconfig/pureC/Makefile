@@ -1,5 +1,7 @@
 COMPILER=cc
-FLAGS=-Wall -Wextra -Wpedantic -g
+
+FLAGS=-g -std=c89
+FLAGS+=-Wall -Wextra -Wpedantic
 
 test: main.o functions.o xmlparsing.o
 	$(COMPILER) $(FLAGS) $^ -o $@

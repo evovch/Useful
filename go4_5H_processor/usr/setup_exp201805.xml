@@ -36,6 +36,8 @@
 
 <crate name="VME0" procid="100">
 
+	<mapping addr="0"	elblock="V560"	startelectrch="0"	nelectrch="16"	detector="scalers"	startdetch="0"	folder=""/>
+
 	<mapping addr="5"	elblock="mADC"	startelectrch="0"	nelectrch="32"	detector="SQX_L"	startdetch="0"	folder="Left_telescope"/>
 	<mapping addr="6"	elblock="mADC"	startelectrch="0"	nelectrch="32"	detector="SQX_R"	startdetch="0"	folder="Right_telescope"/>
 

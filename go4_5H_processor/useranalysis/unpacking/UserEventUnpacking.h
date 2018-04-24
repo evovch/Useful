@@ -59,7 +59,10 @@ public: //TODO should be private. Made public for ER
 	 */
 	Short_t fCAMAC[8];
 
-	UInt_t fTrigger;
+	/**
+	 * This data field duplicates the trigger which is written with each raw message
+	 */
+	Short_t fTrigger;
 
 	ClassDef(UserEventUnpacking, 1);
 };

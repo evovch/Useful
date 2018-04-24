@@ -9,6 +9,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 set(ROOTCLING_HEADERS UserAnalysis.h
                       UserParameter.h
+                      mesh/MeshDummyEvent.h
+                      mesh/MeshProviderProc.h
                       unpacking/UserEventUnpacking.h
                       unpacking/UserProcUnpacking.h
                       unpacking/UserHistosUnpacking.h
@@ -24,6 +26,8 @@ set(ROOTCLING_HEADERS UserAnalysis.h
 
                       monitoring/UserProcMonitoring.h
                       monitoring/UserHistosMonitoring.h
+                      learn/UserEventLearn.h
+                      learn/UserProcLearn.h
                       step2/UserEventStep2.h
                       step2/UserProcStep2.h
                       data/BeamDetMWPCDigi.h
@@ -39,6 +43,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(SOURCE_LIB G__UserAnalysis.cxx
                UserAnalysis.cxx
                UserParameter.cxx
+               mesh/MeshDummyEvent.cxx
+               mesh/MeshProviderProc.cxx
                unpacking/UserEventUnpacking.cxx
                unpacking/UserProcUnpacking.cxx
                unpacking/UserHistosUnpacking.cxx
@@ -54,6 +60,8 @@ set(SOURCE_LIB G__UserAnalysis.cxx
 
                monitoring/UserProcMonitoring.cxx
                monitoring/UserHistosMonitoring.cxx
+               learn/UserEventLearn.cxx
+               learn/UserProcLearn.cxx
                step2/UserEventStep2.cxx
                step2/UserProcStep2.cxx
                data/BeamDetMWPCDigi.cxx

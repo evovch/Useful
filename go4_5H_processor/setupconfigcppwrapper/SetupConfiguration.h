@@ -24,6 +24,8 @@ class SetupConfiguration : public TObject
 {
 public:
 	//TODO restrict default constructor SetupConfiguration()
+	// Default constructor is required to enable ROOT streaming?
+	SetupConfiguration();
 	SetupConfiguration(const char* p_filename);
 	virtual ~SetupConfiguration();
 

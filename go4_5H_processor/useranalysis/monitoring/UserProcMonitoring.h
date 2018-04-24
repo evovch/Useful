@@ -9,8 +9,6 @@
 
 #include <TGo4EventProcessor.h> // mother class
 
-#include "setupconfigcppwrapper/SetupConfiguration.h"
-
 class TGo4EventElement;
 
 class UserEventMonitoring;
@@ -35,9 +33,19 @@ private: // methods
 	void ProcessMessageUniversal(const RawMessage* p_message);
 
 	/**
+	 * Process scaler message
+	 */
+	void ProcessMessageScaler(const RawMessage* p_message);
+
+	/**
 	 * Process raw CAMAC words assuming they have been produced by MWPCs
 	 */
 	void ProcessCAMACmwpcWords(const UserEventUnpacking* p_inputEvent);
+
+	/**
+	 *
+	 */
+	void FillHistograms(void) const;
 
 private: // data members
 	/**
@@ -59,9 +67,9 @@ private: // data members
 	UserHistosMonitoring* fHistoMan;
 
 	/**
-	 * Setup configuration object.
+	 * Summary stream
 	 */
-	SetupConfiguration* fSetupConfiguration;
+	FILE* fFileSummary;
 
 	ClassDef(UserProcMonitoring, 1);
 };

@@ -29,6 +29,7 @@ RawMessage::RawMessage() :
 	fChannel(-1),
 	fValueQA(-1),
 	fValueT(-1),
+	fMessageIndex(-1),
 	fSubsubeventFooterCounter(-1)
 {
 }
@@ -58,6 +59,7 @@ RawMessage::RawMessage(const RawMessage &obj) :
 	fChannel(obj.fChannel),
 	fValueQA(obj.fValueQA),
 	fValueT(obj.fValueT),
+	fMessageIndex(obj.fMessageIndex),
 	fSubsubeventFooterCounter(obj.fSubsubeventFooterCounter)
 {
 }
@@ -75,7 +77,8 @@ void RawMessage::Dump(bool p_printEndl) const
 	     << "module=" << fSubsubeventModule << "\t"
 	     << "ch=" << fChannel << "\t"
 	     << "valQA=" << fValueQA << "\t"
-	     << "valT=" << fValueT;
+	     << "valT=" << fValueT << "\t"
+	     << "pos=" << fMessageIndex;
 	if (p_printEndl) cerr << endl;
 }
 
@@ -100,6 +103,7 @@ void RawMessage::ExtDump(bool p_printEndl) const
 	     << "\tchannel=" << fChannel << endl
 	     << "\tvalueQA=" << fValueQA << endl
 	     << "\tvalueT=" << fValueT << endl
+	     << "\tpos=" << fMessageIndex << endl
 	     << "\tfooter_counter=" << fSubsubeventFooterCounter << endl;
 	if (p_printEndl) cerr << endl;
 }

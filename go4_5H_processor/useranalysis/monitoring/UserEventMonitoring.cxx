@@ -73,6 +73,13 @@ void UserEventMonitoring::Clear(Option_t* t)
 	}
 
 	// Beam detector - MWPC
+	//TODO temporary solution
+	nx1=0; ny1=0; nx2=0; ny2=0;
+	for (UInt_t i=0; i<32; i++) {
+		x1[i]=0; y1[i]=0; x2[i]=0; y2[i]=0;
+	}
+	rx1=0; ry1=0; rx2=0; ry2=0;
+	//TODO end of temporary solution
 	// MWPC[]
 	for (UInt_t i=0; i<4; i++) {
 		tMWPC[i] = 0;
@@ -81,7 +88,10 @@ void UserEventMonitoring::Clear(Option_t* t)
 	// Trigger
 	trigger = 0;
 
-	// Scalers?
+	// Scalers
+	for (UInt_t i=0; i<16; i++) {
+		scaler[i] = 0;
+	}
 
 	// Machine time
 
@@ -128,21 +138,26 @@ void UserEventMonitoring::Dump(void) const
 	cerr <<"       :"; for (UInt_t i=0; i<16; i++) { cerr << "\t" <<neutTDC[i+16]; } cerr << endl;
 
 	// Beam detector - ToF
-	cerr << "    F3:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<      F3[i]; } cerr << endl;
-	cerr << "   tF3:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<     tF3[i]; } cerr << endl;
-	cerr << "    F5:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<      F5[i]; } cerr << endl;
-	cerr << "   tF5:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<     tF5[i]; } cerr << endl;
-	cerr << "    F6:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<      F6[i]; } cerr << endl;
-	cerr << "   tF6:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<     tF6[i]; } cerr << endl;
+	cerr << "    F3:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<     F3[i]; } cerr << endl;
+	cerr << "   tF3:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<    tF3[i]; } cerr << endl;
+	cerr << "    F5:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<     F5[i]; } cerr << endl;
+	cerr << "   tF5:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<    tF5[i]; } cerr << endl;
+	cerr << "    F6:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<     F6[i]; } cerr << endl;
+	cerr << "   tF6:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<    tF6[i]; } cerr << endl;
 
 	// Beam detector - MWPC
+	//TODO temporary solution
+	cerr << " nMWPC:"; cerr << "nx1=" << (UInt_t)nx1 << "\t" << "ny1=" << (UInt_t)ny1 << "\t"
+	                        << "nx2=" << (UInt_t)nx2 << "\t" << "ny2=" << (UInt_t)ny2 << endl;
+	//TODO end of temporary solution
 	// MWPC[]
 	cerr << " tMWPC:"; for (UInt_t i=0; i<4; i++)  { cerr << "\t" <<   tMWPC[i]; } cerr << endl;
 
 	// Trigger
-	cerr << "  trig:" << trigger << endl;
+	cerr << "  trig:"; cerr << trigger << endl;
 
-	// Scalers?
+	// Scalers
+	cerr << "scaler:"; for (UInt_t i=0; i<16; i++) { cerr << "\t" <<  scaler[i]; } cerr << endl;
 
 	// Machine time
 }
@@ -189,6 +204,12 @@ UShort_t* UserEventMonitoring::GetFieldByName(TString p_name)
 	// Beam detector - MWPC
 	//else if (p_name ==  "MWPC")     { return  MWPC; }
 	else if (p_name == "tMWPC")     { return tMWPC; }
+
+	// Trigger
+	////// else if (p_name == "trigger")   { return &trigger; } // We dont' need this
+
+	// Scalers
+	////// else if (p_name == "scaler")    { return scaler; } // We dont' need this
 
 	else if (p_name == "Ignore") {
 		cerr << "[WARN  ] Acquiring en event data field '" << p_name << "' which does not exist." << endl;

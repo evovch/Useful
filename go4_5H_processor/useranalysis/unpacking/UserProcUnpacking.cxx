@@ -43,9 +43,10 @@ UserProcUnpacking::UserProcUnpacking(const char* name) :
 	fNunknownWords(0)
 {
 	fHistoMan = new UserHistosUnpacking();
-	fFileSummary = fopen("summary.txt", "w");
+	fFileSummary = fopen("textoutput/summaryUnpacking.txt", "w");
 	if (fFileSummary == NULL) {
 		//TODO error
+		cerr << "[WARN  ] " << "Could not open output text summary file '" << "summaryUnpacking.txt" << "'" << endl;
 	}
 }
 
@@ -138,6 +139,7 @@ void UserProcUnpacking::ProcessEventHeader(TGo4MbsEvent* p_event)
 	fCurMessage.fEventDummy = p_event->GetDummy();
 	fCurMessage.fEventTrigger = p_event->GetTrigger();
 	fCurMessage.fEventCount = p_event->GetCount();
+	fCurrentOutputEvent->fTrigger = p_event->GetTrigger();
 
 	#ifdef PRINTDEBUGINFO
 	cerr << "[DEBUG ] Event header:" << "\t"
@@ -162,6 +164,7 @@ void UserProcUnpacking::FinishEvent()
 	fCurMessage.fEventDummy = -1;
 	fCurMessage.fEventTrigger = -1;
 	fCurMessage.fEventCount = -1;
+	////// fCurrentOutputEvent->fTrigger = -1; // ONE SHOULD NOT DO IT! Opposed to the current message, the output event has not been emitted yet.
 	#endif // DORESET
 }
 
@@ -497,6 +500,8 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 	cerr << "         -----------------------------------------------------------" << endl;
 	#endif
 
+	Int_t v_dataWordsCounter = 0;
+
 	fCurMessage.fSubsubeventVendor = (Char_t)support::enu_VENDOR::MESYTEC; // MESYTEC=1 //TODO explicit cast?
 
 	for (Int_t v_cursor=0; v_cursor<p_size; v_cursor++) {
@@ -580,6 +585,7 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			fCurMessage.fChannel = v_channel;
 			fCurMessage.fValueQA = v_valueQA;
 			fCurMessage.fValueT = v_valueT;
+			fCurMessage.fMessageIndex = v_dataWordsCounter;
 
 			this->PushOutputRawMessage();
 
@@ -588,7 +594,11 @@ void UserProcUnpacking::ProcessSubsubevent_MESYTEC(Int_t p_size, const Int_t* p_
 			fCurMessage.fChannel = -1;
 			fCurMessage.fValueQA = -1;
 			fCurMessage.fValueT = -1;
+			fCurMessage.fMessageIndex = -1;
 			#endif // DORESET
+
+			// Just count data words. This counter is pushed into the output raw message.
+			v_dataWordsCounter++;
 
 			if (!fInsidePackage) {
 				cerr << "[ERROR ] MESYTEC data word found not between the header and the footer." << endl;
@@ -625,6 +635,8 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 	#endif
 
 	fCurMessage.fSubsubeventVendor = (Char_t)support::enu_VENDOR::CAEN; // CAEN=2 //TODO explicit cast?
+
+	Int_t v_dataWordsCounter = 0;
 
 	for (Int_t v_cursor=0; v_cursor<p_size; v_cursor++) {
 
@@ -717,8 +729,10 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 			fCurMessage.fChannel = v_channel;
 			fCurMessage.fValueQA = v_value;
 			fCurMessage.fValueT = v_value;
+			fCurMessage.fMessageIndex = v_dataWordsCounter;
 
 			//FIXME костыль для machine time
+			// Не стоит пытаться обрезать 2 бита чтобы упихнуть 32-битное время в доступные 30 бит счётчика футера.
 			/*if (v_geo == 30) {
 				fCurMessage.mChannel = -1;
 				fCurMessage.mValueQA = -1;
@@ -733,7 +747,11 @@ void UserProcUnpacking::ProcessSubsubevent_CAEN(Int_t p_size, const Int_t* p_sta
 			fCurMessage.fChannel = -1;
 			fCurMessage.fValueQA = -1;
 			fCurMessage.fValueT = -1;
+			fCurMessage.fMessageIndex = -1;
 			#endif // DORESET
+
+			// Just count data words. This counter is pushed into the output raw message.
+			v_dataWordsCounter++;
 
 			if (!fInsidePackage) {
 				cerr << "[ERROR ] CAEN data word found not between the header and the footer." << endl;

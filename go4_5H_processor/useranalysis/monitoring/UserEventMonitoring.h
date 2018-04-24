@@ -64,12 +64,31 @@ public: //TODO should be private. Made public for ER
 
 	// Beam detector - MWPC
 	// MWPC[]
+	//TODO temporary solution
+	UChar_t nx1; // number of fired wires
+	UChar_t ny1; // number of fired wires
+	UChar_t nx2; // number of fired wires
+	UChar_t ny2; // number of fired wires
+	UChar_t x1[32]; // [nx1] indices of the fired wires
+	UChar_t y1[32]; // [ny1] indices of the fired wires
+	UChar_t x2[32]; // [nx2] indices of the fired wires
+	UChar_t y2[32]; // [ny2] indices of the fired wires
+	UInt_t rx1; // register (raw) as is has been read
+	UInt_t ry1; // register (raw) as is has been read
+	UInt_t rx2; // register (raw) as is has been read
+	UInt_t ry2; // register (raw) as is has been read
+	//TODO end of temporary solution
 	UShort_t tMWPC[4];
 
 	// Trigger
-	unsigned int trigger;
+	UInt_t trigger;
 
-	// Scalers?
+	/**
+	 * Data from V560 scalers
+	 * These data do not correspond to any specific detector
+	 * There are 16 words, each 32 bits
+	 */
+	UInt_t scaler[16];
 
 	// Machine time
 

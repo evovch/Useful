@@ -35,6 +35,8 @@ void UserEventUnpacking::Clear(Option_t* t)
 	for (UInt_t i=0; i<8; i++) {
 		fCAMAC[i] = 0;
 	}
+
+	fTrigger = 0;
 }
 
 void UserEventUnpacking::Dump(void) const

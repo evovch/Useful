@@ -12,8 +12,12 @@ TTree* GetTheTree(TFile* theFile, TString* treeName);
 
 TBranch* GetTheBranch(TTree* theTree, TString* branchName);
 
-void analyse(TString inFilename="outputMonitoring.root")
+//TODO specify how many events do you want to process.
+// If nEvents=0 - process all
+void analyse(TString inFilename, UInt_t nEvents = 10)
 {
+	inFilename = "/home/evovch/Downloads/FLNR_data/exp201805/run05_0016.lmd.root";
+
 	TFile* inFile = new TFile(inFilename, "READ");
 
 	if (inFile->IsZombie()) {
@@ -43,8 +47,7 @@ void analyse(TString inFilename="outputMonitoring.root")
 
 	UInt_t nEventsTotal = inBranch->GetEntries();
 
-	//TODO specify how many events do you want to process
-	UInt_t nEvents = 10; // nEventsTotal
+	if (nEvents == 0) nEvents = nEventsTotal
 
 	// Loop over the events
 	for (UInt_t iEvent=0; iEvent<nEvents; iEvent++)

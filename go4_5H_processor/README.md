@@ -43,15 +43,17 @@ You can remove all generated files by:
 
 > ./doclean.sh
 
-Note that doclean.sh removes both build result and analysis results.
+Note that doclean.sh removes both build result and textual output generate during analysis.
+Analysis results should be located outside of the repository by specifying corresponding paths in the run.sh script.
 
 
 Analysis of output root files
 =============================
 
-A ROOT macro 'analyse.C' is provided as a template to start your simple analysis by means of native ROOT. Please, follow the instructions written at the beginning of the file.
+A ROOT macro 'macros/analyse.C' is provided as a template to start your simple analysis by means of native ROOT. Please, follow the instructions written at the beginning of the file.
 
-> root -l "analyse.C(\"outputMonitoring.root\")" > out.txt 2> err.txt
+> cd macros
+> root -l "analyse.C(\"filename.lmd.root\")" > macroout.txt 2> macroerr.txt
 
 Input data structure
 ====================
@@ -104,6 +106,58 @@ A data word (32 bits) can be coming from a unit by one of the vendors - CAEN or 
 The subsubevent header is used to identify the vendor.
 The footer is used only to separate the subsubevents.
 It can be (and currently is) used to identify the length of the subsubevent.
+
+
+Project structure
+=================
+
+UserAnalysis
+------------
+
+### Unpacking
+
+The first step of the analysis. Only reads raw data and extracts raw messages without mapping them to any detector. This step is able to produce a ROOT tree with unpacked raw messages (together with raw words) to be processed by any software.
+
+### Monitoring
+
+The second step of the analysis. Looks into the setup configuration and produces a ROOT tree ...
+
+### Step2
+
+Obsolete. A very primitive analysis step for MWPC decoding. Already implemented in the 'monitoring' step together with the rest of the setup.
+
+### Learn
+
+A subsystem which allows to perform analysis of a rather small portion of the input data (TODO implement nEvents limit) and generate a summaryLearn.txt file which contains information about which procID's (crates), addressed (geo/module) and electronics channels produce data. This information can be then compared to the setup file and create warnings abount unmapped channels or mapped channels with no information.
+
+### Mesh
+
+A small subsystem which is required by Go4 and used by UserAnalysis class to create a mesh-like structure of the analysis. This allows, in particular, to split the unpacked, but not mapped data into two or more streams to be processed by separate processors (i.e. monitoring and learn).
+
+SetupConfig
+-----------
+
+A pure "C" sybsystem which performs import of the setup configuration XML. This code conforms c89 standard which makes it compilable by the RIO3 (RIO4?) VME controllers. It is planned that this subsystem will be also used to configure the DAQ hardware.
+
+SetupConfigCppWrapper
+---------------------
+
+"C++" wrapper around SetupConfig for easier usage in this project.
+
+usr
+---
+
+Directory for XML files, including setup configuration XML files.
+
+textoutput
+----------
+
+Different text output files produced by the analysis. This directory must exist in order for the usr library to word. Please, use provided script to compile/clean/run anlysis. They take care.
+
+macros
+------
+
+Directory for user macros.
 
 
 Coding convention
