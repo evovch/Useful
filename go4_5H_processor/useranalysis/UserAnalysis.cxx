@@ -171,7 +171,6 @@ void UserAnalysis::Construct(TString p_outfilename, TString p_setupfilename)
 	AddAnalysisStep(stepLearn);
 
 	// ============================================================================================
-
 }
 
 Int_t UserAnalysis::UserPreLoop(void)
