@@ -97,7 +97,6 @@ void cls_scene::SendToGPU(cls_renderer* p_rend/*, bool p_uniqueColor*/)
 
 void cls_scene::SendToGPUvAndC(cls_renderer* p_rend/*, bool p_uniqueColor*/)
 {
-
 	std::vector<cls_model*>::const_iterator iter;
 
 	// Count ======================================================================================
@@ -117,11 +116,18 @@ void cls_scene::SendToGPUvAndC(cls_renderer* p_rend/*, bool p_uniqueColor*/)
 
 	(*iter)->SendToGPUvAndC(p_rend->mVAO, p_rend->mVBO, mTotalNvertices/*, p_uniqueColor*/);
 
+	LOG(DEBUG) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << cls_logger::endl;
+
 	unsigned int v_Nvertices = (*iter)->GetNumOfVertices();
+
+	LOG(DEBUG) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << cls_logger::endl;
 
 	// Append remaining models ====================================================================
 
 	++iter;
+
+	LOG(DEBUG) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << cls_logger::endl;
+
 	for (; iter != mModels.end(); ++iter) {
 
 		LOG(DEBUG) << "Current: " << v_Nvertices << " vertices."
@@ -147,7 +153,7 @@ void cls_scene::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 
 	(*mModelsIter)->HighlightTriangle(p_index, p_VAO, p_VBO);
 
-/*
+	/*
 	unsigned int iModel = 0;
 	unsigned int v_trCounter = 0;
 	for (; mOffsetsIter != mOffsets.end(); ++mOffsetsIter) {
@@ -165,7 +171,7 @@ void cls_scene::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 		iModel++;
 		++mModelsIter; // iterator over the models goes in parallel with the iterator over the offsets
 	}
-*/
+	*/
 }
 
 void cls_scene::Draw(cls_renderer* p_rend) const

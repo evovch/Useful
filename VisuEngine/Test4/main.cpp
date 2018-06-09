@@ -18,6 +18,7 @@
 #include "aneu_interface/cls_aneu_file.h"
 
 #include "brep/cls_circle.h"
+#include "brep/cls_planar_patch.h"
 
 cls_renderer* gRenderer;
 cls_scene* gScene;
@@ -177,7 +178,7 @@ static void MouseFunc(int button, int state, int x, int y)
 			                         << "Triangle ID = " << v_triangleID
 			                         << cls_logger::endl;
 
-			//if ((unsigned int)(v_pickedColor[3]) != 255)
+			if ((unsigned int)(v_pickedColor[3]) != 255) //TODO why comment this?
 			{
 				gScene->HighlightTriangle(v_triangleID, gRenderer->mVAO, gRenderer->mVBO);
 				glutPostRedisplay();
@@ -272,7 +273,7 @@ static void IdleFunc(void)
 
 int main(int argc, char** argv)
 {
-	cls_logger::SetLevel(DEBUG2);
+	cls_logger::SetLevel(DEBUG);
 
 	glutInit(&argc, argv);
 
@@ -303,10 +304,15 @@ int main(int argc, char** argv)
 
 	gRenderer = new cls_renderer();
 	gScene = new cls_scene();
-	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 2.);
+	gCamera = new cls_camera(glm::vec3(0., 0., 0.), 100.);
+/*
+	cls_model* v_modelTest = new cls_model();
+	v_modelTest->GenerateBox();
+	gScene->AddModel(v_modelTest);
+*/
 /*
 	cls_model* v_modelDatum = new cls_model();
-	cls_stl_file* v_stlfileDatum = cls_stl_interface::Import("input/datum.stl");
+	cls_stl_file* v_stlfileDatum = cls_stl_interface::Import("input/Lobster.stl");
 	if (v_stlfileDatum != nullptr) {
 		v_stlfileDatum->BuildModel(v_modelDatum);
 		v_modelDatum->Shift(0., 0., 0.);
@@ -323,7 +329,8 @@ int main(int argc, char** argv)
 		v_model2->RotateY(90.);
 		gScene->AddModel(v_model2);
 	}
-
+*/
+/*
 	cls_model* v_model5 = new cls_model();
 	cls_stl_file* v_stlfile5 = cls_stl_interface::Import("input/humanoid.stl");
 	if (v_stlfile5 != nullptr) {
@@ -333,14 +340,33 @@ int main(int argc, char** argv)
 		gScene->AddModel(v_model5);
 	}
 */
-/*
-	cls_model* v_model3 = new cls_model();
-	cls_circle* v_circle = new cls_circle();
-	v_circle->BuildModel(v_model3);
-	v_model3->Shift(0., 0., 0.);
-	gScene->AddModel(v_model3);
-*/
 
+	cls_model* v_modelPatch = new cls_model();
+	cls_planar_patch* v_patch = new cls_planar_patch();
+	v_patch->BuildModel(v_modelPatch);
+	v_modelPatch->Shift(0., 0., 0.);
+	//v_modelPatch->Dump();
+	gScene->AddModel(v_modelPatch);
+
+
+/*
+	cls_model* v_modelCircle = new cls_model();
+	cls_circle* v_circle = new cls_circle();
+	v_circle->BuildModel(v_modelCircle);
+	v_modelCircle->Shift(0., 0., 0.);
+	v_modelCircle->Dump();
+	gScene->AddModel(v_modelCircle);
+
+	cls_model* v_modelCircle2 = new cls_model();
+	cls_circle* v_circle2 = new cls_circle();
+	v_circle2->SetRadius(30.);
+	v_circle2->SetPosition(0., 0., 40.);
+	v_circle2->BuildModel(v_modelCircle2);
+	v_modelCircle2->Shift(0., 0., 0.);
+	v_modelCircle2->Dump();
+	gScene->AddModel(v_modelCircle2);
+*/
+/*
 	cls_model* v_model4 = new cls_model();
 	cls_stl_file* v_stlfile4 = cls_stl_interface::Import("input/liver.stl");
 	if (v_stlfile4 != nullptr) {
@@ -350,7 +376,7 @@ int main(int argc, char** argv)
 		v_model4->Shift(-200., -200., -100.); // liver
 		gScene->AddModel(v_model4);
 	}
-
+*/
 /*
 	cls_model* v_model6 = new cls_model();
 	cls_stl_file* v_stlfile6 = cls_stl_interface::Import("input/Lobster.stl");
@@ -378,7 +404,6 @@ int main(int argc, char** argv)
 		gScene->AddModel(v_modelANEU);
 	}
 */
-
 
 	gScene->SendToGPU(gRenderer);
 

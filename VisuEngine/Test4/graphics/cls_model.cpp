@@ -163,16 +163,16 @@ void cls_model::GenerateAxisSystem(void)
 
 	float startX, startY, startZ;
 
-//	if (firstTime) {
+	//if (firstTime) {
 		startX = 0.f; //100. * (float)std::rand()/(float)RAND_MAX;
 		startY = 0.f; //100. * (float)std::rand()/(float)RAND_MAX;
 		startZ = 0.f; //100. * (float)std::rand()/(float)RAND_MAX;
-//		firstTime = false;
-//	} else {
-//		startX = 100. * (float)std::rand()/(float)RAND_MAX;
-//		startY = 100. * (float)std::rand()/(float)RAND_MAX;
-//		startZ = 100. * (float)std::rand()/(float)RAND_MAX;
-//	}
+	//	firstTime = false;
+	/*} else {
+		startX = 100. * (float)std::rand()/(float)RAND_MAX;
+		startY = 100. * (float)std::rand()/(float)RAND_MAX;
+		startZ = 100. * (float)std::rand()/(float)RAND_MAX;
+	}*/
 
 	float v_size = 100.f;
 
@@ -226,8 +226,10 @@ void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 
 	// Expand mVertexAndColorData by p_nPoints elements
 	stc_VandC* tmpVandC = new stc_VandC[mNumOfVertices+p_nPoints]; //// mNumOfVertices + p_nPoints
-	std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, tmpVandC);
-	delete [] mVertexAndColorData;
+	if (mVertexAndColorData != nullptr) {
+		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, tmpVandC);
+		delete [] mVertexAndColorData;
+	}
 	mVertexAndColorData = tmpVandC;
 
 	for (unsigned int i=0; i<p_nPoints; i++) {
@@ -250,8 +252,10 @@ void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 
 	// Expand mPointsIndices by p_nPoints elements
 	unsigned int* tmpPointsIndices = new unsigned int[mNumOfPoints+p_nPoints]; //// mNumOfPoints + p_nPoints
-	std::copy(mPointsIndices, mPointsIndices + mNumOfPoints, tmpPointsIndices);
-	delete [] mPointsIndices;
+	if (mPointsIndices != nullptr) {
+		std::copy(mPointsIndices, mPointsIndices + mNumOfPoints, tmpPointsIndices);
+		delete [] mPointsIndices;
+	}
 	mPointsIndices = tmpPointsIndices;
 
 	// Add new indices
@@ -275,8 +279,10 @@ void cls_model::AppendWires(unsigned int p_nWires, unsigned int* p_array)
 
 	// Expand mWireIndices by p_nWires*2 elements
 	unsigned int* tmpWires = new unsigned int[mNumOfWires*2 + p_nWires*2]; //// mNumOfWires*2 + p_nWires*2
-	std::copy(mWireIndices, mWireIndices + mNumOfWires*2, tmpWires);
-	delete [] mWireIndices;
+	if (mWireIndices != nullptr) {
+		std::copy(mWireIndices, mWireIndices + mNumOfWires*2, tmpWires);
+		delete [] mWireIndices;
+	}
 	mWireIndices = tmpWires;
 
 	for (unsigned int i=0; i<p_nWires*2; i++) {
@@ -290,7 +296,6 @@ void cls_model::AppendWires(unsigned int p_nWires, unsigned int* p_array)
 
 void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array)
 {
-
 	LOG(DEBUG) << "before: mNumOfTriangles=" << mNumOfTriangles << cls_logger::endl;
 	LOG(DEBUG) << "parameter: p_nTriangles=" << p_nTriangles << cls_logger::endl;
 
@@ -298,17 +303,31 @@ void cls_model::AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array
 
 	// Expand mTriangleIndices by p_nTriangles*3 elements
 	unsigned int* tmpTriangles = new unsigned int[mNumOfTriangles*3 + p_nTriangles*3]; //// mNumOfTriangles*3 + p_nTriangles*3
-	std::copy(mTriangleIndices, mTriangleIndices + mNumOfTriangles*3, tmpTriangles);
-	delete [] mTriangleIndices; //TODO potential problem. If there were no triangles before....
+	if (mTriangleIndices != nullptr) {
+		std::copy(mTriangleIndices, mTriangleIndices + mNumOfTriangles*3, tmpTriangles);
+		delete [] mTriangleIndices; //TODO potential problem. If there were no triangles before....
+	}
 	mTriangleIndices = tmpTriangles;
 
 	for (unsigned int i=0; i<p_nTriangles*3; i++) {
-		mTriangleIndices[mNumOfTriangles*3+i] = p_array[i]; //TODO fix
+		mTriangleIndices[mNumOfTriangles*3 + i] = p_array[i]; //TODO fix
 	}
 
 	mNumOfTriangles += p_nTriangles;
 
 	LOG(DEBUG) << "after: mNumOfTriangles=" << mNumOfTriangles << cls_logger::endl;
+}
+
+void cls_model::SetVertexColor(unsigned int p_vertexIndex, float p_r, float p_g, float p_b)
+{
+	//CHECK
+	if (p_vertexIndex >= mNumOfVertices) {
+		LOG(WARNING) << "Trying to set the color to a vertex out of vertices array bounds." << cls_logger::endl;
+		return;
+	}
+	mVertexAndColorData[p_vertexIndex].c[0] = p_r;
+	mVertexAndColorData[p_vertexIndex].c[1] = p_g;
+	mVertexAndColorData[p_vertexIndex].c[2] = p_b;
 }
 
 //TODO check
@@ -334,8 +353,6 @@ void cls_model::PrepareUniqueColors(unsigned int p_vertOffset) const
 		            << cls_logger::endl;
 
 		IntToColorUnique(v_fullIndex, &mVertexAndColorData[v_vertexIndex+0]);
-		IntToColorUnique(v_fullIndex, &mVertexAndColorData[v_vertexIndex+1]); // This is redundant, only the first vertex is enough
-		IntToColorUnique(v_fullIndex, &mVertexAndColorData[v_vertexIndex+2]); // This is redundant, only the first vertex is enough
 	}
 
 	mUniqueColorPrepared = true;
@@ -346,20 +363,20 @@ void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 	//TODO test this method
 
 	unsigned int v_vertexIndex0 = mTriangleIndices[p_index*3+0];
-/*	unsigned int v_vertexIndex1 = mTriangleIndices[p_index*3+1];
+	/*unsigned int v_vertexIndex1 = mTriangleIndices[p_index*3+1];
 	unsigned int v_vertexIndex2 = mTriangleIndices[p_index*3+2];*/
 
 	glm::vec4 curVertex0(mVertexAndColorData[v_vertexIndex0].v[0],
 		                 mVertexAndColorData[v_vertexIndex0].v[1],
 		                 mVertexAndColorData[v_vertexIndex0].v[2], 1.);
-/*	glm::vec4 curVertex1(mVertexAndColorData[v_vertexIndex1].v[0],
+	/*glm::vec4 curVertex1(mVertexAndColorData[v_vertexIndex1].v[0],
 		                 mVertexAndColorData[v_vertexIndex1].v[1],
 		                 mVertexAndColorData[v_vertexIndex1].v[2], 1.);
 	glm::vec4 curVertex2(mVertexAndColorData[v_vertexIndex2].v[0],
 		                 mVertexAndColorData[v_vertexIndex2].v[1],
 		                 mVertexAndColorData[v_vertexIndex2].v[2], 1.);*/
 	glm::vec4 transformedVertex0 = mMatrix * curVertex0;
-/*	glm::vec4 transformedVertex1 = mMatrix * curVertex1;
+	/*glm::vec4 transformedVertex1 = mMatrix * curVertex1;
 	glm::vec4 transformedVertex2 = mMatrix * curVertex2;*/
 
 	stc_VandC* v_newVertexAndColorData = new stc_VandC[3];
@@ -372,7 +389,7 @@ void cls_model::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 	v_newVertexAndColorData[0].c_unique[0] = mVertexAndColorData[v_vertexIndex0].c_unique[0];
 	v_newVertexAndColorData[0].c_unique[1] = mVertexAndColorData[v_vertexIndex0].c_unique[1];
 	v_newVertexAndColorData[0].c_unique[2] = mVertexAndColorData[v_vertexIndex0].c_unique[2];
-/*	v_newVertexAndColorData[1].v[0] = transformedVertex1[0];
+	/*v_newVertexAndColorData[1].v[0] = transformedVertex1[0];
 	v_newVertexAndColorData[1].v[1] = transformedVertex1[1];
 	v_newVertexAndColorData[1].v[2] = transformedVertex1[2];
 	v_newVertexAndColorData[1].c[0] = 0.0;
@@ -468,7 +485,7 @@ void cls_model::Dump(void) const
 	if (mUniqueColorPrepared) {
 		LOG(INFO) << "mUniqueColorPrepared = true" << cls_logger::endl;
 
-/*		for (unsigned int i=0; i<mNumOfVertices; i++) {
+		/*for (unsigned int i=0; i<mNumOfVertices; i++) {
 			unsigned int v_reconstrIndex = ColorToInt(&mVandCdataUniqueColors[i]);
 			LOG(INFO) << "i=" << i << ":\t"
 		              << "x=" << mVandCdataUniqueColors[i].v[0] << "\t"
@@ -508,12 +525,15 @@ void cls_model::SendToGPUvAndC(GLuint p_VAO, GLuint p_VBO, unsigned int p_overri
 		v_VandCdataPointer = mVertexAndColorData;
 	}
 
+	LOG(DEBUG) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << cls_logger::endl;
+
 	stc_VandC* v_newVertexAndColorData;
 
 	//TODO implement correct if statement
 	//TODO do this only if the matrix is not trivial.
 	//TODO Otherwise keep the 'new' pointer pointing to the 'old' one
 	{
+		LOG(DEBUG4) << "mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
 		v_newVertexAndColorData = new stc_VandC[mNumOfVertices];
 		std::copy(v_VandCdataPointer, v_VandCdataPointer + mNumOfVertices, v_newVertexAndColorData);
 
@@ -831,6 +851,12 @@ void cls_model::DrawPoints(GLuint p_program, GLuint p_vao, GLuint p_ibo) const
 
 void cls_model::Shift(float p_x, float p_y, float p_z)
 {
+	//TODO should we do that?
+	if (p_x == 0.0f && p_y == 0.0f && p_z == 0.0f) {
+		// No need to do anything if the shift is zero
+		return;
+	}
+
 	mMatrix = glm::translate(mMatrix, glm::vec3(p_x, p_y, p_z));
 
 	LOG(DEBUG3) << "mMatrix after Shift():" << cls_logger::endl

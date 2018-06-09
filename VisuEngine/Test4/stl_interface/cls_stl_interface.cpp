@@ -48,10 +48,10 @@ cls_stl_file* cls_stl_interface::Import(const char* p_filename)
         // If it is 'solid' - a text STL file, otherwise - binary!
         if (strcmp(v_firstWord, "solid") == 0) {
             LOG(INFO) << "Input file '" << p_filename << "' identified as a text STL file." << cls_logger::endl;
-            return cls_stl_interface::ImportText(p_filename);
+            return cls_stl_interface::ImportText(p_filename); // #FF0000
         } else {
             LOG(INFO) << "Input file '" << p_filename << "' identified as a binary STL file." << cls_logger::endl;
-            return cls_stl_interface::ImportBinary(p_filename);
+            return cls_stl_interface::ImportBinary(p_filename); // #FF0000
         }
     }
 }
@@ -84,7 +84,7 @@ cls_stl_file* cls_stl_interface::ImportText(const char* p_filename)
     } else {
         yyin = v_inFile;
         cls_stl_file* v_stl_file;
-        /*int res = */yyparse(v_stl_file);
+        /*int res = */yyparse(v_stl_file); // #FF0000
         fclose(v_inFile);
         return v_stl_file;
     }

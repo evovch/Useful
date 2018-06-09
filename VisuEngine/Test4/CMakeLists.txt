@@ -52,6 +52,11 @@ include_directories(${CMAKE_SOURCE_DIR})
 add_executable(prog ${SOURCE_EXE})
 
 # ===============================================
+# Algorithms library
+
+add_subdirectory(algo)
+
+# ===============================================
 # Base
 
 add_subdirectory(base)
@@ -78,4 +83,4 @@ add_subdirectory(brep)
 
 # ===============================================
 
-target_link_libraries(prog base graphics stl_interface aneu_interface brep)
+target_link_libraries(prog algo base graphics stl_interface aneu_interface brep)

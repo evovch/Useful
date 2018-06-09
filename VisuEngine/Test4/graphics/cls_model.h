@@ -31,6 +31,8 @@ public:
 	void AppendWires(unsigned int p_nWires, unsigned int* p_array);
 	void AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array);
 
+	void SetVertexColor(unsigned int p_vertexIndex, float p_r, float p_g, float p_b);
+
 	void PrepareUniqueColors(unsigned int p_vertOffset) const;
 
 	void HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_VBO) const;

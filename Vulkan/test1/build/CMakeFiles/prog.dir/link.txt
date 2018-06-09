@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11 -g -Wall -Wextra -Wpedantic   CMakeFiles/prog.dir/main.cpp.o CMakeFiles/prog.dir/cls_VulkanRenderer.cpp.o  -o prog  -L/home/evovch/soft/VulkanSDK/1.1.73.0/x86_64/lib -lvulkan -Wl,-rpath,/home/evovch/soft/VulkanSDK/1.1.73.0/x86_64/lib 
