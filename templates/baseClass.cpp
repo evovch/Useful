@@ -17,3 +17,9 @@ baseClass<T>::~baseClass()
 {
 	cout << "baseClass destructor" << endl;
 }
+
+template <typename T>
+void baseClass<T>::method2(T param)
+{
+	this->method1(param);
+}

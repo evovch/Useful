@@ -9,6 +9,10 @@ class childClass : public baseClass<T>
 public:
 	childClass();
 	~childClass();
+
+	// Overloaded method
+	T method1(T param) const;
+
 protected:
 	T protMemChild;
 private:

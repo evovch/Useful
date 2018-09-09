@@ -7,6 +7,11 @@ class baseClass
 public:
 	baseClass();
 	~baseClass();
+
+	virtual T method1(T param) const = 0;
+
+	void method2(T param);
+
 protected:
 	T protMemBase;
 private:

@@ -20,3 +20,9 @@ childClass<T>::~childClass()
 {
 	cout << "childClass destructor" << endl;
 }
+
+template <typename T>
+T childClass<T>::method1(T param) const
+{
+	return param;
+}

@@ -9,7 +9,7 @@ prog2: main2.cpp
 	g++ $^ -o $@
 
 prog3: main3.o libClasses.so
-	g++ $^ -o $@ -L. -lClasses
+	g++ main3.o -o $@ -L. -lClasses
 
 main3.o: main3.cpp
 	g++ -c $^

@@ -1,7 +1,3 @@
-/**
- * g++ main1.cpp -o prog1
- */
-
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -13,6 +9,11 @@ class baseClass
 public:
 	baseClass();
 	~baseClass();
+
+	virtual int method1(int param) const = 0;
+
+	void method2(int param);
+
 protected:
 	int protMemBase;
 private:
@@ -34,6 +35,12 @@ baseClass::~baseClass()
 	cout << "baseClass destructor" << endl;
 }
 
+
+void baseClass::method2(int param)
+{
+	this->method1(param);
+}
+
 // ==============================================
 
 class childClass : public baseClass
@@ -41,6 +48,10 @@ class childClass : public baseClass
 public:
 	childClass();
 	~childClass();
+
+	// Overloaded method
+	int method1(int param) const;
+
 protected:
 	int protMemChild;
 private:
@@ -65,8 +76,16 @@ childClass::~childClass()
 	cout << "childClass destructor" << endl;
 }
 
+
+int childClass::method1(int param) const
+{
+	return param;
+}
+
 // ==============================================
 int main(int /*argc*/, char** /*argv*/)
 {
 	childClass obj1;
+	obj1.method1(1);
+	obj1.method2(1);
 }
