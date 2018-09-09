@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ -z ${ROOTSYS+x} ]; then
+	echo "No ROOT found! ROOTSYS is unset. Please run thisroot.sh";
+	exit;
+else
+	echo "Found ROOT" `root-config --version` "in ROOTSYS='$ROOTSYS'";
+fi
+
+if [ ! -d "build" ]; then
+	mkdir build
+fi
+#rm -rf build/*
+
+cd build
+cmake ../
+make -j
+cp -v prog ../
+cd -
