@@ -176,7 +176,7 @@ void cls_scene::HighlightTriangle(unsigned int p_index, GLuint p_VAO, GLuint p_V
 
 void cls_scene::Draw(cls_renderer* p_rend) const
 {
-	LOG(DEBUG3) << "Draw:    " << mTotalNvertices << " vertices,\t"
+	LOG(DEBUG4) << "Draw:    " << mTotalNvertices << " vertices,\t"
 	                           << mTotalNtriangles << " triangles,\t"
 	                           << mTotalNwires << " wires,\t"
 	                           << mTotalNpoints << " points."

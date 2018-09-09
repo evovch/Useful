@@ -1,6 +1,9 @@
 #ifndef SUPPORT_H
 #define SUPPORT_H
 
+// STD
+#include <cmath>
+
 // OpenGL
 #include <GL/glew.h>
 
@@ -76,5 +79,21 @@ unsigned int FourCharsToUintLE(const unsigned char* p_mem);
 /**
 */
 float FourCharsToFloat(const unsigned char* p_mem);
+
+/**
+*/
+unsigned int Factorial(unsigned int p);
+
+/**
+*/
+unsigned int BinomCoef(unsigned int n, unsigned int k);
+
+/**
+*/
+/*template <typename TYPE>
+TYPE BernsteinCoef(TYPE t, unsigned int n, unsigned int i);*/
+
+float BernsteinCoef(float t, unsigned int n, unsigned int i);
+double BernsteinCoef(double t, unsigned int n, unsigned int i);
 
 #endif // SUPPORT_H

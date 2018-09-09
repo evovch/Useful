@@ -44,14 +44,6 @@ endif()
 # set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # ===============================================
-
-set(SOURCE_EXE main.cpp)
-
-include_directories(${CMAKE_SOURCE_DIR})
-
-add_executable(prog ${SOURCE_EXE})
-
-# ===============================================
 # Algorithms library
 
 add_subdirectory(algo)
@@ -79,8 +71,33 @@ add_subdirectory(aneu_interface)
 # ===============================================
 # BREP library
 
-add_subdirectory(brep)
+add_subdirectory(brep_new)
+
+# ===============================================
+# Planar draw exe
+
+include_directories(${CMAKE_SOURCE_DIR})
+set(SOURCE_PLANAR_DRAW_EXE main_planar_draw.cpp)
+add_executable(planar_draw ${SOURCE_PLANAR_DRAW_EXE})
+target_link_libraries(planar_draw base graphics brep_new)
+
+# ===============================================
+# 3D draw exe
+
+#set(SOURCE_3D_DRAW_EXE main_3d_draw.cpp)
+#add_executable(3d_draw ${SOURCE_3D_DRAW_EXE})
+#target_link_libraries(3d_draw base graphics brep)
+
+# ===============================================
+# Test exec
+
+#add_executable(testProg main_test.cpp)
+#target_link_libraries(testProg base brep)
 
 # ===============================================
 
-target_link_libraries(prog algo base graphics stl_interface aneu_interface brep)
+#set(SOURCE_EXE main.cpp)
+#add_executable(prog ${SOURCE_EXE})
+#target_link_libraries(prog algo base graphics stl_interface aneu_interface brep)
+
+# ===============================================

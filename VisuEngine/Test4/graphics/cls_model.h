@@ -27,7 +27,8 @@ public:
 	void GenerateBox(void);
 	void GenerateAxisSystem(void);
 
-	void AppendPoints(unsigned int p_nPoints, float* p_array);
+	void AppendVertices(unsigned int p_nVertices, float* p_array, float p_R=0.7, float p_G=0.7, float p_B=0.7);
+	void AppendPoints(unsigned int p_nPoints, float* p_array, float p_R=0.7, float p_G=0.7, float p_B=0.7);
 	void AppendWires(unsigned int p_nWires, unsigned int* p_array);
 	void AppendTriangles(unsigned int p_nTriangles, unsigned int* p_array);
 

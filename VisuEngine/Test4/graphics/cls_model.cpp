@@ -23,12 +23,13 @@ cls_model::cls_model() :
 	mScene(nullptr),
 	mIndexInScene(0)
 {
+	mMatrix = glm::mat4(1.);
+
 	LOG(DEBUG3) << "mMatrix at cls_model construction:" << cls_logger::endl
 		        << "\t\t" << mMatrix[0][0] << " " << mMatrix[0][1] << " " << mMatrix[0][2] << " " << mMatrix[0][3] << cls_logger::endl
 		        << "\t\t" << mMatrix[1][0] << " " << mMatrix[1][1] << " " << mMatrix[1][2] << " " << mMatrix[1][3] << cls_logger::endl
 		        << "\t\t" << mMatrix[2][0] << " " << mMatrix[2][1] << " " << mMatrix[2][2] << " " << mMatrix[2][3] << cls_logger::endl
 		        << "\t\t" << mMatrix[3][0] << " " << mMatrix[3][1] << " " << mMatrix[3][2] << " " << mMatrix[3][3] << cls_logger::endl;
-	// mMatrix seems to be automatically initialized with E (diagonal unity matrix)
 
 	//this->GenerateAxisSystem();
 	//this->Dump();
@@ -52,7 +53,7 @@ void cls_model::Reset(void)
 	mNumOfWires = 0;
 	mNumOfPoints = 0;
 	mConstructed = false;
-	mMatrix = glm::mat4();
+	mMatrix = glm::mat4(1.);
 	/*if (mVandCdataUniqueColors != nullptr) { delete [] mVandCdataUniqueColors; mVandCdataUniqueColors = nullptr; }*/
 	mUniqueColorPrepared = false;
 }
@@ -217,8 +218,42 @@ void cls_model::GenerateAxisSystem(void)
 	mConstructed = true;
 }
 
-void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
+//TODO test
+void cls_model::AppendVertices(unsigned int p_nVertices, float* p_array, float p_R, float p_G, float p_B)
 {
+	LOG(DEBUG) << "before: mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
+	LOG(DEBUG) << "parameter: p_nVertices=" << p_nVertices << cls_logger::endl;
+
+	// --------------------------------------------------------------------------------------------
+
+	// Expand mVertexAndColorData by p_nVertices elements
+	stc_VandC* tmpVandC = new stc_VandC[mNumOfVertices+p_nVertices]; //// mNumOfVertices + p_nVertices
+	if (mVertexAndColorData != nullptr) {
+		std::copy(mVertexAndColorData, mVertexAndColorData + mNumOfVertices, tmpVandC);
+		delete [] mVertexAndColorData;
+	}
+	mVertexAndColorData = tmpVandC;
+
+	for (unsigned int i=0; i<p_nVertices; i++) {
+		mVertexAndColorData[mNumOfVertices+i].v[0] = p_array[i*3+0];
+		mVertexAndColorData[mNumOfVertices+i].v[1] = p_array[i*3+1];
+		mVertexAndColorData[mNumOfVertices+i].v[2] = p_array[i*3+2];
+		mVertexAndColorData[mNumOfVertices+i].c[0] = p_R;
+		mVertexAndColorData[mNumOfVertices+i].c[1] = p_G;
+		mVertexAndColorData[mNumOfVertices+i].c[2] = p_B;
+	}
+
+	mNumOfVertices += p_nVertices;
+
+	LOG(DEBUG) << "after: mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
+
+	// --------------------------------------------------------------------------------------------
+}
+
+void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array, float p_R, float p_G, float p_B)
+{
+	//TODO test
+	/*
 	LOG(DEBUG) << "before: mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
 	LOG(DEBUG) << "parameter: p_nPoints=" << p_nPoints << cls_logger::endl;
 
@@ -244,6 +279,9 @@ void cls_model::AppendPoints(unsigned int p_nPoints, float* p_array)
 	mNumOfVertices += p_nPoints;
 
 	LOG(DEBUG) << "after: mNumOfVertices=" << mNumOfVertices << cls_logger::endl;
+	*/
+
+	this->AppendVertices(p_nPoints, p_array, p_R, p_G, p_B);
 
 	// --------------------------------------------------------------------------------------------
 

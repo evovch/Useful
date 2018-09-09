@@ -4,15 +4,17 @@
 #include <cstdio>
 
 // GLM
-#include "glm/gtx/vector_angle.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/vector_angle.hpp"
 
 // OpenGL
 #include <GL/glut.h>
 
 // Project
 #include "cls_renderer.h"
+#include "base/cls_logger.h"
 
 cls_camera::cls_camera(glm::vec3 p_center, float p_radius) :
     mDefCenter(p_center), mDefRadius(p_radius)
@@ -41,7 +43,11 @@ void cls_camera::Reset(void)
     this->SetParallelBoxSize(mDefRadius*1.2f);
     this->SetParallelBoxDepth(mDefRadius*1.2f);
 
-    mQua = glm::quat();
+    //FIXME
+    //               w   x   y   z
+    mQua = glm::quat(0., 0., 0., 1.);
+
+    fprintf(stderr, "QUATERNION: x=%0.6f\ty=%0.6f\tz=%0.6f\tw=%0.6f\n", mQua.x, mQua.y, mQua.z, mQua.w);
 
     //this->SendCamToGPU();
 }
@@ -113,6 +119,14 @@ void cls_camera::Rotate(glm::vec3 p_curLocalDir, glm::vec3 p_startLocalDir)
 glm::mat3 cls_camera::GetRotM(void) const
 {
     glm::mat3 v_M = glm::mat3_cast(mQua);
+
+//TODO
+    LOG(DEBUG4) << "v_M:" << cls_logger::endl
+                << "\t\t" << v_M[0][0] << " " << v_M[0][1] << " " << v_M[0][2] << cls_logger::endl
+                << "\t\t" << v_M[1][0] << " " << v_M[1][1] << " " << v_M[1][2] << cls_logger::endl
+                << "\t\t" << v_M[2][0] << " " << v_M[2][1] << " " << v_M[2][2] << cls_logger::endl;
+//TODO
+
     return v_M;
 }
 
@@ -128,12 +142,18 @@ glm::mat4 cls_camera::GetModelToCamera(void) const
     v_modelToCamera[0].x = v_modelToCamera3x3[0].x;
     v_modelToCamera[0].y = v_modelToCamera3x3[0].y;
     v_modelToCamera[0].z = v_modelToCamera3x3[0].z;
+    v_modelToCamera[0].w = 0.0f;
     v_modelToCamera[1].x = v_modelToCamera3x3[1].x;
     v_modelToCamera[1].y = v_modelToCamera3x3[1].y;
     v_modelToCamera[1].z = v_modelToCamera3x3[1].z;
+    v_modelToCamera[1].w = 0.0f;
     v_modelToCamera[2].x = v_modelToCamera3x3[2].x;
     v_modelToCamera[2].y = v_modelToCamera3x3[2].y;
     v_modelToCamera[2].z = v_modelToCamera3x3[2].z;
+    v_modelToCamera[2].w = 0.0f;
+    v_modelToCamera[3].x = 0.0f;
+    v_modelToCamera[3].y = 0.0f;
+    v_modelToCamera[3].z = 0.0f;
     v_modelToCamera[3].w = 1.0f;
 
     v_modelToCamera = glm::translate(v_modelToCamera, -(this->GetLookPt()) + v_gshift);

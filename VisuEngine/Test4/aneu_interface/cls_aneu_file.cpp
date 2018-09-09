@@ -3,12 +3,25 @@
 // Project
 #include "graphics/cls_model.h"
 
-cls_aneu_file::cls_aneu_file()
+cls_aneu_file::cls_aneu_file() :
+	mNnodes(0),
+	mNelements(0),
+	mNtriangles(0),
+	mNodes(nullptr),
+	mElements(nullptr),
+	mTriangles(nullptr),
+	mTriangAttr(nullptr)
 {
 }
 
 cls_aneu_file::~cls_aneu_file()
 {
+	//TODO check with cls_aneu_interface
+	
+	if (mNodes) { delete [] mNodes; mNodes = nullptr; }
+	if (mElements) { delete [] mElements; mElements = nullptr; }
+	if (mTriangles) { delete [] mTriangles; mTriangles = nullptr; }
+	if (mTriangAttr) { delete [] mTriangAttr; mTriangAttr = nullptr; }
 }
 
 void cls_aneu_file::Export(std::string p_filename) const
@@ -17,6 +30,7 @@ void cls_aneu_file::Export(std::string p_filename) const
 
 void cls_aneu_file::BuildModel(cls_model* p_model) const
 {
+	//TODO develop further
 	unsigned int v_nWires = mNtriangles*3;
 	unsigned int* v_wires = new unsigned int[v_nWires*2];
 

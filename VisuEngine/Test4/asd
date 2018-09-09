@@ -1,8 +1,24 @@
 #!/bin/bash
 
+if [ ! -d "build" ]; then
+	mkdir build
+fi
+#rm -rf build/*
+
+#if [ ! -d "report" ]; then
+#	mkdir report
+#fi
+#rm -f report/*
+
+#cppcheck --enable=all --inconclusive --xml . > report/cppcheck1.out 2> report/report1.xml
+#cppcheck-htmlreport --file=report/report1.xml --report-dir=report --source-dir=.
+
 cd build
-#rm -rf *
-#cmake ../
+cmake ../ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 make -j
-cp -v prog ../
+#cp -v prog ../
+cp -v planar_draw ../
+#cp -v 3d_draw ../
+#cp -v testProg ../
+#cppcheck --enable=all --inconclusive --xml --project=compile_commands.json > cppcheck2.out 2> report2.xml
 cd -

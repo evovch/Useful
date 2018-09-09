@@ -9,6 +9,9 @@ in vec4 vertex_Color[];
 // output
 out vec4 geom_Color;
 
+
+
+
 void main()
 {
     gl_Position = gl_in[0].gl_Position;

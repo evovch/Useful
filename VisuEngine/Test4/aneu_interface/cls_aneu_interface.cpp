@@ -81,5 +81,7 @@ cls_aneu_file* cls_aneu_interface::Import(const char* p_filename)
 
 	f.close();
 
+	//TODO delete [] in cls_aneu_file class???
+
 	return v_resAneuFile;
 }

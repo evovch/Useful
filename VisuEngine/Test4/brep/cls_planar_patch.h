@@ -1,3 +1,9 @@
+/**
+
+	@class cls_planar_patch
+
+*/
+
 #ifndef CLS_PLANAR_PATCH_H
 #define CLS_PLANAR_PATCH_H
 

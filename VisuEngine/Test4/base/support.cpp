@@ -115,3 +115,40 @@ float FourCharsToFloat(const unsigned char* p_mem)
 	unsigned int v_res = (p_mem[3] << 24) | (p_mem[2] << 16) | (p_mem[1] << 8) | (p_mem[0]);
 	return *((float*)&v_res); //TODO hack!
 }
+
+unsigned int Factorial(unsigned int p)
+{
+	if (p==0 || p==1) return 1;
+	unsigned int rez = 1;
+	for (unsigned int i=2; i<=p; i++) {
+		rez *= i;
+	}
+	return rez;
+}
+
+//TODO implement computing several coefficients simultaneously
+unsigned int BinomCoef(unsigned int n, unsigned int k)
+{
+	return Factorial(n) / (Factorial(k) * Factorial(n-k));
+}
+
+/*template <typename TYPE>
+TYPE BernsteinCoef(TYPE t, unsigned int n, unsigned int i)
+{
+	return BinomCoef(n, i) * mypow((static_cast<TYPE>(1.)-t), static_cast<TYPE>(n-i)) *
+	                         mypow(static_cast<TYPE>(t), static_cast<TYPE>(i));
+}*/
+
+// c++11 has overloaded pow for double and float
+
+float BernsteinCoef(float t, unsigned int n, unsigned int i)
+{
+	return BinomCoef(n, i) * pow((1.f-t), static_cast<float>(n-i)) *
+	                         pow(static_cast<float>(t), static_cast<float>(i));
+}
+
+double BernsteinCoef(double t, unsigned int n, unsigned int i)
+{
+	return BinomCoef(n, i) * pow((1.-t), static_cast<double>(n-i)) *
+	                         pow(static_cast<double>(t), static_cast<double>(i));
+}
