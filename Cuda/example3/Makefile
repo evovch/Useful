@@ -2,8 +2,8 @@ FLAGS=-g
 
 .PHONY : clean
 
-example2 : example2.cu
+example3 : example3.cu
 	nvcc ${FLAGS} $^ -o $@ --gpu-architecture=sm_50
 
 clean :
-	rm -fv example2
+	rm -fv example3
