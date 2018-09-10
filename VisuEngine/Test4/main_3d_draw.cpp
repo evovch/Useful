@@ -11,15 +11,10 @@
 #include "graphics/cls_renderer.h"
 #include "graphics/cls_scene.h"
 
-#include "stl_interface/cls_stl_file.h"
-#include "stl_interface/cls_stl_interface.h"
 
-#include "aneu_interface/cls_aneu_interface.h"
-#include "aneu_interface/cls_aneu_file.h"
-
-#include "brep/cls_circle.h"
-#include "brep/cls_planar_patch.h"
 #include "brep/cls_bezier_spline.h"
+#include "brep/cls_bezier_surface.h"
+#include "brep/cls_b_spline.h"
 
 cls_renderer* gRenderer;
 cls_scene* gScene;
@@ -104,7 +99,7 @@ static void SpecKeyFunc(int key, int /*x*/, int /*y*/)
 
 static void DisplayFunc(void)
 {
-	LOG(DEBUG3) << "main::DisplayFunc()" << cls_logger::endl;
+	LOG(DEBUG4) << "main::DisplayFunc()" << cls_logger::endl;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -116,7 +111,7 @@ static void DisplayFunc(void)
 static void MouseFunc(int button, int state, int x, int y)
 {
 	if (state == GLUT_DOWN) {
-		LOG(DEBUG3) << "main::MouseFunc(): press at x=" << x << ", y=" << y << cls_logger::endl;
+		LOG(DEBUG4) << "main::MouseFunc(): press at x=" << x << ", y=" << y << cls_logger::endl;
 
 		//// Current values
 
@@ -159,10 +154,10 @@ static void MouseFunc(int button, int state, int x, int y)
 		mMouseTracked = true;
 		mMouseMoved = false;
 	} else if (state == GLUT_UP) {
-		LOG(DEBUG3) << "main::MouseFunc(): release at x=" << x << ", y=" << y << cls_logger::endl;
+		LOG(DEBUG4) << "main::MouseFunc(): release at x=" << x << ", y=" << y << cls_logger::endl;
 
 		if (!mMouseMoved) {
-			LOG(DEBUG3) << "Click!" << cls_logger::endl;
+			LOG(DEBUG4) << "Click!" << cls_logger::endl;
 
 			// 4 is max. Exact number is store in the NUMOFCOMPONENTS macro in the cls_offscreen_renderer class
 			GLubyte v_pickedColor[4];
@@ -211,7 +206,7 @@ static void MouseMoveFunc(int x, int y)
 		if (std::isnan(v_za)) v_za2 = 0.0f; //TODO check
 		else v_za2 = v_za;
 
-		LOG(DEBUG3) << "main::MouseMoveFunc(): move at "
+		LOG(DEBUG4) << "main::MouseMoveFunc(): move at "
 		            << "x=" << x << ", y=" << y << ", "
 		            << "xa=" << v_xa << ", ya=" << v_ya
 		            << "za=" << v_za << ", v_za2=" << v_za2
@@ -252,7 +247,7 @@ static void MouseMoveFunc(int x, int y)
 
 static void ReshapeFunc(GLsizei width, GLsizei height)
 {
-	LOG(DEBUG3) << "main::ReshapeFunc(): width=" << width << ", height=" << height << cls_logger::endl;
+	LOG(DEBUG4) << "main::ReshapeFunc(): width=" << width << ", height=" << height << cls_logger::endl;
 
 	if (height == 0) {
 		height = 1;
@@ -274,7 +269,7 @@ static void IdleFunc(void)
 
 int main(int argc, char** argv)
 {
-	cls_logger::SetLevel(DEBUG);
+	cls_logger::SetLevel(DEBUG3);
 
 	glutInit(&argc, argv);
 
@@ -312,108 +307,34 @@ int main(int argc, char** argv)
 	gScene->AddModel(v_modelTest);
 
 
-	cls_model* v_modelDatum = new cls_model();
-	cls_stl_file* v_stlfileDatum = cls_stl_interface::Import("input/Lobster.stl");
-	if (v_stlfileDatum != nullptr) {
-		v_stlfileDatum->BuildModel(v_modelDatum);
-		v_modelDatum->Shift(0., 0., 0.);
-		gScene->AddModel(v_modelDatum);
-	}
-
-/*
-	cls_model* v_model2 = new cls_model();
-	cls_stl_file* v_stlfile2 = cls_stl_interface::Import("input/humanoid.stl");
-	if (v_stlfile2 != nullptr) {
-		v_stlfile2->BuildModel(v_model2);
-		v_model2->Shift(5., 0., 5.);
-		//v_model2->RotateZ(90.);
-		v_model2->RotateY(90.);
-		gScene->AddModel(v_model2);
-	}
-*/
-/*
-	cls_model* v_model5 = new cls_model();
-	cls_stl_file* v_stlfile5 = cls_stl_interface::Import("input/humanoid.stl");
-	if (v_stlfile5 != nullptr) {
-		v_stlfile5->BuildModel(v_model5);
-		v_model5->Shift(5., 0., -5.);
-		v_model5->RotateY(90.);
-		gScene->AddModel(v_model5);
-	}
-*/
-/*
-	cls_model* v_modelPatch = new cls_model();
-	cls_planar_patch* v_patch = new cls_planar_patch();
-	v_patch->BuildModel(v_modelPatch);
-	v_modelPatch->Shift(0., 0., 0.);
-	//v_modelPatch->Dump();
-	gScene->AddModel(v_modelPatch);
-*/
-
-/*
-	cls_model* v_modelCircle = new cls_model();
-	cls_circle* v_circle = new cls_circle();
-	v_circle->BuildModel(v_modelCircle);
-	v_modelCircle->Shift(0., 0., 0.);
-	v_modelCircle->Dump();
-	gScene->AddModel(v_modelCircle);
-
-	cls_model* v_modelCircle2 = new cls_model();
-	cls_circle* v_circle2 = new cls_circle();
-	v_circle2->SetRadius(30.);
-	v_circle2->SetPosition(0., 0., 40.);
-	v_circle2->BuildModel(v_modelCircle2);
-	v_modelCircle2->Shift(0., 0., 0.);
-	v_modelCircle2->Dump();
-	gScene->AddModel(v_modelCircle2);
-*/
-/*
-	cls_model* v_model4 = new cls_model();
-	cls_stl_file* v_stlfile4 = cls_stl_interface::Import("input/liver.stl");
-	if (v_stlfile4 != nullptr) {
-		v_stlfile4->BuildModel(v_model4);
-		//v_model4->Shift(0., 0., 0.);
-		//v_model4->Shift(150., 180., -150.); // shoe
-		v_model4->Shift(-200., -200., -100.); // liver
-		gScene->AddModel(v_model4);
-	}
-*/
-/*
-	cls_model* v_model6 = new cls_model();
-	cls_stl_file* v_stlfile6 = cls_stl_interface::Import("input/Lobster.stl");
-	if (v_stlfile6 != nullptr) {
-		v_stlfile6->BuildModel(v_model6);
-		//v_model6->Shift(200., 200., 0.);
-		gScene->AddModel(v_model6);
-	}
-*/
-/*
-	cls_model* v_model7 = new cls_model();
-	cls_stl_file* v_stlfile7 = cls_stl_interface::Import("input/Lobster.stl");
-	if (v_stlfile7 != nullptr) {
-		v_stlfile7->BuildModel(v_model7);
-		v_model7->Shift(200., 200., 0.);
-		gScene->AddModel(v_model7);
-	}
-*/
-
-	cls_model* v_modelANEU = new cls_model();
-	cls_aneu_file* v_aneufile = cls_aneu_interface::Import("input/3DCM(46-)_117k.aneu");
-	if (v_aneufile != nullptr) {
-		v_aneufile->BuildModel(v_modelANEU);
-		v_modelANEU->Shift(0., 0., 0.);
-		gScene->AddModel(v_modelANEU);
-	}
-
-/*
-	cls_model* v_modelSpline1 = new cls_model();
+/*	cls_model* v_modelSpline1 = new cls_model();
 	cls_bezier_spline* v_spline1 = new cls_bezier_spline();
 	v_spline1->Generate(4);
 	v_spline1->BuildModel(v_modelSpline1);
-	//v_modelSpline1->Shift(0., 0., 0.);
-	//v_modelSpline1->Dump();
 	gScene->AddModel(v_modelSpline1);
 */
+
+/*
+	cls_model* v_modelTrack = new cls_model();
+	v_spline1->TestInter(v_modelTrack);
+	gScene->AddModel(v_modelTrack);
+*/
+
+/*
+	cls_model* v_modelSurf1 = new cls_model();
+	cls_bezier_surface* v_surf1 = new cls_bezier_surface();
+	v_surf1->Generate(4, 4);
+	v_surf1->BuildModel(v_modelSurf1);
+	//v_modelSurf1->Shift(0., 0., 0.);
+	//v_modelSurf1->Dump();
+	gScene->AddModel(v_modelSurf1);
+*/
+
+	cls_model* v_modelSpline1 = new cls_model();
+	cls_b_spline* v_spline1 = new cls_b_spline();
+	v_spline1->Generate(2,3);
+	v_spline1->BuildModel(v_modelSpline1);
+	gScene->AddModel(v_modelSpline1);
 
 	gScene->SendToGPU(gRenderer);
 

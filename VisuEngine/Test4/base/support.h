@@ -3,6 +3,7 @@
 
 // STD
 #include <cmath>
+#include <string>
 
 // OpenGL
 #include <GL/glew.h>
@@ -95,5 +96,16 @@ TYPE BernsteinCoef(TYPE t, unsigned int n, unsigned int i);*/
 
 float BernsteinCoef(float t, unsigned int n, unsigned int i);
 double BernsteinCoef(double t, unsigned int n, unsigned int i);
+
+/**
+ * Assumes little endian //TODO not sure
+ * size in bytes
+ */
+std::string GetBinaryRepresentation(size_t const size, void const * const ptr);
+
+/**
+ * size in bytes
+ */
+std::string GetHexRepresentation(size_t const size, void const * const ptr);
 
 #endif // SUPPORT_H
