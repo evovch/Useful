@@ -7,11 +7,11 @@
 #include <TMultiGraph.h>
 #include <TStyle.h>
 
-#define NPOINTS 41
-#define NCOMPS 4
+#define NPOINTS 61
+#define NCOMPS 7
 #define BUFSIZE 32
 #define XMIN 0.f
-#define XMAX 3.f
+#define XMAX 4.f
 
 int main(int argc, char** argv)
 {
