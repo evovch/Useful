@@ -1,6 +1,9 @@
-set(SOURCE_LIB_BREP cls_spline_base.cpp
+set(SOURCE_LIB_BREP B_spline_basis.hpp
+                    cls_spline_base.cpp
                     cls_bezier_spline.cpp
                     cls_b_spline.cpp
+                    cls_surface_base.cpp
+                    cls_bezier_surface.cpp
                     )
 
 include_directories(${CMAKE_SOURCE_DIR})

@@ -2,6 +2,7 @@
 
 // Project
 #include "base/support.h"
+#include "B_spline_basis.hpp"
 
 template <typename STORETYPE, typename COMPUTETYPE>
 cls_b_spline<STORETYPE, COMPUTETYPE>::cls_b_spline() :
@@ -28,7 +29,7 @@ void cls_b_spline<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_order, unsign
 	for (unsigned int iCtrlPoint = 0; iCtrlPoint < this->mNcontrolPoints; iCtrlPoint++) {
 		this->mControlPoints[iCtrlPoint].mCoord[0] = 100. * ((float)std::rand()/(float)RAND_MAX - 0.5);
 		this->mControlPoints[iCtrlPoint].mCoord[1] = 100. * ((float)std::rand()/(float)RAND_MAX - 0.5);
-		this->mControlPoints[iCtrlPoint].mCoord[2] = 0.; //100. * ((float)std::rand()/(float)RAND_MAX - 0.5); //FIXME
+		this->mControlPoints[iCtrlPoint].mCoord[2] = 100. * ((float)std::rand()/(float)RAND_MAX - 0.5); //FIXME
 		this->mWeights[iCtrlPoint] = 1.; // * ((float)std::rand()/(float)RAND_MAX);
 		LOG(DEBUG3) << "x=" << this->mControlPoints[iCtrlPoint].mCoord[0] << "\t"
 		            << "y=" << this->mControlPoints[iCtrlPoint].mCoord[1] << "\t"
@@ -77,84 +78,5 @@ void cls_b_spline<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_order, unsign
 template <typename STORETYPE, typename COMPUTETYPE>
 COMPUTETYPE cls_b_spline<STORETYPE, COMPUTETYPE>::GetBasisValue(COMPUTETYPE t, unsigned int i) const
 {
-	return this->GetBasis(i, this->mOrder-1, t);
-}
-
-template <typename STORETYPE, typename COMPUTETYPE>
-COMPUTETYPE cls_b_spline<STORETYPE, COMPUTETYPE>::GetBasis(unsigned int i, unsigned int p, COMPUTETYPE u) const
-{
-	static int depth = 0;
-	depth++;
-
-	COMPUTETYPE retVal;
-
-	/*fprintf(stderr, "u=%f\n", u);
-	fprintf(stderr, "mKnots[i]=%f\n", mKnots[i]);
-	fprintf(stderr, "mKnots[i+1]=%f\n", mKnots[i+1]);
-	if (u >= static_cast<COMPUTETYPE>(mKnots[i])) {
-		fprintf(stderr, "u >= mKnots[i] ? : true\n");
-	} else {
-		fprintf(stderr, "u >= mKnots[i] ? : false\n");
-	}*/
-
-	if (p == 0) {
-
-		/*
-		COMPUTETYPE curKnot = static_cast<COMPUTETYPE>(mKnots[i]);
-		COMPUTETYPE nxtKnot = static_cast<COMPUTETYPE>(mKnots[i+1]);
-		LOG(DEBUG4) << "u   : " << GetBinaryRepresentation(sizeof(u), (void*)&u) << "\t" << u << cls_logger::endl;
-		LOG(DEBUG4) << "t[" << i << "]: " << GetBinaryRepresentation(sizeof(curKnot), (void*)&curKnot) << "\t" << curKnot << cls_logger::endl;
-		LOG(DEBUG4) << "t[" << i+1 << "]: " << GetBinaryRepresentation(sizeof(nxtKnot), (void*)&nxtKnot) << "\t" << nxtKnot << cls_logger::endl;
-		*/
-		
-		if (u >= static_cast<COMPUTETYPE>(mKnots[i]) && u < static_cast<COMPUTETYPE>(mKnots[i+1])) { //TODO <= ?
-			depth--;
-			retVal = static_cast<COMPUTETYPE>(1.);
-
-			LOG(DEBUG4) << depth << "| 1 | GetBasis(" << i << "," << p << "," << u << ") = "
-			            << retVal << cls_logger::endl;
-
-			return retVal;
-		} else {
-			depth--;
-			retVal = static_cast<COMPUTETYPE>(0.);
-
-			LOG(DEBUG4) << depth << "| 2 | GetBasis(" << i << "," << p << "," << u << ") = "
-			            << retVal << cls_logger::endl;
-
-			return retVal;
-		}
-	} else {
-		COMPUTETYPE Bi = this->GetBasis(i, p-1, u);
-		COMPUTETYPE Biplus1 = this->GetBasis(i+1, p-1, u);
-
-		depth--;
-
-		COMPUTETYPE ti = static_cast<COMPUTETYPE>(mKnots[i]);
-		COMPUTETYPE tipluspplus1 = static_cast<COMPUTETYPE>(mKnots[i+p+1]);
-
-		COMPUTETYPE denom1 = (static_cast<COMPUTETYPE>(mKnots[i+p]) - ti);
-		COMPUTETYPE denom2 = (tipluspplus1 - static_cast<COMPUTETYPE>(mKnots[i+1]));
-
-		COMPUTETYPE term1 = static_cast<COMPUTETYPE>(0.);
-		if (denom1 != static_cast<COMPUTETYPE>(0.)) {
-			term1 = (u - ti) * Bi / denom1;
-		} else {
-			//LOG(WARNING) << "Denominator = 0" << cls_logger::endl;
-		}
-
-		COMPUTETYPE term2 = static_cast<COMPUTETYPE>(0.);
-		if (denom2 != static_cast<COMPUTETYPE>(0.)) {
-			term2 = (tipluspplus1 - u) * Biplus1 / denom2;
-		} else {
-			//LOG(WARNING) << "Denominator = 0" << cls_logger::endl;
-		}
-
-		retVal = term1 + term2;
-
-		LOG(DEBUG4) << depth << "| 3 | GetBasis(" << i << "," << p << "," << u << ") = "
-		            << retVal << cls_logger::endl;
-
-		return retVal;
-	}
+	return B_spline_basis::GetBasis(i, this->mOrder-1, t, mKnots);
 }

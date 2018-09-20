@@ -84,9 +84,9 @@ target_link_libraries(planar_draw base graphics brep_new)
 # ===============================================
 # 3D draw exe
 
-#set(SOURCE_3D_DRAW_EXE main_3d_draw.cpp)
-#add_executable(3d_draw ${SOURCE_3D_DRAW_EXE})
-#target_link_libraries(3d_draw base graphics brep)
+set(SOURCE_3D_DRAW_EXE main_3d_draw.cpp)
+add_executable(3d_draw ${SOURCE_3D_DRAW_EXE})
+target_link_libraries(3d_draw base graphics brep_new)
 
 # ===============================================
 # Test exec

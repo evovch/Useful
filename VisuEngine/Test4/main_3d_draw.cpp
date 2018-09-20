@@ -1,3 +1,6 @@
+// STD
+#include <ctime>
+
 // OpenGL
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -11,10 +14,10 @@
 #include "graphics/cls_renderer.h"
 #include "graphics/cls_scene.h"
 
-
-#include "brep/cls_bezier_spline.h"
-#include "brep/cls_bezier_surface.h"
-#include "brep/cls_b_spline.h"
+#include "brep_new/cls_bezier_spline.h"
+#include "brep_new/cls_b_spline.h"
+#include "brep_new/cls_bezier_surface.h"
+//#include "brep_new/cls_b_spline.h"
 
 cls_renderer* gRenderer;
 cls_scene* gScene;
@@ -307,34 +310,30 @@ int main(int argc, char** argv)
 	gScene->AddModel(v_modelTest);
 
 
-/*	cls_model* v_modelSpline1 = new cls_model();
-	cls_bezier_spline* v_spline1 = new cls_bezier_spline();
-	v_spline1->Generate(4);
+	std::srand(std::time(nullptr));
+
+/*
+	cls_model* v_modelSpline1 = new cls_model();
+	cls_b_spline<float, float>* v_spline1 = new cls_b_spline<float, float>();
+	v_spline1->Generate(4,7);
 	v_spline1->BuildModel(v_modelSpline1);
 	gScene->AddModel(v_modelSpline1);
 */
-
 /*
-	cls_model* v_modelTrack = new cls_model();
-	v_spline1->TestInter(v_modelTrack);
-	gScene->AddModel(v_modelTrack);
+	cls_model* v_modelSpline2 = new cls_model();
+	cls_bezier_spline<float, float>* v_spline2 = new cls_bezier_spline<float, float>();
+	v_spline2->Generate(3);
+	v_spline2->BuildModel(v_modelSpline2);
+	gScene->AddModel(v_modelSpline2);
 */
 
-/*
+
 	cls_model* v_modelSurf1 = new cls_model();
-	cls_bezier_surface* v_surf1 = new cls_bezier_surface();
+	cls_bezier_surface<float, float>* v_surf1 = new cls_bezier_surface<float, float>();
 	v_surf1->Generate(4, 4);
 	v_surf1->BuildModel(v_modelSurf1);
-	//v_modelSurf1->Shift(0., 0., 0.);
-	//v_modelSurf1->Dump();
 	gScene->AddModel(v_modelSurf1);
-*/
 
-	cls_model* v_modelSpline1 = new cls_model();
-	cls_b_spline* v_spline1 = new cls_b_spline();
-	v_spline1->Generate(2,3);
-	v_spline1->BuildModel(v_modelSpline1);
-	gScene->AddModel(v_modelSpline1);
 
 	gScene->SendToGPU(gRenderer);
 
