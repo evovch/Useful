@@ -21,7 +21,6 @@ cls_bezier_surface<STORETYPE, COMPUTETYPE>::~cls_bezier_surface()
 }*/
 
 //FIXME types!
-// +
 template <typename STORETYPE, typename COMPUTETYPE>
 void cls_bezier_surface<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_orderU, unsigned int p_orderV,
 	                                                      unsigned int /*p_nCPsU*/,  unsigned int /*p_nCPsV*/)
@@ -53,14 +52,12 @@ void cls_bezier_surface<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_orderU,
 	}
 }
 
-// +
 template <typename STORETYPE, typename COMPUTETYPE>
 COMPUTETYPE cls_bezier_surface<STORETYPE, COMPUTETYPE>::GetBasisValueU(COMPUTETYPE u, unsigned int i) const
 {
 	return BernsteinCoef(u, this->mOrderU, i);
 }
 
-// +
 template <typename STORETYPE, typename COMPUTETYPE>
 COMPUTETYPE cls_bezier_surface<STORETYPE, COMPUTETYPE>::GetBasisValueV(COMPUTETYPE v, unsigned int j) const
 {

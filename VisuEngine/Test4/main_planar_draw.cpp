@@ -14,7 +14,7 @@
 #include "graphics/cls_scene.h"
 
 #include "brep_new/cls_bezier_spline.h"
-#include "brep_new/cls_b_spline.h"
+#include "brep_new/cls_b_spline_curve.h"
 
 cls_renderer* gRenderer;
 cls_scene* gScene;
@@ -254,7 +254,7 @@ int main(int argc, char** argv)
 
 
 	cls_model* v_modelSpline1 = new cls_model();
-	cls_b_spline<float, float>* v_spline1 = new cls_b_spline<float, float>();
+	cls_b_spline_curve<float, float>* v_spline1 = new cls_b_spline_curve<float, float>();
 	v_spline1->Generate(4,7);
 	v_spline1->BuildModel(v_modelSpline1);
 	gScene->AddModel(v_modelSpline1);

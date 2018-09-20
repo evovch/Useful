@@ -31,7 +31,6 @@ cls_surface_base<STORETYPE, COMPUTETYPE>::~cls_surface_base()
 	if (mCacheV) { delete [] mCacheV; mCacheV = nullptr; }
 }
 
-// +
 template <typename STORETYPE, typename COMPUTETYPE>
 void cls_surface_base<STORETYPE, COMPUTETYPE>::GetPoint(COMPUTETYPE p_paramU, COMPUTETYPE p_paramV, STORETYPE* o_coord) const
 {
@@ -54,7 +53,6 @@ void cls_surface_base<STORETYPE, COMPUTETYPE>::GetPoint(COMPUTETYPE p_paramU, CO
 	}
 }
 
-// +
 template <typename STORETYPE, typename COMPUTETYPE>
 void cls_surface_base<STORETYPE, COMPUTETYPE>::GetPoint(COMPUTETYPE p_paramU, COMPUTETYPE p_paramV, cls_cartesian_point<STORETYPE>* o_point) const
 {

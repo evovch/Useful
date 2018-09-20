@@ -1,23 +1,25 @@
-#include "cls_b_spline.h"
+#include "cls_b_spline_curve.h"
 
 // Project
 #include "base/support.h"
 #include "B_spline_basis.hpp"
 
 template <typename STORETYPE, typename COMPUTETYPE>
-cls_b_spline<STORETYPE, COMPUTETYPE>::cls_b_spline() :
-	cls_spline_base<STORETYPE, COMPUTETYPE>()
+cls_b_spline_curve<STORETYPE, COMPUTETYPE>::cls_b_spline_curve() :
+	cls_spline_base<STORETYPE, COMPUTETYPE>(),
+	mKnotsT(nullptr)
 {
 }
 
-/*template <typename STORETYPE, typename COMPUTETYPE>
-cls_b_spline<STORETYPE, COMPUTETYPE>::~cls_b_spline()
+template <typename STORETYPE, typename COMPUTETYPE>
+cls_b_spline_curve<STORETYPE, COMPUTETYPE>::~cls_b_spline_curve()
 {
-}*/
+	if (mKnotsT) { delete [] mKnotsT; mKnotsT = nullptr; }
+}
 
 //FIXME types!
 template <typename STORETYPE, typename COMPUTETYPE>
-void cls_b_spline<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_order, unsigned int p_nCPs)
+void cls_b_spline_curve<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_order, unsigned int p_nCPs)
 {
 	this->mOrder = p_order;
 	this->mNcontrolPoints = p_nCPs;
@@ -38,9 +40,9 @@ void cls_b_spline<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_order, unsign
 	}
 
 //TODO check
-	unsigned int nKnots = this->mOrder + this->mNcontrolPoints;
+	unsigned int nKnotsT = this->mOrder + this->mNcontrolPoints;
 
-	this->mKnots = new float[nKnots];
+	this->mKnotsT = new float[nKnotsT];
 
 	LOG(DEBUG3) << "Knot vector:" << cls_logger::endl;
 
@@ -50,25 +52,25 @@ void cls_b_spline<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_order, unsign
 	LOG(DEBUG3) << "bound1=" << bound1 << cls_logger::endl;
 	LOG(DEBUG3) << "bound2=" << bound2 << cls_logger::endl;
 
-	this->mKnots[0] = 0.f;
-	LOG(DEBUG3) << "1) t_" << 0 << "=" << this->mKnots[0] << cls_logger::endl;
+	this->mKnotsT[0] = 0.f;
+	LOG(DEBUG3) << "1) t_" << 0 << "=" << this->mKnotsT[0] << cls_logger::endl;
 
 	for (unsigned int j=1; j<bound1; j++) {
-		this->mKnots[j] = this->mKnots[j-1];
-		LOG(DEBUG3) << "1) t_" << j << "=" << this->mKnots[j] << cls_logger::endl;
+		this->mKnotsT[j] = this->mKnotsT[j-1];
+		LOG(DEBUG3) << "1) t_" << j << "=" << this->mKnotsT[j] << cls_logger::endl;
 	}
 	for (unsigned int j=bound1; j<bound2; j++) {
-		this->mKnots[j] = this->mKnots[j-1] + 1.f;
-		LOG(DEBUG3) << "2) t_" << j << "=" << this->mKnots[j] << cls_logger::endl;
+		this->mKnotsT[j] = this->mKnotsT[j-1] + 1.f;
+		LOG(DEBUG3) << "2) t_" << j << "=" << this->mKnotsT[j] << cls_logger::endl;
 	}
-	for (unsigned int j=bound2; j<nKnots; j++) {
-		this->mKnots[j] = this->mKnots[j-1];
-		LOG(DEBUG3) << "3) t_" << j << "=" << this->mKnots[j] << cls_logger::endl;
+	for (unsigned int j=bound2; j<nKnotsT; j++) {
+		this->mKnotsT[j] = this->mKnotsT[j-1];
+		LOG(DEBUG3) << "3) t_" << j << "=" << this->mKnotsT[j] << cls_logger::endl;
 	}
 
 	//startU = (float)(bound1);
-	this->mTmin = this->mKnots[bound1-1];
-	this->mTmax = this->mKnots[bound2-1];
+	this->mTmin = this->mKnotsT[bound1-1];
+	this->mTmax = this->mKnotsT[bound2-1];
 
 	LOG(DEBUG3) << "Tmin=" << this->mTmin << cls_logger::endl;
 	LOG(DEBUG3) << "Tmax=" << this->mTmax << cls_logger::endl;
@@ -76,7 +78,7 @@ void cls_b_spline<STORETYPE, COMPUTETYPE>::Generate(unsigned int p_order, unsign
 }
 
 template <typename STORETYPE, typename COMPUTETYPE>
-COMPUTETYPE cls_b_spline<STORETYPE, COMPUTETYPE>::GetBasisValue(COMPUTETYPE t, unsigned int i) const
+COMPUTETYPE cls_b_spline_curve<STORETYPE, COMPUTETYPE>::GetBasisValue(COMPUTETYPE t, unsigned int i) const
 {
-	return B_spline_basis::GetBasis(i, this->mOrder-1, t, mKnots);
+	return B_spline_basis::GetBasis(i, this->mOrder-1, t, mKnotsT);
 }

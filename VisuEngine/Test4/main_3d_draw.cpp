@@ -15,9 +15,9 @@
 #include "graphics/cls_scene.h"
 
 #include "brep_new/cls_bezier_spline.h"
-#include "brep_new/cls_b_spline.h"
+#include "brep_new/cls_b_spline_curve.h"
 #include "brep_new/cls_bezier_surface.h"
-//#include "brep_new/cls_b_spline.h"
+#include "brep_new/cls_b_spline_surface.h"
 
 cls_renderer* gRenderer;
 cls_scene* gScene;
@@ -314,7 +314,7 @@ int main(int argc, char** argv)
 
 /*
 	cls_model* v_modelSpline1 = new cls_model();
-	cls_b_spline<float, float>* v_spline1 = new cls_b_spline<float, float>();
+	cls_b_spline_curve<float, float>* v_spline1 = new cls_b_spline_curve<float, float>();
 	v_spline1->Generate(4,7);
 	v_spline1->BuildModel(v_modelSpline1);
 	gScene->AddModel(v_modelSpline1);
@@ -327,13 +327,19 @@ int main(int argc, char** argv)
 	gScene->AddModel(v_modelSpline2);
 */
 
-
+/*
 	cls_model* v_modelSurf1 = new cls_model();
 	cls_bezier_surface<float, float>* v_surf1 = new cls_bezier_surface<float, float>();
 	v_surf1->Generate(4, 4);
 	v_surf1->BuildModel(v_modelSurf1);
 	gScene->AddModel(v_modelSurf1);
+*/
 
+	cls_model* v_modelSurf2 = new cls_model();
+	cls_b_spline_surface<float, float>* v_surf2 = new cls_b_spline_surface<float, float>();
+	v_surf2->Generate(4, 4, 5, 5);
+	v_surf2->BuildModel(v_modelSurf2);
+	gScene->AddModel(v_modelSurf2);
 
 	gScene->SendToGPU(gRenderer);
 
