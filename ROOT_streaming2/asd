@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Cleanup
+
+if [ ! -d "build" ]; then
+	mkdir build
+else
+	rm -rfv build/*
+fi
+
+rm -fv output.root
+
+# Build
+
+cd build
+cmake ../
+make -j2
+cd ../
+
+# Create soft links
+
+#ln -s build/prog .
+#ln -s build/libUserClasses_rdict.pcm .
+#ln -s build/libUserClasses.rootmap .
+#ln -s build/libUserClasses.so .
