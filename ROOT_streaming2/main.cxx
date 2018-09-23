@@ -1,6 +1,4 @@
 #include <iostream>
-using std::cerr;
-using std::endl;
 
 #include <TFile.h>
 
@@ -12,7 +10,7 @@ int main(int /*argc*/, char** /*argv*/)
 	TFile* outFile = new TFile(outFilename, "RECREATE");
 
 	if (outFile->IsZombie()) {
-		cerr << "Error opening file " << outFilename.Data() << ". Aborting." << endl;
+		std::cerr << "Error opening file " << outFilename.Data() << ". Aborting." << std::endl;
 		return 1;
 	}
 
