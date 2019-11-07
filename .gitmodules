@@ -1,0 +1,12 @@
+[submodule "VisuEngine/external/glew"]
+	path = VisuEngine/external/glew
+	url = https://github.com/nigels-com/glew.git
+[submodule "VisuEngine/external/glm"]
+	path = VisuEngine/external/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "VisuEngine/external/FreeGLUT"]
+	path = VisuEngine/external/FreeGLUT
+	url = https://github.com/dcnieho/FreeGLUT.git
+[submodule "VisuEngine/external/libpng"]
+	path = VisuEngine/external/libpng
+	url = https://github.com/glennrp/libpng.git
