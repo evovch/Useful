@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 
     const float central_ray_dir[3] = { 0.0f, 0.0f, 1.0f };
 
-    printf("Scalar\n");
+    printf("==== Scalar ====\n");
     const float start_theta = 0.0f;
     const float delta_theta = (float)M_PI_2;
     const float step_theta = (delta_theta - start_theta) / (7.0f);
@@ -128,11 +128,19 @@ int main(int argc, char** argv)
         RTCIntersectContext ctx1;
         rtcInitIntersectContext(&ctx1);
         rtcOccluded1(scene, &ctx1, &ray1);
-        if (ray1.tfar > 0.0f) { printf("not occluded\n"); }
-        else { printf("occluded\n"); }
+        if (ray1.tfar > 0.0f) { printf("not occluded\t"); }
+        else { printf("occluded\t"); }
+
+        RTCRayHit rayhit1;
+        InitRay(rayhit1.ray, &central_ray_dir[0], theta);
+        rayhit1.hit.geomID = RTC_INVALID_GEOMETRY_ID;
+        rtcIntersect1(scene, &ctx1, &rayhit1);
+        if (rayhit1.hit.geomID == RTC_INVALID_GEOMETRY_ID) {
+            printf("not intersected\n");
+        } else { printf("intersected\n"); }
     }
 
-    printf("Vector\n");
+    printf("==== Vector ====\n");
     RTCRay8 ray8;
     InitRay8(ray8, &central_ray_dir[0]);
     const int valid[] = { -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -144,5 +152,16 @@ int main(int argc, char** argv)
         else { printf("occluded\n"); }
     }
 
+    RTCRayHit8 rayhit8;
+    InitRay8(rayhit8.ray, &central_ray_dir[0]);
+    for (int i = 0; i < 8; i++) {
+        rayhit8.hit.geomID[i] = RTC_INVALID_GEOMETRY_ID;
+    }
+    rtcIntersect8(valid, scene, &ctx8, &rayhit8);
+    for (int i = 0; i < 8; i++) {
+        if (rayhit8.hit.geomID[i] == RTC_INVALID_GEOMETRY_ID) {
+            printf("not occluded\n");
+        } else { printf("occluded\n"); }
+    }
     return 0;
 }
