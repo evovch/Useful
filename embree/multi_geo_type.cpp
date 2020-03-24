@@ -26,13 +26,27 @@ struct quad_t {
     unsigned int v2;
     unsigned int v3;
 };
-struct shape_tri_t {
+
+/*struct shape_tri_t {
     std::vector<vertex_t> _v;
     std::vector<triangle_t> _tr;
 };
 struct shape_quad_t {
     std::vector<vertex_t> _v;
     std::vector<quad_t> _q;
+};*/
+
+struct shape_tri_t {
+    const int _n_v = 4;
+    const int _n_tr = 2;
+    vertex_t _v[4];
+    triangle_t _tr[2];
+};
+struct shape_quad_t {
+    const int _n_v = 4;
+    const int _n_q = 1;
+    vertex_t _v[4];
+    quad_t _q[1];
 };
 
 void InitRay(RTCRay& ray1, const point_t& pt1, const point_t& pt2) {
@@ -66,7 +80,9 @@ void InitRay8(RTCRay8& ray8, const point_t& pt1, const point_t& pt2) {
     }
 }
 
-void generate_shape_tri(shape_tri_t& shape, const float z, const unsigned int v_offset) {
+/*void generate_shape_tri(shape_tri_t& shape, const float z, const unsigned int v_offset) {
+    shape._v.resize(4);
+    shape._tr.resize(2);
     shape._v.push_back({ -0.5f, -0.5f, z });
     shape._v.push_back({  0.5f, -0.5f, z });
     shape._v.push_back({  0.5f,  0.5f, z });
@@ -75,14 +91,32 @@ void generate_shape_tri(shape_tri_t& shape, const float z, const unsigned int v_
     shape._tr.push_back({ v_offset + 0, v_offset + 2, v_offset + 3 });
 }
 void generate_shape_quad(shape_quad_t& shape, const float z, const unsigned int v_offset) {
+    shape._v.resize(4);
+    shape._q.resize(1);
     shape._v.push_back({ -0.5f, -0.5f, z });
     shape._v.push_back({  0.5f, -0.5f, z });
     shape._v.push_back({  0.5f,  0.5f, z });
     shape._v.push_back({ -0.5f,  0.5f, z });
     shape._q.push_back({ v_offset + 0, v_offset + 1, v_offset + 2, v_offset + 3 });
+}*/
+
+void generate_shape_tri(shape_tri_t& shape, const float z, const unsigned int v_offset) {
+    shape._v[0] = { -0.5f, -0.5f, z };
+    shape._v[1] = { 0.5f, -0.5f, z };
+    shape._v[2] = { 0.5f,  0.5f, z };
+    shape._v[3] = { -0.5f,  0.5f, z };
+    shape._tr[0] = { v_offset + 0, v_offset + 1, v_offset + 2 };
+    shape._tr[1] = { v_offset + 0, v_offset + 2, v_offset + 3 };
+}
+void generate_shape_quad(shape_quad_t& shape, const float z, const unsigned int v_offset) {
+    shape._v[0] = { -0.5f, -0.5f, z };
+    shape._v[1] = { 0.5f, -0.5f, z };
+    shape._v[2] = { 0.5f,  0.5f, z };
+    shape._v[3] = { -0.5f,  0.5f, z };
+    shape._q[0] = { v_offset + 0, v_offset + 1, v_offset + 2, v_offset + 3 };
 }
 
-void submit_shape_tri(RTCDevice& device, RTCScene& scene, const shape_tri_t& shape) {
+/*void submit_shape_tri(RTCDevice& device, RTCScene& scene, const shape_tri_t& shape) {
     RTCGeometry geom_tri = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
     rtcSetSharedGeometryBuffer(geom_tri, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3,
         shape._v.data(), 0, sizeof(vertex_t), shape._v.size());
@@ -98,6 +132,27 @@ void submit_shape_quad(RTCDevice& device, RTCScene& scene, const shape_quad_t& s
         shape._v.data(), 0, sizeof(vertex_t), shape._v.size());
     rtcSetSharedGeometryBuffer(geom_quad, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT4,
         shape._q.data(), 0, sizeof(quad_t), shape._q.size());
+    rtcCommitGeometry(geom_quad);
+    rtcAttachGeometry(scene, geom_quad);
+    rtcReleaseGeometry(geom_quad);
+}*/
+
+void submit_shape_tri(RTCDevice& device, RTCScene& scene, const shape_tri_t& shape) {
+    RTCGeometry geom_tri = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
+    rtcSetSharedGeometryBuffer(geom_tri, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3,
+        &shape._v[0], 0, sizeof(vertex_t), shape._n_v);
+    rtcSetSharedGeometryBuffer(geom_tri, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3,
+        &shape._tr[0], 0, sizeof(triangle_t), shape._n_tr);
+    rtcCommitGeometry(geom_tri);
+    rtcAttachGeometry(scene, geom_tri);
+    rtcReleaseGeometry(geom_tri);
+}
+void submit_shape_quad(RTCDevice& device, RTCScene& scene, const shape_quad_t& shape) {
+    RTCGeometry geom_quad = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_QUAD);
+    rtcSetSharedGeometryBuffer(geom_quad, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3,
+        &shape._v[0], 0, sizeof(vertex_t), shape._n_v);
+    rtcSetSharedGeometryBuffer(geom_quad, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT4,
+        &shape._q[0], 0, sizeof(quad_t), shape._n_q);
     rtcCommitGeometry(geom_quad);
     rtcAttachGeometry(scene, geom_quad);
     rtcReleaseGeometry(geom_quad);
