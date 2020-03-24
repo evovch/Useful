@@ -32,12 +32,16 @@ struct RTC_ALIGN(16) shape_tri_t {
     triangle_t _tr[2];
     const int _n_v = 4;
     const int _n_tr = 2;
+    const int padding1 = 0;
+    const int padding2 = 0;
 };
 struct RTC_ALIGN(16) shape_quad_t {
     vertex_t _v[4];
     quad_t _q[1];
     const int _n_v = 4;
     const int _n_q = 1;
+    const int padding1 = 0;
+    const int padding2 = 0;
 };
 
 void InitRay(RTCRay& ray1, const float* const centr_ray_dir, const float theta) {
