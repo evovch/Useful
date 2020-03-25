@@ -79,6 +79,10 @@ void InitRay8(RTCRay8& ray8, const float* const centr_ray_dir) {
     }
 }
 
+struct RTC_ALIGN(32) valid_t {
+    int _valid[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+};
+
 int main(int argc, char** argv)
 {
     RTCDevice device = rtcNewDevice(NULL);
@@ -147,10 +151,10 @@ int main(int argc, char** argv)
     printf("==== Vector ====\n");
     RTCRay8 ray8;
     InitRay8(ray8, &central_ray_dir[0]);
-    const int valid[] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+    const valid_t valid;
     RTCIntersectContext ctx8;
     rtcInitIntersectContext(&ctx8);
-    rtcOccluded8(valid, scene, &ctx8, &ray8); // <--------------------- crash here
+    rtcOccluded8(&valid._valid[0], scene, &ctx8, &ray8);
     for (int i = 0; i < 8; i++) {
         if (ray8.tfar[i] > 0.0f) { printf("not occluded\n"); }
         else { printf("occluded\n"); }
@@ -161,11 +165,11 @@ int main(int argc, char** argv)
     for (int i = 0; i < 8; i++) {
         rayhit8.hit.geomID[i] = RTC_INVALID_GEOMETRY_ID;
     }
-    rtcIntersect8(valid, scene, &ctx8, &rayhit8);
+    rtcIntersect8(&valid._valid[0], scene, &ctx8, &rayhit8);
     for (int i = 0; i < 8; i++) {
         if (rayhit8.hit.geomID[i] == RTC_INVALID_GEOMETRY_ID) {
-            printf("not occluded\n");
-        } else { printf("occluded\n"); }
+            printf("not intersected\n");
+        } else { printf("intersected\n"); }
     }
     return 0;
 }
