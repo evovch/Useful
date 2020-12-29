@@ -24,14 +24,25 @@ link_directories($ENV{VULKAN_SDK}/lib)
 
 # ===============================================
 
+set (GLFWDIR "C:\\Users\\evovch\\source\\vendor\\glfw-3.3.2.bin.WIN64\\")
+
+include_directories(${GLFWDIR}/include)
+link_directories(${GLFWDIR}/lib-vc2019)
+
+# ===============================================
+
 set(SOURCE_EXE main.cpp
-               cls_VulkanRenderer.cpp
+               vulkan_renderer.cpp
                )
 
 add_executable(prog ${SOURCE_EXE})
 
 # ===============================================
 
-target_link_libraries(prog vulkan)
+target_link_libraries(prog vulkan-1 glfw3)
+
+# ===============================================
+
+#TODO compile shaders?
 
 # ===============================================
