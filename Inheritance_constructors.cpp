@@ -1,4 +1,4 @@
-#define DELETECOPY
+//#define DELETECOPY
 
 #include <utility>
 #include <iostream>
@@ -28,6 +28,12 @@ public:
 #endif
 	Base(Base&& other) noexcept;
 	Base& operator=(Base&& other) noexcept;
+public:
+	void Print(void) const {
+		std::cout << _base_private_x << "\t"
+			<< _base_protected_y << "\t"
+			<< _base_public_z;
+	}
 };
 
 Base::Base(const int& x, const int& y, const int& z)
@@ -36,14 +42,13 @@ Base::Base(const int& x, const int& y, const int& z)
 	, _base_protected_y(y)
 	, _base_public_z(z)
 {
-	std::cout << "Base  constructor: "
-		<< _base_private_x << "\t" << _base_protected_y << "\t" << _base_public_z << std::endl;
+	std::cout << "Base  constructor" << "\t"; // std::endl;
+	this->Print(); std::cout << std::endl;
 }
 
 Base::~Base(void) {
-	std::cout << "Base  destructor: "
-		<< _base_private_x << "\t" << _base_protected_y << "\t" << _base_public_z << "\t"
-		<< " valid=" << (_valid ? "1" : "0" ) << std::endl;
+	std::cout << "Base  destructor" << "\t"; // std::endl;
+	this->Print(); std::cout << std::endl;
 }
 
 // Copy
@@ -56,7 +61,8 @@ Base::Base(const Base& other)
 	, _base_protected_y(other._base_protected_y)
 	, _base_public_z   (other._base_public_z)
 {
-	std::cout << "Base  copy constructor" << std::endl;
+	std::cout << "Base  copy constructor" << "\t"; // std::endl;
+	other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 }
 
 Base& Base::operator=(const Base& other) {
@@ -64,7 +70,8 @@ Base& Base::operator=(const Base& other) {
 	_base_private_x   = other._base_private_x;
 	_base_protected_y = other._base_protected_y;
 	_base_public_z    = other._base_public_z;
-	std::cout << "Base  copy operator=" << std::endl;
+	std::cout << "Base  copy operator=" << "\t"; // std::endl;
+	other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 	return *this;
 }
 
@@ -73,19 +80,23 @@ Base& Base::operator=(const Base& other) {
 // Move
 
 Base::Base(Base&& other) noexcept {
+	std::cout << "Base  move constructor" << std::endl;
+	std::cout << "Before: "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 	_valid = true; other._valid = false;
 	std::swap(_base_private_x,   other._base_private_x);
 	std::swap(_base_protected_y, other._base_protected_y);
 	std::swap(_base_public_z,    other._base_public_z);
-	std::cout << "Base  move constructor" << std::endl;
+	std::cout << "After:  "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 }
 
 Base& Base::operator=(Base&& other) noexcept {
+	std::cout << "Base  move operator=" << std::endl;
+	std::cout << "Before: "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 	_valid = true; other._valid = false;
 	std::swap(_base_private_x,   other._base_private_x);
 	std::swap(_base_protected_y, other._base_protected_y);
 	std::swap(_base_public_z,    other._base_public_z);
-	std::cout << "Base  move operator=" << std::endl;
+	std::cout << "After:  "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 	return *this;
 }
 
@@ -112,6 +123,13 @@ public:
 #endif
 	Child(Child&& other) noexcept;
 	Child& operator=(Child&& other) noexcept;
+public:
+	void Print(void) const {
+		Base::Print(); std::cout << "\t";
+		std::cout << _child_private_p << "\t"
+			<< _child_protected_q << "\t"
+			<< _child_public_r;
+	}
 };
 
 Child::Child(const int& x, const int& y, const int& z,
@@ -121,15 +139,13 @@ Child::Child(const int& x, const int& y, const int& z,
 	, _child_protected_q(q)
 	, _child_public_r(r)
 {
-	std::cout << "Child constructor: "
-		<< "(" << x << ")" << "\t" << _base_protected_y << "\t" << _base_public_z << "\t"
-		<< _child_private_p << "\t" << _child_protected_q << "\t" << _child_public_r << std::endl;
+	std::cout << "Child constructor" << "\t"; // std::endl;
+	this->Print(); std::cout << std::endl;
 }
 
 Child::~Child(void) {
-	std::cout << "Child destructor: "
-		<< "x" << "\t" << _base_protected_y << "\t" << _base_public_z << "\t"
-		<< _child_private_p << "\t" << _child_protected_q << "\t" << _child_public_r << std::endl;
+	std::cout << "Child destructor" << "\t"; // std::endl;
+	this->Print(); std::cout << std::endl;
 }
 
 // Copy
@@ -137,19 +153,22 @@ Child::~Child(void) {
 #ifndef DELETECOPY
 
 Child::Child(const Child& other)
-	: Base(other)
+	: Base(other) // <-------------------------------------------------------------------------------------------------
 	, _child_private_p  (other._child_private_p)
 	, _child_protected_q(other._child_protected_q)
 	, _child_public_r   (other._child_public_r)
 {
-	std::cout << "Child copy constructor" << std::endl;
+	std::cout << "Child copy constructor" << "\t"; // std::endl;
+	other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 }
 
 Child& Child::operator=(const Child& other) {
+	Base::operator=(other); // <---------------------------------------------------------------------------------------
 	_child_private_p   = other._child_private_p;
 	_child_protected_q = other._child_protected_q;
 	_child_public_r    = other._child_public_r;
-	std::cout << "Child copy operator=" << std::endl;
+	std::cout << "Child copy operator=" << "\t"; // std::endl;
+	other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 	return *this;
 }
 
@@ -158,19 +177,24 @@ Child& Child::operator=(const Child& other) {
 // Move
 
 Child::Child(Child&& other) noexcept
-	: Base(std::move(other))
+	: Base(std::move(other)) // <--------------------------------------------------------------------------------------
 {
+	std::cout << "Child move constructor" << std::endl;
+	std::cout << "Before: "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 	std::swap(_child_private_p,   other._child_private_p);
 	std::swap(_child_protected_q, other._child_protected_q);
 	std::swap(_child_public_r,    other._child_public_r);
-	std::cout << "Child move constructor" << std::endl;
+	std::cout << "After:  "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 }
 
 Child& Child::operator=(Child&& other) noexcept {
+	std::cout << "Child move operator=" << std::endl;
+	std::cout << "Before: "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
+	Base::operator=(std::move(other)); // <----------------------------------------------------------------------------
 	std::swap(_child_private_p,   other._child_private_p);
 	std::swap(_child_protected_q, other._child_protected_q);
 	std::swap(_child_public_r,    other._child_public_r);
-	std::cout << "Child move operator=" << std::endl;
+	std::cout << "After:  "; other.Print(); std::cout << "\t->\t"; this->Print(); std::cout << std::endl;
 	return *this;
 }
 
@@ -185,10 +209,11 @@ int main(int argc, char** argv) {
 	std::cout << "-----------------------------------" << std::endl;
 	Child ch3(11, 12, 13, 14, 15, 16);
 	std::cout << "-----------------------------------" << std::endl;
-	Child ch4 = ch3;
+	Child ch4(21, 22, 23, 24, 25, 26);
+	std::cout << "-----------------------------------" << std::endl;
+	ch4 = ch3;
 	std::cout << "-----------------------------------" << std::endl;
 #endif // DELETECOPY
-	//Func(Child(11, 12, 13, 14, 15, 16));
 	std::vector<Child> children;
 	children.push_back(Child(91, 92, 93, 94, 95, 96));
 	std::cout << "-----------------------------------" << std::endl;
