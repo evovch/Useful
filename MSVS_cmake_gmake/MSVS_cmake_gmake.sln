@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UserLibrary", "UserLibrary\UserLibrary.vcxproj", "{F3CA18A0-BD9E-44E2-B926-89BA3DC7BC5E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UserLibraryClient", "UserLibraryClient\UserLibraryClient.vcxproj", "{85A40AEF-8244-4645-B6FA-EF08A7DBD9F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cmake", "cmake", "{3EF510FB-7CC2-4FAD-AAE1-63CD75C4B5AE}"
+	ProjectSection(SolutionItems) = preProject
+		CMakeLists.txt = CMakeLists.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gmake", "gmake", "{6A6936FE-680B-4D69-AFC4-8FB1D878D656}"
+	ProjectSection(SolutionItems) = preProject
+		Makefile = Makefile
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3CA18A0-BD9E-44E2-B926-89BA3DC7BC5E}.Debug|x64.ActiveCfg = Debug|x64
+		{F3CA18A0-BD9E-44E2-B926-89BA3DC7BC5E}.Debug|x64.Build.0 = Debug|x64
+		{F3CA18A0-BD9E-44E2-B926-89BA3DC7BC5E}.Release|x64.ActiveCfg = Release|x64
+		{F3CA18A0-BD9E-44E2-B926-89BA3DC7BC5E}.Release|x64.Build.0 = Release|x64
+		{85A40AEF-8244-4645-B6FA-EF08A7DBD9F6}.Debug|x64.ActiveCfg = Debug|x64
+		{85A40AEF-8244-4645-B6FA-EF08A7DBD9F6}.Debug|x64.Build.0 = Debug|x64
+		{85A40AEF-8244-4645-B6FA-EF08A7DBD9F6}.Release|x64.ActiveCfg = Release|x64
+		{85A40AEF-8244-4645-B6FA-EF08A7DBD9F6}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A304DDB-2B66-473B-9C0A-08EBCC590FED}
+	EndGlobalSection
+EndGlobal

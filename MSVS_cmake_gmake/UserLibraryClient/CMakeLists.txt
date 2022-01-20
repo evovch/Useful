@@ -1,0 +1,5 @@
+set(SOURCES source/UserLibraryClient.cpp)
+add_executable(UserLibraryClient ${SOURCES})
+target_include_directories(UserLibraryClient PRIVATE include)
+target_include_directories(UserLibraryClient PRIVATE ../UserLibrary/include)
+target_link_libraries(UserLibraryClient UserLibrary)
