@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "TheClass.h"
+#include "TheClass2.h"
 
 int main(int argc, char** argv) {
 	TheClass obj1;
