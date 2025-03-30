@@ -9,6 +9,12 @@
     .globl mul_ints_64_asm2
     .globl add_ints_32x4_asm
     .globl mul_ints_32x4_asm
+    .globl add_floats_asm
+    .globl add_floats_asm2
+    .globl mul_floats_asm
+    .globl mul_floats_asm2
+    .globl add_floats_x4_asm
+    .globl mul_floats_x4_asm
 
 add_ints_32_asm:
     movl %ecx, %eax  # l suffix in movl, addl, imull - 32 bit operation
@@ -59,7 +65,7 @@ mul_ints_64_asm2:
 add_ints_32x4_asm:
     movdqu (%rcx), %xmm0
     movdqu (%rdx), %xmm1
-    paddd  %xmm1, %xmm0
+    paddd %xmm1, %xmm0
     movdqu %xmm0, (%r8)
     ret
 mul_ints_32x4_asm:
@@ -67,4 +73,34 @@ mul_ints_32x4_asm:
     movdqu (%rdx), %xmm1
     pmulld %xmm1, %xmm0
     movdqu %xmm0, (%r8)
+    ret
+
+add_floats_asm:
+    movss %xmm0, %xmm2
+    addss %xmm1, %xmm2
+    movss %xmm2, %xmm0
+    ret
+add_floats_asm2:
+    addss %xmm1, %xmm0
+    ret
+mul_floats_asm:
+    movss %xmm0, %xmm2
+    mulss %xmm1, %xmm2
+    movss %xmm2, %xmm0
+    ret
+mul_floats_asm2:
+    mulss %xmm1, %xmm0
+    ret
+
+add_floats_x4_asm:
+    movaps (%rcx), %xmm0
+    movaps (%rdx), %xmm1
+    addps %xmm1, %xmm0
+    movaps %xmm0, (%r8)
+    ret
+mul_floats_x4_asm:
+    movaps (%rcx), %xmm0
+    movaps (%rdx), %xmm1
+    mulps %xmm1, %xmm0
+    movaps %xmm0, (%r8)
     ret
